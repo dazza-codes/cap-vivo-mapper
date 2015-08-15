@@ -14,6 +14,8 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/sul-dlss/cap-vivo-mapper'
   spec.licenses      = ['Apache-2.0']
 
+  spec.add_dependency 'dotenv'
+
   # Use pry for console and debug config
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'pry-doc'

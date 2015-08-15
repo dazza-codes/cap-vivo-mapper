@@ -3,5 +3,7 @@ require 'rubygems'
 require 'bundler/setup'
 
 require 'cap/vivo/mapper'
+CONFIG = Cap::Vivo::Mapper.configuration
+
 require 'pry'
 binding.pry
