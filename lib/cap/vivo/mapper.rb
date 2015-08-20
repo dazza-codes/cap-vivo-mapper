@@ -1,8 +1,10 @@
 require 'dotenv'
 Dotenv.load
 
+require 'linkeddata'
 require 'cap/vivo/mapper/version'
 require_relative 'mapper/configuration'
+require_relative 'mapper/mapper'
 
 # This is a utility working with Stanford CAP and VIVO data mappings.
 # https://github.com/sul-dlss/cap-vivo-mapper

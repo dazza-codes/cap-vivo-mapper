@@ -15,6 +15,7 @@ Gem::Specification.new do |spec|
   spec.licenses      = ['Apache-2.0']
 
   spec.add_dependency 'dotenv'
+  spec.add_dependency 'linkeddata'
 
   # Use pry for console and debug config
   spec.add_development_dependency 'pry'
