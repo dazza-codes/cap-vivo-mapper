@@ -8,11 +8,8 @@ module Cap
         attr_accessor :logger
         attr_reader :log_file
 
-        attr_accessor :cap_client
-
         def initialize
           self.debug = env_boolean('DEBUG')
-          # self.cap_client = CAP::Client.new
           logger_init
         end
 

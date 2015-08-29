@@ -3,7 +3,17 @@ require 'rubygems'
 require 'bundler/setup'
 
 require 'cap/vivo/mapper'
-CONFIG = Cap::Vivo::Mapper.configuration
+mapper = Cap::Vivo::Mapper::Mapper.new
+
+require 'cap/client'
+client = Cap::Client::Client.new
+
+# # TODO: convert client.profiles to vivo jsonld and save results.
+# client.profiles.each_pair do |id, profile|
+#   # mapper.map
+# end
 
 require 'pry'
 binding.pry
+
+client.profiles.close  # close db (finalize doesn't work)

@@ -14,8 +14,11 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/sul-dlss/cap-vivo-mapper'
   spec.licenses      = ['Apache-2.0']
 
+  spec.add_dependency 'daybreak' # memory mapped file db
   spec.add_dependency 'dotenv'
   spec.add_dependency 'linkeddata'
+  spec.add_dependency 'faraday'
+  spec.add_dependency 'faraday_middleware'
 
   # Use pry for console and debug config
   spec.add_development_dependency 'pry'
