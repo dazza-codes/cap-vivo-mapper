@@ -1,2 +1,4 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'cap/vivo/mapper'
+require 'cap'
+require 'cap/client'
+require 'cap/vivo'
