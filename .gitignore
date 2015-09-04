@@ -1,7 +1,5 @@
 *.gem
-*.gemtags
 *.rbc
-*.tags
 /.config
 /.env
 /coverage/
@@ -12,6 +10,12 @@
 /test/tmp/
 /test/version_tmp/
 /tmp/
+
+## Ctags
+/bin/ctags*
+*.tags
+*.gemtags
+
 
 ## Specific to RubyMine:
 .idea

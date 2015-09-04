@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
+
+require 'pry'
+require 'cap'
+require 'cap/client'
+require 'cap/vivo'
+
+# init configs
+config = Cap.configuration
+
+# client will load profile data from a local repo; if it is empty, it
+# can be populated from the CAP API using `client.get_profiles`.  The
+# profile data is available in `client.profiles`.
+client = Cap::Client::Client.new
+client.get_profiles
+
+# Convert all the CAP API profiles into VIVO linked data and
+# store it in the CAP_REPO_4STORE triple store.
+ids = client.profile_ids
+if config.rdf_replace
+  puts 'Replacing all VIVO linked data'
+  config.rdf_repo.clear
+else
+  puts 'Updating VIVO linked data'
+  q = 'SELECT ?person WHERE { ?person a <http://xmlns.com/foaf/0.1/Person> }'
+  r = config.rdf_repo.client.query(q)
+  vivo_uris = r.map {|s| s[:person]}
+  vivo_ids = vivo_uris.map {|uri| uri.to_s.split('/').last.to_i }
+  ids.delete_if {|id| vivo_ids.include? id }
+end
+puts "Processing #{ids.length} CAP profiles"
+count = 0
+start = Time.now.to_i
+ids.each do |id|
+  count += 1
+  profile = client.profile(id)
+  begin
+    mapper = Cap::Vivo::Mapper.new profile
+    mapper.create_vivo
+    mapper.save
+    if count % 25 == 0
+      delay = Time.now.to_i - start
+      printf "\nmapped %4d of %d (%4d sec)\n", count, ids.length, delay.to_s
+    else
+      if count == 1
+        printf "Mapping %4d profiles:\n", ids.length
+      end
+      printf '.'
+    end
+  rescue => e
+    delay = Time.now.to_i - start
+    puts
+    printf "FAILED profileId %d (%d of %d)\n", id, count, ids.length
+    puts e.message
+    puts
+  end
+end
+puts
+
+at_exit {
+  config.cap_repo.close if config.cap_repo.is_a? Daybreak::DB
+  client = nil
+  config = nil
+  sleep 2 # give it a chance to close
+}

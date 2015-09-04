@@ -2,18 +2,21 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'cap/vivo/mapper'
-mapper = Cap::Vivo::Mapper::Mapper.new
-
-require 'cap/client'
-client = Cap::Client::Client.new
-
-# # TODO: convert client.profiles to vivo jsonld and save results.
-# client.profiles.each_pair do |id, profile|
-#   # mapper.map
-# end
-
 require 'pry'
-binding.pry
+require 'cap'
+require 'cap/client'
+require 'cap/vivo'
 
-client.profiles.close  # close db (finalize doesn't work)
+# init configs
+config = Cap.configuration
+config.cap_repo
+config.rdf_repo
+
+# client will load profile data from a local repo; if it is empty, it
+# can be populated from the CAP API using `client.get_profiles`.  The
+# profile data is available in `client.profiles`.
+client = Cap::Client::Client.new
+ids = client.profile_ids
+puts "Currently holding #{ids.length} CAP profiles in local repo"
+
+binding.pry

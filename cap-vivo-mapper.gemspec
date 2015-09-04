@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'cap/vivo/mapper/version'
+require 'cap/vivo/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "cap-vivo-mapper"
-  spec.version       = Cap::Vivo::Mapper::VERSION
+  spec.version       = Cap::Vivo::VERSION
   spec.authors       = ["Darren L. Weber, Ph.D."]
   spec.email         = ["darren.weber@stanford.edu"]
 
@@ -14,9 +14,14 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/sul-dlss/cap-vivo-mapper'
   spec.licenses      = ['Apache-2.0']
 
-  spec.add_dependency 'daybreak' # memory mapped file db
   spec.add_dependency 'dotenv'
+
+  spec.add_dependency 'daybreak' # memory mapped file db
+  spec.add_dependency 'mongo'
+
   spec.add_dependency 'linkeddata'
+  spec.add_dependency 'rdf-4store'
+
   spec.add_dependency 'faraday'
   spec.add_dependency 'faraday_middleware'
 

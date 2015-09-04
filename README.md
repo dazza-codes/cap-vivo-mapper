@@ -43,7 +43,53 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: usage instructions here
+### Setup
+
+#### MongoDB
+
+```sh
+# The following worked on an Ubuntu desktop system
+sudo apt-get install mongodb
+```
+
+#### 4store
+
+```sh
+# The following worked on an Ubuntu desktop system
+sudo apt-get install 4store
+sudo 4store status
+sudo service 4store stop
+sudo service 4store status
+# Only setup the backend once (it erases existing data)
+sudo 4s-backend-setup cap_vivo
+sudo 4s-backend cap_vivo
+sudo 4s-httpd -h # describes the options used below
+sudo 4s-httpd -p 9000 -U -s -1 cap_vivo
+```
+
+4store should be running a SPARQL server on the `cap_vivo` knowledge base; take a look at http://localhost:9000/status/.
+
+### Configure and Run Conversion
+
+Use the example configuration in
+https://github.com/sul-dlss/cap-vivo-mapper/blob/master/.env_example
+
+```sh
+mkdir -p ~/tmp/cap_vivo/log
+cd ~/tmp/cap_vivo
+project='https://raw.githubusercontent.com/sul-dlss/cap-vivo-mapper'
+wget ${project}/master/.env_example
+cp .env_example .env
+vim .env  # hopefully this file is self explanatory
+# If it's not already installed, install the the gem.
+gem install cap-vivo-mapper
+# Run it overnight, unless you have a high bandwidth connection to the
+# CAP API and a fast system.  So, watch it for any immediate failures;
+# if it's running, then leave it overnight.  The expected runtime is on
+# the order of hours.
+cap2vivo
+```
+
 
 ## Development
 
