@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# This script will start/stop a custom 4store KB called 'cap_vivo'.
+# To use a custom KB as the default whenever the system restarts,
+# modify the content of /etc/default/4store.  If that file is
+# modified, this script should not be required.
+
+# The script should work on an Ubuntu or Debian system
+grep -q 'Ubuntu' /etc/lsb-release
+if [ ! $? ]; then
+  echo "This script works on Ubuntu"
+  exit 1
+fi
+
+dpkg -s 4store | grep -q 'Status:.*installed'
+if [ ! $? ]; then
+  sudo apt-get install -y 4store
+fi
+
+. /lib/lsb/init-functions
+
+# The knowledge base (KB) is called 'cap_vivo'
+# The following is adapted from /etc/init.d/4store
+DAEMON1=/usr/bin/4s-backend
+DAEMON2=/usr/bin/4s-httpd
+DAEMON_OPTS='--start --chuid fourstore '
+PORT=9001  # avoid the default 4s-httpd port at 9000
+KB=cap_vivo
+
+case "$1" in
+  start)
+    sudo mkdir -p -m 0755 /var/run/4store
+    sudo find /var/run/4store \( \( -type d -links 2 \) -o \( -type f -links 1 \) \) -execdir chown "fourstore": {} +
+    # Ensure the 4store KB exists for 'cap_vivo'
+    if [ ! -d "/var/lib/4store/$KB" ]; then
+      # Only setup the backend once (it erases existing data)
+      sudo su - fourstore -s /bin/sh -c "4s-backend-setup '$KB'"
+    fi
+    # Start the 4s-backend server
+    sudo start-stop-daemon $DAEMON_OPTS \
+        --pidfile /var/run/4store/4s-backend-cap.pid --make-pidfile \
+        --name 4s-backend --startas $DAEMON1 -- $KB
+    # Start the 4s-httpd server for SPARQL
+    #4s-httpd -h # describes the options used below
+    options="-p $PORT -U -s -1 $KB"
+    sudo start-stop-daemon $DAEMON_OPTS \
+        --pidfile /var/run/4store/4s-httpd-cap.pid --make-pidfile \
+        --name 4s-httpd --startas $DAEMON2 -- $options
+    ;;
+  stop)
+    sudo start-stop-daemon --stop --name 4s-backend
+    sudo start-stop-daemon --stop --name 4s-httpd
+    ;;
+  status)
+    status_of_proc $DAEMON1 "4s-backend server"
+    status_of_proc $DAEMON2 "4s-httpd server"
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|status}"
+    exit 2
+    ;;
+esac
+

@@ -51,7 +51,7 @@ module Cap
 
     def rdf_repo
       @rdf_repo ||= begin
-        repo = ENV['CAP_REPO_4STORE'].dup || 'http://localhost:9000'
+        repo = ENV['CAP_REPO_4STORE'].dup || 'http://localhost:9001'
         RDF::FourStore::Repository.new(repo)
       end
     end

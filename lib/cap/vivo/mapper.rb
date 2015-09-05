@@ -7,6 +7,15 @@ module Cap
 
       PROFILE_URI_PREFIX = 'https://profiles.stanford.edu/vivo'
 
+      # PROV data
+      MAPPING_ACTIVITY = RDF::URI.parse('https://github.com/sul-dlss/cap-vivo-mapper/mapping')
+      MAPPING_ENTITY = RDF::URI.parse('https://github.com/sul-dlss/cap-vivo-mapper')
+      # MAPPING_AGENT = RDF::URI.parse('http://orcid.org/0000-0002-4822-6661')
+      MAPPING_AGENT = RDF::URI.parse('http://www.linkedin.com/in/darrenleeweber')
+      MAPPING_ORG = RDF::URI.parse('http://library.stanford.edu')
+      MAPPING_AGENT_NAME = RDF::Literal.new('Darren Lee Weber, Ph.D.')
+      MAPPING_ORG_NAME = RDF::Literal.new('Stanford Univerity Libraries')
+
       attr_accessor :config
 
       # profile
@@ -90,24 +99,73 @@ module Cap
           end
         end
         # Web Links
+        profiles_url = profile_link('https://cap.stanford.edu/rel/public')
+        if profiles_url
+          vcard_url = RDF::Node.new
+          @rdf << [vcard, RDF::Vocab::VCARD.hasURL, vcard_url]
+          @rdf << [vcard_url, RDF::Vocab::VCARD.hasValue, profiles_url]
+          @rdf << [vcard_url, RDF::RDFS.label, "CAP public profile"]
+          @rdf << [vcard_url, RDF.type, RDF::Vocab::VCARD.Work]
+        end
+      end
+
+      # Retrieve profile link URLs, using the link relation, such as:
+      # Profiles - 'https://cap.stanford.edu/rel/public'
+      # CAP API  - 'https://cap.stanford.edu/rel/self'
+      # @param link_rel [String] the link relation required
+      # @return uri [RDF::URI|nil] Stanford Profiles URL
+      def profile_link(link_rel)
+        uri = nil
         profile['meta']['links'].each do |link|
-          if link['rel'] == 'https://cap.stanford.edu/rel/public'
-            url = RDF::URI.parse link['href']
-            vcard_url = RDF::Node.new
-            @rdf << [vcard, RDF::Vocab::VCARD.hasURL, vcard_url]
-            @rdf << [vcard_url, RDF::Vocab::VCARD.hasValue, url]
-            @rdf << [vcard_url, RDF::RDFS.label, "CAP public profile"]
-            @rdf << [vcard_url, RDF.type, RDF::Vocab::VCARD.Work]
+          if link['rel'] == link_rel
+            uri = RDF::URI.parse link['href']
           end
+        end
+        uri
+      end
+
+      def prov
+        prov_mapping  # create most of the PROV once
+        vivo_modified = RDF::Literal.new(Time.now.utc, :datatype => RDF::XSD.dateTime)
+        t = Time.parse(profile['lastModified']).utc
+        cap_modified = RDF::Literal.new(t, :datatype => RDF::XSD.dateTime)
+        @vivo_uri ||= @uri
+        @cap_uri  ||= profile_link('https://cap.stanford.edu/rel/self')
+        @rdf << [@vivo_uri, RDF.type, RDF::PROV.Entity]
+        @rdf << [@cap_uri,  RDF.type, RDF::PROV.Entity]
+        @rdf << [@cap_uri,  RDF::PROV.generatedAtTime, cap_modified]
+        @rdf << [@vivo_uri, RDF::PROV.wasDerivedFrom, @cap_uri]
+        @rdf << [@vivo_uri, RDF::PROV.wasGeneratedBy, MAPPING_ACTIVITY]
+        @rdf << [@vivo_uri,  RDF::PROV.generatedAtTime, vivo_modified]
+        @rdf << [MAPPING_ACTIVITY, RDF::PROV.used, @cap_uri]
+      end
+
+      # Save the PROV mapping activity and associated agent data to the
+      # triple store once.
+      def prov_mapping
+        @@prov_mapping ||= begin
+          g = RDF::Graph.new
+          g << [MAPPING_ENTITY, RDF.type, RDF::PROV.Entity]
+          g << [MAPPING_ACTIVITY, RDF.type, RDF::PROV.Activity]
+          g << [MAPPING_ACTIVITY, RDF::PROV.wasAssociatedWith, MAPPING_AGENT]
+          g << [MAPPING_AGENT, RDF.type, RDF::PROV.Agent]
+          g << [MAPPING_AGENT, RDF.type, RDF::PROV.Person]
+          g << [MAPPING_AGENT, RDF::FOAF.name, MAPPING_AGENT_NAME]
+          g << [MAPPING_AGENT, RDF::PROV.actedOnBehalfOf, MAPPING_ORG]
+          g << [MAPPING_ORG, RDF.type, RDF::PROV.Agent]
+          g << [MAPPING_ORG, RDF.type, RDF::PROV.Organization]
+          g << [MAPPING_ORG, RDF::FOAF.name, MAPPING_ORG_NAME]
+          g.each_statement {|s| @config.rdf_repo.insert_statement s}
+          true
+        rescue => e
+          @config.logger.error e.message
+          false
         end
       end
 
       def save
+        prov
         @rdf.each_statement {|s| @config.rdf_repo.insert_statement s};
-      end
-
-      def prov
-        now = RDF::Literal.new(Time.now.utc, :datatype => RDF::XSD.dateTime)
       end
 
       def to_jsonld

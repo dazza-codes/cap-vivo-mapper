@@ -47,27 +47,20 @@ Or install it yourself as:
 
 #### MongoDB
 
+The CAP API profile data is retrieved and saved locally into a mongodb database (`cap` by default).  To get mongodb installed and running, try:
 ```sh
-# The following worked on an Ubuntu desktop system
+# This should work for a Debian/Ubuntu system
 sudo apt-get install mongodb
+# If the mongodb-org package is available, use it instead.
 ```
 
 #### 4store
 
-```sh
-# The following worked on an Ubuntu desktop system
-sudo apt-get install 4store
-sudo 4store status
-sudo service 4store stop
-sudo service 4store status
-# Only setup the backend once (it erases existing data)
-sudo 4s-backend-setup cap_vivo
-sudo 4s-backend cap_vivo
-sudo 4s-httpd -h # describes the options used below
-sudo 4s-httpd -p 9000 -U -s -1 cap_vivo
-```
+The VIVO data is saved to the 4store triple store.  To get it running, see the shell script in
+https://github.com/sul-dlss/cap-vivo-mapper/blob/master/bin/cap_vivo_4store
 
-4store should be running a SPARQL server on the `cap_vivo` knowledge base; take a look at http://localhost:9000/status/.
+After running `cap_vivo_4store` on a Debian/Ubuntu system, there should be a SPARQL server for the `cap_vivo` knowledge base; take a look at
+http://localhost:9001/status/.
 
 ### Configure and Run Conversion
 
@@ -75,14 +68,17 @@ Use the example configuration in
 https://github.com/sul-dlss/cap-vivo-mapper/blob/master/.env_example
 
 ```sh
+# If it's not already installed, install the the gem.
+gem install cap-vivo-mapper
+# Create a working directory and create a .env config file. The
+# hardest part to the configuration could be getting a CAP API
+# account to complete the parameters for client authentication.
 mkdir -p ~/tmp/cap_vivo/log
 cd ~/tmp/cap_vivo
 project='https://raw.githubusercontent.com/sul-dlss/cap-vivo-mapper'
 wget ${project}/master/.env_example
 cp .env_example .env
 vim .env  # hopefully this file is self explanatory
-# If it's not already installed, install the the gem.
-gem install cap-vivo-mapper
 # Run it overnight, unless you have a high bandwidth connection to the
 # CAP API and a fast system.  So, watch it for any immediate failures;
 # if it's running, then leave it overnight.  The expected runtime is on
