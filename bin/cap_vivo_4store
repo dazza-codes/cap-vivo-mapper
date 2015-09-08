@@ -5,55 +5,77 @@
 # modify the content of /etc/default/4store.  If that file is
 # modified, this script should not be required.
 
-# The script should work on an Ubuntu or Debian system
-grep -q 'Ubuntu' /etc/lsb-release
+which 4s-backend > /dev/null
 if [ ! $? ]; then
-  echo "This script works on Ubuntu"
+  echo "4store is not installed on the PATH"
+  echo "See http://4store.org/trac/wiki/Documentation"
+  exit 1
+fi
+which 4s-httpd > /dev/null
+if [ ! $? ]; then
+  echo "4store is not installed on the PATH"
+  echo "See http://4store.org/trac/wiki/Documentation"
   exit 1
 fi
 
-dpkg -s 4store | grep -q 'Status:.*installed'
-if [ ! $? ]; then
-  sudo apt-get install -y 4store
-fi
-
-. /lib/lsb/init-functions
-
 # The knowledge base (KB) is called 'cap_vivo'
 # The following is adapted from /etc/init.d/4store
-DAEMON1=/usr/bin/4s-backend
-DAEMON2=/usr/bin/4s-httpd
-DAEMON_OPTS='--start --chuid fourstore '
 PORT=9001  # avoid the default 4s-httpd port at 9000
 KB=cap_vivo
 
 case "$1" in
   start)
-    sudo mkdir -p -m 0755 /var/run/4store
-    sudo find /var/run/4store \( \( -type d -links 2 \) -o \( -type f -links 1 \) \) -execdir chown "fourstore": {} +
-    # Ensure the 4store KB exists for 'cap_vivo'
+    # Ensure the 4store KB exists for 'cap_vivo'.
+    # Only setup the backend once (it erases existing data).
     if [ ! -d "/var/lib/4store/$KB" ]; then
-      # Only setup the backend once (it erases existing data)
-      sudo su - fourstore -s /bin/sh -c "4s-backend-setup '$KB'"
+      sudo 4s-backend-setup $KB
     fi
-    # Start the 4s-backend server
-    sudo start-stop-daemon $DAEMON_OPTS \
-        --pidfile /var/run/4store/4s-backend-cap.pid --make-pidfile \
-        --name 4s-backend --startas $DAEMON1 -- $KB
-    # Start the 4s-httpd server for SPARQL
-    #4s-httpd -h # describes the options used below
-    options="-p $PORT -U -s -1 $KB"
-    sudo start-stop-daemon $DAEMON_OPTS \
-        --pidfile /var/run/4store/4s-httpd-cap.pid --make-pidfile \
-        --name 4s-httpd --startas $DAEMON2 -- $options
+    if ps aux | grep -q -E "[4]s-backend.*$KB"; then
+      echo -e "4s-backend\t: already running $KB"
+    else
+      echo -e "4s-backend\t: starting $KB"
+      if sudo 4s-backend $KB; then
+        echo -e "4s-backend\t: started $KB"
+      else
+        echo -e "4s-backend\t: failed!"
+        exit 1
+      fi
+    fi
+    if ps aux | grep -q -E "[4]s-httpd.*$PORT.*$KB"; then
+      echo -e "4s-httpd\t: already running $KB on $PORT"
+    else
+      echo -e "4s-httpd\t: starting $KB on $PORT"
+      # Start the 4s-httpd server for SPARQL
+      #4s-httpd -h # describes the options
+      if sudo 4s-httpd -p $PORT -U -s -1 $KB; then
+        echo -e "4s-httpd\t: started $KB on $PORT"
+        echo "See http://localhost:9001/status/"
+      else
+        echo -e "4s-httpd\t: failed!"
+        exit 1
+      fi
+    fi
     ;;
   stop)
-    sudo start-stop-daemon --stop --name 4s-backend
-    sudo start-stop-daemon --stop --name 4s-httpd
+    patterns="[4]s-httpd.*$KB [4]s-backend.*$KB"
+    for pattern in $patterns; do
+      echo "Stopping processes matching: $pattern"
+      pids=$(ps aux | grep -E $pattern | tr -s ' ' | cut -d' ' -f2)
+      echo "Stopping process numbers:"
+      echo "$pids"
+      for pid in $pids; do
+        sudo kill $pid
+      done
+    done
     ;;
   status)
-    status_of_proc $DAEMON1 "4s-backend server"
-    status_of_proc $DAEMON2 "4s-httpd server"
+    for p in backend httpd; do
+      if ps aux | grep -q -E "[4]s-${p}.*$KB"; then
+        echo -e "4s-${p}\t: running $KB"
+      else
+        echo -e "4s-${p}\t: not running $KB"
+      fi
+    done
     ;;
   *)
     echo "Usage: $0 {start|stop|status}"
