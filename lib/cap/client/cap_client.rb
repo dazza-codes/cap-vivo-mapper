@@ -13,7 +13,6 @@ module Cap
     class Client
 
       JSON_CONTENT = 'application/json'
-      BSON_MAX = 16777216
 
       attr_reader :config
       attr_reader :cap_api
@@ -107,46 +106,8 @@ module Cap
                     puts "Retrieved #{page} of #{pages} pages."
                   end
                   profiles = data['values']
-                  if @profiles.is_a? Daybreak::DB
-                    profiles.each do |profile|
-                      id = profile["profileId"]
-                      @profiles[id] = profile
-                    end
-                    @profiles.flush
-                  elsif @profiles.is_a? Mongo::Collection
-                    # split out the publication data to accommodate the
-                    # 16Mb limit on mongodb docs.
-                    pubs_fields = ['doiId', 'doiUrl', 'webOfScienceId', 'webOfScienceUrl']
-                    profiles.each do |profile|
-                      id = profile['profileId']
-                      presentations = profile.delete('presentations') || []
-                      presentations.each {|p| p.delete('detail')}
-                      pres = {'profileId' => id, 'presentations' => presentations}
-                      begin
-                        @presentations.insert_one(pres)
-                      rescue
-                        msg = "Profile #{id} presentations failed to save."
-                        @config.logger.error msg
-                      end
-                      publications = profile.delete('publications') || []
-                      publications.each do |p|
-                        p.keys {|k| p.delete(k) unless pubs_fields.include? k }
-                      end
-                      pub = {'profileId' => id, 'publications' => publications}
-                      begin
-                        @publications.insert_one(pub)
-                      rescue
-                        msg = "Profile #{id} publications failed to save."
-                        @config.logger.error msg
-                      end
-                      begin
-                        @profiles.insert_one(profile)
-                      rescue
-                        msg = "Profile #{id} failed to save."
-                        @config.logger.error msg
-                      end
-                    end
-                  end
+                  profiles.each {|profile| profile_insert(profile) }
+                  @profiles.flush if @profiles.is_a? Daybreak::DB
                   page += 1
                   break if data['lastPage']
                 else
@@ -174,6 +135,12 @@ module Cap
         end
       end
 
+      # TODO: provide a method for retrieving the CAP API data
+      #       for profileId and lastModified and determine
+      #       whether the local repo data should be updated.
+      #
+      # api/profiles/v1?ps=1&vw=brief
+      #
       # def update_profiles
       #   # profile['profileId']
       #   # => 42005
@@ -188,7 +155,7 @@ module Cap
         if @profiles.is_a? Daybreak::DB
           @profiles.keys.map {|k| k.to_i}
         elsif @profiles.is_a? Mongo::Collection
-          @profiles.find.projection({profileId:1}).map {|p| p['profileId'] }
+          @profiles.find.projection({_id:1}).map {|p| p['_id'] }
         end
       end
 
@@ -199,7 +166,60 @@ module Cap
         if @profiles.is_a? Daybreak::DB
           @profiles[id.to_s]
         elsif @profiles.is_a? Mongo::Collection
-          @profiles.find({profileId: id}).first
+          profile = @profiles.find({_id: id}).first
+          profile['profileId'] = profile.delete('_id')
+          profile
+        end
+      end
+
+      # Insert profile data in local repo
+      # @param profile [Hash] CAP profile data
+      def profile_insert(profile)
+        if @profiles.is_a? Daybreak::DB
+          id = profile["profileId"]
+          @profiles[id] = profile
+        elsif @profiles.is_a? Mongo::Collection
+          # split out the publication data to accommodate size limit on mongo
+          id = profile.delete('profileId')
+          profile['_id'] = id  # use 'profileId' as the mongo _id
+          presentations = profile.delete('presentations') || []
+          presentations.each {|p| p.delete('detail')}
+          pres = {'_id' => id, 'presentations' => presentations}
+          begin
+            @presentations.insert_one(pres)
+          rescue
+            msg = "Profile #{id} presentations failed to save."
+            @config.logger.error msg
+          end
+          @pubs_fields ||= ['doiId', 'doiUrl', 'webOfScienceId', 'webOfScienceUrl']
+          publications = profile.delete('publications') || []
+          publications.each do |p|
+            p.keys {|k| p.delete(k) unless @pubs_fields.include? k }
+          end
+          pub = {'_id' => id, 'publications' => publications}
+          begin
+            @publications.insert_one(pub)
+          rescue
+            msg = "Profile #{id} publications failed to save."
+            @config.logger.error msg
+          end
+          begin
+            @profiles.insert_one(profile)
+          rescue
+            msg = "Profile #{id} failed to save."
+            @config.logger.error msg
+          end
+          begin
+            cap_modified = profile['lastModified'] || 0
+            cap_modified = Time.parse(cap_modified).to_i
+            data = process_data(id)
+            data['cap_modified'] = cap_modified
+            data['cap_retrieved'] = Time.now.to_i
+            process_update(id, data)
+          rescue
+            msg = "Profile #{id}: failed to update process data."
+            @config.logger.error msg
+          end
         end
       end
 
@@ -214,7 +234,7 @@ module Cap
             nil
           end
         elsif @profiles.is_a? Mongo::Collection
-          @presentations.find({profileId: id}).first
+          @presentations.find({_id: id}).first
         end
       end
 
@@ -228,25 +248,26 @@ module Cap
             nil
           end
         elsif @profiles.is_a? Mongo::Collection
-          @publications.find({profileId: id}).first
+          @publications.find({_id: id}).first
         end
       end
 
       # A profile's processing data.
       # @param id [Integer] A profileId number
-      def processed(id)
+      # @return data [Hash] Processing information
+      def process_data(id)
         if @profiles.is_a? Daybreak::DB
           begin
             @profiles[id.to_s]['processed']
           rescue
-            nil
+            {}
           end
         elsif @processed.is_a? Mongo::Collection
-          @processed.find({profileId: id}).first
+          @processed.find({_id: id}).first || {}
         end
       end
 
-      # Update a profile record with processing data.
+      # Update a profile record with lastModified time and processing data.
       # @param id [Integer] A profileId number
       # @param data [Hash] Optional processing information
       def process_update(id, data=nil)
@@ -258,15 +279,13 @@ module Cap
           @profiles[id.to_s]['processed'] = process_doc
         elsif @processed.is_a? Mongo::Collection
           process_doc = {
-            profileId: id,
+            _id: id,
             lastModified: Time.now.to_i,
             data: data
           }
           @processed.insert_one(process_doc)
         end
       end
-
-      private
 
       def repo_clean
         if @profiles.is_a? Daybreak::DB
@@ -283,6 +302,8 @@ module Cap
         end
       end
 
+      private
+
       def repo_commit(total)
         if @profiles.is_a? Daybreak::DB
           @profiles.flush
@@ -291,41 +312,37 @@ module Cap
           puts "Stored #{@profiles.size} of #{total} profiles."
           puts "Stored profiles to #{@profiles.class} at: #{@profiles.file}."
         elsif @profiles.is_a? Mongo::Collection
-          indexes = {"profileId" => 1}
-          @profiles.indexes.create_one( indexes, :unique => true )
-          @presentations.indexes.create_one( indexes, :unique => true )
-          @publications.indexes.create_one( indexes, :unique => true )
-          @processed.indexes.create_one( indexes, :unique => true )
           puts "Stored #{@profiles.find.count} of #{total} profiles."
           puts "Stored profiles to #{@profiles.class} at: #{@profiles.namespace}."
         end
       end
 
-      # Migrate CAP API profile data from a Daybreak::DB into mongodb
-      def profiles_daybreak_to_mongo
-        mongo = Cap.configuration.cap_repo_mongo
-        mongo[:profiles].drop
-        db = Cap.configuration.cap_repo_daybreak
-        db.keys do |id|
-          profile = profiles[id]
-          mongo[:profiles].insert_one(profile)
-        end
-        mongo[:profiles].indexes.create_one({profileId:1}, :unique => true )
-        daybreak_matches_mongo?
-      end
+      # # Migrate CAP API profile data from a Daybreak::DB into mongodb
+      # def profiles_daybreak_to_mongo
+      #   mongo = Cap.configuration.cap_repo_mongo
+      #   mongo[:profiles].drop
+      #   db = Cap.configuration.cap_repo_daybreak
+      #   db.keys do |id|
+      #     profile = profiles[id]
+      #     mongo[:profiles].insert_one(profile)
+      #   end
+      #   # mongo[:profiles].indexes.create_one({profileId:1}, :unique => true )
+      #   daybreak_matches_mongo?
+      # end
 
-      # Validate a daybreak to mongo data transfer
-      def daybreak_matches_mongo?
-        mongo = Cap.configuration.cap_repo_mongo
-        profiles = Cap.configuration.cap_repo_daybreak
-        matches = profiles.keys.map do |id|
-          profile = profiles[id]
-          mongo_profile = mongo[:profiles].find(:profileId => id.to_i).first
-          mongo_profile.delete("_id")
-          mongo_profile == profile
-        end
-        matches.all?  # should be true
-      end
+      # # Validate a daybreak to mongo data transfer
+      # def daybreak_matches_mongo?
+      #   mongo = Cap.configuration.cap_repo_mongo
+      #   profiles = Cap.configuration.cap_repo_daybreak
+      #   matches = profiles.keys.map do |id|
+      #     profile = profiles[id]
+      #     mongo_profile = mongo[:profiles].find({_id: id.to_i}).first
+      #     id = mongo_profile.delete("_id")
+      #     mongo_profile['profileId'] = id
+      #     mongo_profile == profile
+      #   end
+      #   matches.all?  # should be true
+      # end
 
       def json_payloads
         { accept: JSON_CONTENT, content_type: JSON_CONTENT }

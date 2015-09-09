@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
+
+require 'pry'
+require 'cap'
+require 'cap/client'
+require 'cap/vivo'
+
+# init configs
+CONFIG = Cap.configuration
+CAP_CLIENT = Cap::Client::Client.new
+RDF_CLIENT = CONFIG.rdf_repo.client
+
+# Find an return all the CAP 'profileId' in the local repo.
+# @return ids [Array<Integer>] An array of CAP profile IDs
+def cap_ids
+  CAP_CLIENT.profile_ids
+end
+
+# Find an return the VIVO equivalent of the CAP 'profileId'
+# @return ids [Array<Integer>] An array of VIVO Person IDs
+def vivo_ids
+  vivo_uris.map {|uri| uri.to_s.split('/').last.to_i }
+end
+
+# Return results for the SPARQL query to find all VIVO Person entities, i.e.
+# SELECT ?person WHERE { ?person a <http://xmlns.com/foaf/0.1/Person> }
+# @return uris [Array<RDF::URI>] An array of URIs
+def vivo_uris
+  q = 'SELECT ?person WHERE { ?person a <http://xmlns.com/foaf/0.1/Person> }'
+  r = RDF_CLIENT.query(q)
+  r.map {|s| s[:person]}
+end
+
+# Retrieve the graph of a VIVO profile
+# @param uri [RDF::URI] A VIVO profile URI
+# @return g [RDF::Graph] A graph of the 'DESCRIBE <uri>'
+def vivo_profile(uri)
+  rdf_subject_graph(uri)
+end
+
+# @param subject [RDF::Resource] An RDF::Resource
+# @return [RDF::Graph] graph for 'subject' as the ?s in ?s ?p ?o
+def rdf_subject_graph(subject)
+  g = RDF::Graph.new
+  q = rdf_subject_select(subject)
+  solutions = RDF_CLIENT.query(q)
+  solutions.each do |s|
+    p = s[:p]
+    o = s[:o]
+    g << [subject, p, o]
+    g << rdf_subject_graph(o) if o.node?
+    g << rdf_subject_graph(o) if o.uri?
+  end
+  g
+end
+
+# @param subject [RDF::Resource] An RDF::Resource
+# @return query [String] SELECT * WHERE { <subject> ?p ?o }
+def rdf_subject_select(subject)
+  "SELECT * WHERE { <#{subject}> ?p ?o }"
+end
+
+binding.pry

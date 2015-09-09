@@ -1,6 +1,7 @@
 require 'dotenv'
 Dotenv.load
 
+require 'time'
 require 'linkeddata'
 require 'rdf/4store'
 require 'daybreak'

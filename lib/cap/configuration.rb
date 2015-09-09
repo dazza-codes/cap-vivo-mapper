@@ -7,15 +7,18 @@ module Cap
     attr_reader :log_file
 
     attr_reader :cap_repo
+    attr_reader :cap_replace
+
     attr_reader :rdf_repo
     attr_reader :rdf_replace
 
     def initialize
       self.debug = env_boolean('DEBUG')
-      @rdf_replace = env_boolean('CAP_VIVO_REPLACE')
       logger_init
       cap_repo
+      @cap_replace = env_boolean('CAP_API_REPLACE')
       rdf_repo
+      @rdf_replace = env_boolean('CAP_RDF_REPLACE')
     end
 
     def env_boolean(var)

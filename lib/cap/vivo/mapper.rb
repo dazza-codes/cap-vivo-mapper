@@ -77,14 +77,19 @@ module Cap
         contacts.compact!
         contacts.each do |contact|
           unless contact['email'].nil?
-            email = RDF::URI.parse("mailto:#{contact['email']}")
-            label = contact['type'] || contact['label'] || ''
             vcard_email = RDF::Node.new
             @rdf << [vcard, RDF::Vocab::VCARD.hasEmail, vcard_email]
-            @rdf << [vcard_email, RDF.type, RDF::Vocab::VCARD.Email]
             @rdf << [vcard_email, RDF.type, RDF::Vocab::VCARD.Work]
-            @rdf << [vcard_email, RDF::Vocab::VCARD.hasValue, email]
-            @rdf << [vcard_email, RDF::RDFS.label, label]
+            label = contact['type'] || contact['label'] || ''
+            unless label.empty?
+              @rdf << [vcard_email, RDF::RDFS.label, RDF::Literal.new(label)]
+            end
+            emails = contact['email'].split
+            emails.each do |email|
+              email = email.gsub(/,\z/,'').gsub(/>\z/,'')
+              email = RDF::URI.parse("mailto:#{email}")
+              @rdf << [vcard_email, RDF::Vocab::VCARD.hasValue, email]
+            end
           end
           phone_numbers = contact['phoneNumbers'] || []
           phone_numbers.each do |phone|
@@ -164,7 +169,7 @@ module Cap
       end
 
       def save
-        prov
+        # prov
         @rdf.each_statement {|s| @config.rdf_repo.insert_statement s};
       end
 

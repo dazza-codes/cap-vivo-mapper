@@ -14,11 +14,15 @@ config = Cap.configuration
 # can be populated from the CAP API using `client.get_profiles`.  The
 # profile data is available in `client.profiles`.
 client = Cap::Client::Client.new
-client.get_profiles
+if config.cap_replace
+  client.repo_clean
+  client.get_profiles
+end
 
 # Convert all the CAP API profiles into VIVO linked data and
 # store it in the CAP_REPO_4STORE triple store.
-ids = client.profile_ids
+ids = client.profile_ids.sample(50)
+# ids = client.profile_ids
 if config.rdf_replace
   puts 'Replacing all VIVO linked data'
   config.rdf_repo.clear
@@ -52,9 +56,11 @@ ids.each do |id|
   rescue => e
     delay = Time.now.to_i - start
     puts
-    printf "FAILED profileId %d (%d of %d)\n", id, count, ids.length
-    puts e.message
+    msg = sprintf "FAILED profileId %d (%d of %d)\n", id, count, ids.length
+    msg += e.message
+    puts msg
     puts
+    config.logger.error(msg)
   end
 end
 puts
