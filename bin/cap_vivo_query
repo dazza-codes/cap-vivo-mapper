@@ -10,7 +10,7 @@ require 'cap/vivo'
 # init configs
 CONFIG = Cap.configuration
 CAP_CLIENT = Cap::Client::Client.new
-RDF_CLIENT = CONFIG.rdf_repo.client
+RDF_REPO = CONFIG.rdf_repo
 
 # Find an return all the CAP 'profileId' in the local repo.
 # @return ids [Array<Integer>] An array of CAP profile IDs
@@ -24,12 +24,27 @@ def vivo_ids
   vivo_uris.map {|uri| uri.to_s.split('/').last.to_i }
 end
 
+# @return prefix [String] The prefix for VIVO URIs
+def vivo_prefix
+  @vivo_prefix ||= begin
+    uri = vivo_uris.sample(1).first.to_s
+    id = uri.to_s.split('/').last
+    uri.sub("/#{id}",'')
+  end
+end
+
+# Return a VIVO URI for an ID
+# @return uri [RDF::URI] A VIVO URI
+def vivo_uri(id)
+  RDF::URI.parse "#{vivo_prefix}/#{id}"
+end
+
 # Return results for the SPARQL query to find all VIVO Person entities, i.e.
 # SELECT ?person WHERE { ?person a <http://xmlns.com/foaf/0.1/Person> }
 # @return uris [Array<RDF::URI>] An array of URIs
 def vivo_uris
   q = 'SELECT ?person WHERE { ?person a <http://xmlns.com/foaf/0.1/Person> }'
-  r = RDF_CLIENT.query(q)
+  r = RDF_REPO.client.query(q)
   r.map {|s| s[:person]}
 end
 
@@ -37,15 +52,42 @@ end
 # @param uri [RDF::URI] A VIVO profile URI
 # @return g [RDF::Graph] A graph of the 'DESCRIBE <uri>'
 def vivo_profile(uri)
-  rdf_subject_graph(uri)
+  g = RDF::Graph.new
+  q = rdf_subject_select(uri)
+  solutions = RDF_REPO.client.query(q)
+  solutions.each do |s|
+    p = s[:p]
+    o = s[:o]
+    g << [uri, p, o]
+    if vivo_profile_expand_object?(o)
+      g << rdf_subject_graph(o) if o.node?
+      g << rdf_subject_graph(o) if o.uri?
+    end
+  end
+  g
 end
+
+def vivo_profile_expand_object?(o)
+  # Idetify the exclusions and fall-back to accepting object expansion.
+  return false if o.literal?
+  # exclude expansions for the prov:Activity object
+  return false if @prov_activity_object == o
+  prov_activity_statement = RDF::Statement.new(o, RDF.type, RDF::Vocab::PROV.Activity)
+  if RDF_REPO.has_statement? prov_activity_statement
+    # there is only one prov:Activity object, so keep track of it.
+    @prov_activity_object = o
+    return false
+  end
+  true
+end
+
 
 # @param subject [RDF::Resource] An RDF::Resource
 # @return [RDF::Graph] graph for 'subject' as the ?s in ?s ?p ?o
 def rdf_subject_graph(subject)
   g = RDF::Graph.new
   q = rdf_subject_select(subject)
-  solutions = RDF_CLIENT.query(q)
+  solutions = RDF_REPO.client.query(q)
   solutions.each do |s|
     p = s[:p]
     o = s[:o]
