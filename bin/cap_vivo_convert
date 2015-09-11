@@ -21,8 +21,8 @@ end
 
 # Convert all the CAP API profiles into VIVO linked data and
 # store it in the CAP_REPO_4STORE triple store.
-ids = client.profile_ids.sample(50)
-# ids = client.profile_ids
+# ids = client.profile_ids.sample(50)
+ids = client.profile_ids
 if config.rdf_replace
   puts 'Replacing all VIVO linked data'
   config.rdf_repo.clear
@@ -34,7 +34,7 @@ else
   vivo_ids = vivo_uris.map {|uri| uri.to_s.split('/').last.to_i }
   ids.delete_if {|id| vivo_ids.include? id }
 end
-puts "Processing #{ids.length} CAP profiles"
+puts "Processing #{ids.length} CAP profiles:"
 count = 0
 start = Time.now.to_i
 ids.each do |id|
@@ -44,13 +44,10 @@ ids.each do |id|
     mapper = Cap::Vivo::Mapper.new profile
     mapper.create_vivo
     mapper.save
-    if count % 25 == 0
+    if count % 50 == 0
       delay = Time.now.to_i - start
-      printf "\nmapped %4d of %d (%4d sec)\n", count, ids.length, delay.to_s
+      printf "\ncompleted %4d of %d (%4d sec)\n", count, ids.length, delay.to_s
     else
-      if count == 1
-        printf "Mapping %4d profiles:\n", ids.length
-      end
       printf '.'
     end
   rescue => e
