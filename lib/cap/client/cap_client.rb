@@ -172,9 +172,19 @@ module Cap
         end
       end
 
+      # Remove privileged fields from profile data
+      # @param profile [Hash] CAP profile data
+      def profile_clean(profile)
+        @@priv_fields ||= %w(uid universityId)
+        if @config.clean
+          @@priv_fields.each {|f| profile.delete(f)}
+        end
+      end
+
       # Insert profile data in local repo
       # @param profile [Hash] CAP profile data
       def profile_insert(profile)
+        profile_clean(profile)
         if @profiles.is_a? Daybreak::DB
           id = profile["profileId"]
           @profiles[id] = profile

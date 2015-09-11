@@ -11,12 +11,17 @@ module Cap
       attr_accessor :token_user
       attr_accessor :token_pass
 
+      # Remove any privileged information from CAP profile data?
+      attr_accessor :clean
+
       def initialize
         self.debug = env_boolean('DEBUG')
         logger_init
         # Parameters for triannon client authentication
         @token_user = ENV['CAP_TOKEN_USER'] || ''
         @token_pass = ENV['CAP_TOKEN_PASS'] || ''
+        # Remove any privileged information from CAP profile data?
+        @clean = env_boolean('CAP_API_CLEAN')
       end
 
       def env_boolean(var)
