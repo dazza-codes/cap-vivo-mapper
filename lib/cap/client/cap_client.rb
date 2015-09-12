@@ -159,6 +159,124 @@ module Cap
         end
       end
 
+      # @return ids [Array<Integer>] a profileId for each faculty
+      def faculty_ids
+        faculty_profiles.map {|p| p['profileId'] }
+      end
+      # @return profiles [Array<Hash>] profiles for faculty
+      def faculty_profiles
+        affiliation_profiles('capFaculty')
+      end
+
+      # @return ids [Array<Integer>] a profileId for each staff
+      def staff_ids
+        staff_profiles.map {|p| p['profileId'] }
+      end
+      # @return profiles [Array<Hash>] profiles for staff
+      def staff_profiles
+        affiliation_profiles('capStaff')
+      end
+
+      # @return ids [Array<Integer>] a profileId for each physician
+      def physician_ids
+        physician_profiles.map {|p| p['profileId'] }
+      end
+      # @return profiles [Array<Hash>] profiles for physicians
+      def physician_profiles
+        affiliation_profiles('physician')
+      end
+
+      # @return ids [Array<Integer>] a profileId for each postdoc
+      def postdoc_ids
+        postdoc_profiles.map {|p| p['profileId'] }
+      end
+      # @return profiles [Array<Hash>] profiles for postdocs
+      def postdoc_profiles
+        affiliation_profiles('capPostdoc')
+      end
+
+      # @return ids [Array<Integer>] a profileId for each md_student
+      def md_student_ids
+        md_student_profiles.map {|p| p['profileId'] }
+      end
+      # @return profiles [Array<Hash>] profiles for md_students
+      def md_student_profiles
+        affiliation_profiles('capMdStudent')
+      end
+
+      # @return ids [Array<Integer>] a profileId for each ms_student
+      def ms_student_ids
+        ms_student_profiles.map {|p| p['profileId'] }
+      end
+      # @return profiles [Array<Hash>] profiles for ms_students
+      def ms_student_profiles
+        affiliation_profiles('capMsStudent')
+      end
+
+      # @return ids [Array<Integer>] a profileId for each phd_student
+      def phd_student_ids
+        phd_student_profiles.map {|p| p['profileId'] }
+      end
+      # @return profiles [Array<Hash>] profiles for phd_students
+      def phd_student_profiles
+        affiliation_profiles('capPhdStudent')
+      end
+
+      # @return affiliations [Array<String>] the enum of affiliations
+      def affiliations
+        @affiliations ||= begin
+          id = profile_ids.sample(1).first
+          if id
+            p = profile(id)
+            p['affiliations'].keys
+          else
+            ["capFaculty", "capStaff", "capPostdoc", "capMdStudent", "capMsStudent", "capPhdStudent", "physician"]
+          end
+        rescue
+          ["capFaculty", "capStaff", "capPostdoc", "capMdStudent", "capMsStudent", "capPhdStudent", "physician"]
+        end
+      end
+
+      # @param affiliation [String] an item from the affiliations hash
+      # @return profiles [Array<Hash>] profiles for physicians
+      def affiliation_profiles(affiliation)
+        if affiliations.include? affiliation
+          if @profiles.is_a? Daybreak::DB
+            results = []
+            @profiles.keys do |k|
+              profile = @profiles[k]
+              if profile['affiliations'][affiliation]
+                results.push profile
+              end
+            end
+            results
+          elsif @profiles.is_a? Mongo::Collection
+            q = {"affiliations.#{affiliation}" => true}
+            mongo_profiles(q)
+          end
+        else
+          msg = "#{affiliation} is not in #{affiliations}"
+          puts msg
+          config.logger.warn msg
+          []
+        end
+      end
+
+
+      # Run a mongo find on profiles with query doc
+      # @param query_doc [Hash] profiles.find({query_doc})
+      # @return profiles [Array<Hash>] profiles matching the query
+      def mongo_profiles(query_doc)
+        mongo_map_profile_ids @profiles.find(query_doc)
+      end
+
+      # Convert mongo '_id' to 'profileId'
+      # @param profiles [Array<Hash>] mongo profiles with '_id'
+      # @return profiles [Array<Hash>] mongo profiles with 'profileId'
+      def mongo_map_profile_ids(profiles)
+        profiles.map {|p| p['profileId'] = p.delete('_id'); p }
+      end
+
       # return profile data from local repo
       # @param id [Integer] A profileId number
       # @return profile [Hash|nil]
@@ -322,8 +440,15 @@ module Cap
           puts "Stored #{@profiles.size} of #{total} profiles."
           puts "Stored profiles to #{@profiles.class} at: #{@profiles.file}."
         elsif @profiles.is_a? Mongo::Collection
+          index_affiliations
           puts "Stored #{@profiles.find.count} of #{total} profiles."
           puts "Stored profiles to #{@profiles.class} at: #{@profiles.namespace}."
+        end
+      end
+
+      def index_affiliations
+        affiliations.each do |a|
+          @profiles.indexes.create_one({"affiliation.#{a}" => 1})
         end
       end
 
