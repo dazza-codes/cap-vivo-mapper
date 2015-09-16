@@ -20,10 +20,11 @@ This utility maps Stanford CAP profiles to VIVO.
 
 ### VIVO Resources
 
+- http://www.vivoweb.org
 - https://wiki.duraspace.org/display/VIVO/VIVO
 - https://wiki.duraspace.org/display/VIVO/Major+concepts+in+VIVO+to+get+you+started
 - https://wiki.duraspace.org/display/VIVO/VIVO-ISF+Ontology
-- http://www.vivoweb.org/download
+- https://wiki.duraspace.org/display/VIVO/VIVO-ISF+1.6+Relationship+Diagrams
 - https://github.com/lawlesst/vivo-sample-data
 
 ## Installation
