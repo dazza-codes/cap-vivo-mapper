@@ -82,9 +82,12 @@ cp .env_example .env
 vim .env  # hopefully this file is self explanatory
 # Run it overnight, unless you have a high bandwidth connection to the
 # CAP API and a fast system.  So, watch it for any immediate failures;
-# if it's running, then leave it overnight.  The expected runtime is on
-# the order of hours.
-cap2vivo
+# if it's running, leave it for a few hours.
+cap_vivo_convert
+# When it's done, try to look at some samples
+cap_vivo_query  # loads and starts a pry console
+# try the following in the pry console:
+#> puts vivo_profile(vivo_uris.sample(1).first).to_ttl 
 ```
 
 
