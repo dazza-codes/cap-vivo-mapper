@@ -48,12 +48,8 @@ Or install it yourself as:
 
 #### MongoDB
 
-The CAP API profile data is retrieved and saved locally into a mongodb database (`cap` by default).  To get mongodb installed and running, try:
-```sh
-# This should work for a Debian/Ubuntu system
-sudo apt-get install mongodb
-# If the mongodb-org package is available, use it instead.
-```
+The CAP API profile data is retrieved and saved locally into a mongodb database (`cap` by default).  To install mongodb, review their online documentation, e.g.
+- http://docs.mongodb.org/master/installation/
 
 #### 4store
 
