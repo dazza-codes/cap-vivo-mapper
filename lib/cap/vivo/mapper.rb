@@ -1,20 +1,17 @@
+require_relative 'orgs'
+require_relative 'prov'
+require_relative 'vivo_terms'
+
 module Cap
   module Vivo
 
     class Mapper
 
-      HAS_CONTACT_INFO = RDF::URI.parse 'http://purl.obolibrary.org/obo/ARG_2000028'
+      include Cap::Vivo::Orgs
+      include Cap::Vivo::Prov
+      include Cap::Vivo::VivoTerms
 
       PROFILE_URI_PREFIX = RDF::URI.parse 'https://profiles.stanford.edu/vivo'
-
-      # PROV data
-      MAPPING_ACTIVITY = RDF::URI.parse('https://github.com/sul-dlss/cap-vivo-mapper/mapping')
-      MAPPING_ENTITY = RDF::URI.parse('https://github.com/sul-dlss/cap-vivo-mapper')
-      # MAPPING_AGENT = RDF::URI.parse('http://orcid.org/0000-0002-4822-6661')
-      MAPPING_AGENT = RDF::URI.parse('http://www.linkedin.com/in/darrenleeweber')
-      MAPPING_ORG = RDF::URI.parse('http://library.stanford.edu')
-      MAPPING_AGENT_NAME = RDF::Literal.new('Darren Lee Weber, Ph.D.')
-      MAPPING_ORG_NAME = RDF::Literal.new('Stanford Univerity Libraries')
 
       attr_accessor :config
 
@@ -36,12 +33,33 @@ module Cap
 
       # Convert CAP profile into VIVO linked data
       def create_vivo
-        create_vcard
+        vivo_position
+        vivo_vcard
         prov
       end
 
+      def vivo_position
+        if faculty?
+          @rdf << [@uri, RDF.type, RDF::VIVO.FacultyMember]
+        end
+        # RDF::VIVO.Student in CAP?
+        if md_student? || ms_student? || phd_student?
+          @rdf << [@uri, RDF.type, RDF::VIVO.Student]
+          @rdf << [@uri, RDF.type, RDF::VIVO.GraduateStudent]
+        end
+        if postdoc?
+          @rdf << [@uri, RDF.type, RDF::VIVO.Postdoc]
+        end
+        if staff?
+          @rdf << [@uri, RDF.type, RDF::VIVO.NonAcademic]
+          # OR RDF::VIVO.NonFacultyAcademic for research staff?
+        end
+        # RDF::VIVO.MedicalResidency in CAP?
+        # if physician?  # VIVO equivalent?
+      end
+
       # Map names, addresses, contacts and web links to vcard data.
-      def create_vcard
+      def vivo_vcard
         vcard = @uri + '/vcard'
         @rdf << [@uri, HAS_CONTACT_INFO, vcard]
         @rdf << [vcard, RDF.type, RDF::Vocab::VCARD.Individual]
@@ -50,16 +68,28 @@ module Cap
           fn = name['firstName'] || ''
           mn = name['middleName'] || ''
           ln = name['lastName'] || ''
+          # Add name label to @uri
+          @rdf << [@uri, RDF::RDFS.label, "#{ln}, #{fn}"]
+          # Add name to vcard
           vcard_name = vcard + "/names/#{type}"
           @rdf << [vcard, RDF::Vocab::VCARD.hasName, vcard_name]
           @rdf << [vcard_name, RDF.type, RDF::Vocab::VCARD.Name]
           @rdf << [vcard_name, RDF::RDFS.label, type]
-          @rdf << [vcard_name, RDF::Vocab::VCARD.send('given-name'), fn]
-          @rdf << [vcard_name, RDF::Vocab::VCARD.send('family-name'), ln]
+          # The VIVO-ISF v1.6 uses an older version of VCARD than the
+          # version currently in the RDF::Vocab library.
+          # @rdf << [vcard_name, RDF::Vocab::VCARD.send('given-name'), fn]
+          # @rdf << [vcard_name, RDF::Vocab::VCARD.send('family-name'), ln]
+          @rdf << [vcard_name, VCARD_givenName, fn]
+          @rdf << [vcard_name, VCARD_familyName, ln]
           unless mn.empty?
-            @rdf << [vcard_name, RDF::Vocab::VCARD.send('additional-name'), mn]
+            @rdf << [vcard_name, RDF::VIVO.middleName, mn]
           end
         end
+
+        # TODO:  Title
+        # <http://vivo.school.edu/individual/fac1307-vcard-title> a vcard:Title ;
+        # vcard:title "Professor" .
+
         # Addresses
         offices = profile['academicOffices'] || []
         offices.each do |office|
@@ -205,11 +235,12 @@ module Cap
       # Extract and add email data to the parent entity
       # @param parent [Hash] profile data containing 'email' field
       # @param parent_uri [RDF::URI] profile entity containing email
-      def profile_email(parent, parent_uri)
+      def profile_email(parent, parent_uri, pref=false)
         if parent['email']
           vcard_email = parent_uri + '/email'
           @rdf << [parent_uri, RDF::Vocab::VCARD.hasEmail, vcard_email]
           @rdf << [vcard_email, RDF.type, RDF::Vocab::VCARD.Work]
+          @rdf << [vcard_email, RDF.type, RDF::Vocab::VCARD.Pref] if pref
           label = parent['type'] || parent['label'] || ''
           @rdf << [vcard_email, RDF::RDFS.label, label] unless label.empty?
           # The 'email' field might contain multiple entries, separated by
@@ -220,19 +251,24 @@ module Cap
           #
           # TODO: consider using regex:  /.+@.+\..+/i
           #
-          emails = parent['email'].split
-          emails.each do |email|
-            email = email.gsub(/,\z/,'').gsub(/>.*/,'').gsub(/\A</,'')
-            email = RDF::URI.parse("mailto:#{email}")
-            @rdf << [vcard_email, RDF::Vocab::VCARD.hasValue, email]
-          end
+
+          # temporarily disable parsing email to log errors.
+          email = RDF::URI.parse("mailto:#{parent['email']}")
+          @rdf << [vcard_email, RDF::Vocab::VCARD.hasValue, email]
+
+          # emails = parent['email'].split
+          # emails.each do |email|
+          #   email = email.gsub(/,\z/,'').gsub(/>.*/,'').gsub(/\A</,'')
+          #   email = RDF::URI.parse("mailto:#{email}")
+          #   @rdf << [vcard_email, RDF::Vocab::VCARD.hasValue, email]
+          # end
         end
       end
 
       # Extract and add telephone data to the parent entity
       # @param parent [Hash] profile data containing 'phoneNumbers' field
       # @param parent_uri [RDF::URI] profile entity containing phone numbers
-      def profile_telephone(parent, parent_uri)
+      def profile_telephone(parent, parent_uri, pref=false)
         #
         # TODO: differentiate between phone types, e.g.
         #       http://www.w3.org/TR/vcard-rdf/#Code_Sets for Telephone Type
@@ -253,6 +289,7 @@ module Cap
             @rdf << [parent_uri, RDF::Vocab::VCARD.hasTelephone, vcard_phone]
             @rdf << [vcard_phone, RDF.type, RDF::Vocab::VCARD.Voice]
             @rdf << [vcard_phone, RDF.type, RDF::Vocab::VCARD.Work]
+            @rdf << [vcard_phone, RDF.type, RDF::Vocab::VCARD.Pref] if pref
             @rdf << [vcard_phone, RDF::Vocab::VCARD.hasValue, p]
           end
         end
@@ -264,6 +301,7 @@ module Cap
             @rdf << [parent_uri, RDF::Vocab::VCARD.hasTelephone, vcard_fax]
             @rdf << [vcard_fax, RDF.type, RDF::Vocab::VCARD.Fax]
             @rdf << [vcard_fax, RDF.type, RDF::Vocab::VCARD.Work]
+            @rdf << [vcard_fax, RDF.type, RDF::Vocab::VCARD.Pref] if pref
             @rdf << [vcard_fax, RDF::Vocab::VCARD.hasValue, fax]
           end
         end
@@ -286,42 +324,10 @@ module Cap
       end
 
       def prov
-        prov_mapping  # create most of the PROV once
-        vivo_modified = RDF::Literal.new(Time.now.utc, :datatype => RDF::XSD.dateTime)
-        t = Time.parse(profile['lastModified']).utc
-        cap_modified = RDF::Literal.new(t, :datatype => RDF::XSD.dateTime)
         @vivo_uri ||= @uri
         @cap_uri  ||= profile_link('https://cap.stanford.edu/rel/self')
-        @rdf << [@vivo_uri, RDF.type, RDF::PROV.Entity]
-        @rdf << [@cap_uri,  RDF.type, RDF::PROV.Entity]
-        @rdf << [@cap_uri,  RDF::PROV.generatedAtTime, cap_modified]
-        @rdf << [@vivo_uri, RDF::PROV.wasDerivedFrom, @cap_uri]
-        @rdf << [@vivo_uri, RDF::PROV.wasGeneratedBy, MAPPING_ACTIVITY]
-        @rdf << [@vivo_uri,  RDF::PROV.generatedAtTime, vivo_modified]
-        @rdf << [MAPPING_ACTIVITY, RDF::PROV.used, @cap_uri]
-      end
-
-      # Save the PROV mapping activity and associated agent data to the
-      # triple store once.
-      def prov_mapping
-        @@prov_mapping ||= begin
-          g = RDF::Graph.new
-          g << [MAPPING_ENTITY, RDF.type, RDF::PROV.Entity]
-          g << [MAPPING_ACTIVITY, RDF.type, RDF::PROV.Activity]
-          g << [MAPPING_ACTIVITY, RDF::PROV.wasAssociatedWith, MAPPING_AGENT]
-          g << [MAPPING_AGENT, RDF.type, RDF::PROV.Agent]
-          g << [MAPPING_AGENT, RDF.type, RDF::PROV.Person]
-          g << [MAPPING_AGENT, RDF::FOAF.name, MAPPING_AGENT_NAME]
-          g << [MAPPING_AGENT, RDF::PROV.actedOnBehalfOf, MAPPING_ORG]
-          g << [MAPPING_ORG, RDF.type, RDF::PROV.Agent]
-          g << [MAPPING_ORG, RDF.type, RDF::PROV.Organization]
-          g << [MAPPING_ORG, RDF::FOAF.name, MAPPING_ORG_NAME]
-          g.each_statement {|s| @config.rdf_repo.insert_statement s}
-          true
-        rescue => e
-          @config.logger.error e.message
-          false
-        end
+        cap_modified = profile['lastModified']
+        @rdf << prov_profile(@rdf, @vivo_uri, @cap_uri, cap_modified)
       end
 
       def save
