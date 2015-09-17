@@ -8,6 +8,7 @@ require 'daybreak'
 require 'mongo'
 require_relative 'cap/configuration'
 require_relative 'rdf/vocab/vivo.rb'
+require_relative 'rdf/vocab/vivo_vcard.rb'
 
 # This is a utility working with Stanford CAP and VIVO data mappings.
 # https://github.com/sul-dlss/cap-vivo-mapper

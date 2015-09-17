@@ -17,6 +17,11 @@ vocab_sources = {
    uri: 'http://vivoweb.org/ontology/core#',
    source: 'http://vivoweb.org/files/vivo-isf-public-1.6.owl',
    strict: true
+  },
+  vivo_vcard:  {
+   uri: 'http://www.w3.org/2006/vcard/ns#',
+   source: 'lib/rdf/vocab/vivo_vcard.owl',
+   strict: true
   }
 }
 
