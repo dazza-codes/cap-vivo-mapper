@@ -57,9 +57,12 @@ module Cap
     # Create an output path for storing VIVO RDF data
     # ENV['CAP_REPO_PATH'] || './vivo_rdf'
     def rdf_path
-      path = ENV['CAP_REPO_PATH'] || './vivo_rdf'
-      @rdf_path = File.absolute_path(path)
-      FileUtils.mkdir_p @rdf_path
+      @rdf_path ||= begin
+        path = ENV['CAP_REPO_PATH'] || './data/vivo_rdf'
+        path = File.absolute_path(path)
+        FileUtils.mkdir_p path
+        path
+      end
     end
 
     # Create an RDF::FourStore::Repository for storing VIVO RDF data
