@@ -62,7 +62,7 @@ module Cap
       def vivo_vcard
         vcard = @uri + '/vcard'
         @rdf << [@uri, HAS_CONTACT_INFO, vcard]
-        @rdf << [vcard, RDF.type, RDF::Vocab::VCARD.Individual]
+        @rdf << [vcard, RDF.type, RDF::VIVO_VCARD.Individual]
         # Names
         profile['names'].each_pair do |type, name|
           fn = name['firstName'] || ''
@@ -72,15 +72,13 @@ module Cap
           @rdf << [@uri, RDF::RDFS.label, "#{ln}, #{fn}"]
           # Add name to vcard
           vcard_name = vcard + "/names/#{type}"
-          @rdf << [vcard, RDF::Vocab::VCARD.hasName, vcard_name]
-          @rdf << [vcard_name, RDF.type, RDF::Vocab::VCARD.Name]
+          @rdf << [vcard, RDF::VIVO_VCARD.hasName, vcard_name]
+          @rdf << [vcard_name, RDF.type, RDF::VIVO_VCARD.Name]
           @rdf << [vcard_name, RDF::RDFS.label, type]
           # The VIVO-ISF v1.6 uses an older version of VCARD than the
-          # version currently in the RDF::Vocab library.
-          # @rdf << [vcard_name, RDF::Vocab::VCARD.send('given-name'), fn]
-          # @rdf << [vcard_name, RDF::Vocab::VCARD.send('family-name'), ln]
-          @rdf << [vcard_name, VCARD_givenName, fn]
-          @rdf << [vcard_name, VCARD_familyName, ln]
+          # version currently in RDF::Vocab::VCARD.
+          @rdf << [vcard_name, RDF::VIVO_VCARD.givenName, fn]
+          @rdf << [vcard_name, RDF::VIVO_VCARD.familyName, ln]
           unless mn.empty?
             @rdf << [vcard_name, RDF::VIVO.middleName, mn]
           end
@@ -96,9 +94,9 @@ module Cap
           id = offices.length > 1 ? SecureRandom.hex(5) : office['type']
           label = office['label'] || office['officeName']
           vcard_address = vcard + "/academicOffices/#{id}"
-          @rdf << [vcard, RDF::Vocab::VCARD.hasAddress, vcard_address]
-          @rdf << [vcard_address, RDF.type, RDF::Vocab::VCARD.Address]
-          @rdf << [vcard_address, RDF.type, RDF::Vocab::VCARD.Work]
+          @rdf << [vcard, RDF::VIVO_VCARD.hasAddress, vcard_address]
+          @rdf << [vcard_address, RDF.type, RDF::VIVO_VCARD.Address]
+          @rdf << [vcard_address, RDF.type, RDF::VIVO_VCARD.Work]
           @rdf << [vcard_address, RDF::RDFS.label, label] if label
           profile_address(office, vcard_address)
           profile_telephone(office, vcard_address)
@@ -109,9 +107,9 @@ module Cap
           contact = profile[contact_type]
           if contact
             contact_uri = vcard + "/#{contact_type}"
-            @rdf << [vcard, RDF::Vocab::VCARD.hasRelated, contact_uri]
-            @rdf << [contact_uri, RDF.type, RDF::Vocab::VCARD.Contact]
-            @rdf << [contact_uri, RDF.type, RDF::Vocab::VCARD.Work]
+            @rdf << [vcard, RDF::VIVO_VCARD.hasRelated, contact_uri]
+            @rdf << [contact_uri, RDF.type, RDF::VIVO_VCARD.Contact]
+            @rdf << [contact_uri, RDF.type, RDF::VIVO_VCARD.Work]
             @rdf << [contact_uri, RDF::RDFS.label, contact_type]
             profile_email(contact, contact_uri)
             profile_telephone(contact, contact_uri)
@@ -121,10 +119,10 @@ module Cap
         profiles_url = profile_link('https://cap.stanford.edu/rel/public')
         if profiles_url
           vcard_url = vcard + '/links/public'
-          @rdf << [vcard, RDF::Vocab::VCARD.hasURL, vcard_url]
-          @rdf << [vcard_url, RDF.type, RDF::Vocab::VCARD.Work]
+          @rdf << [vcard, RDF::VIVO_VCARD.hasURL, vcard_url]
+          @rdf << [vcard_url, RDF.type, RDF::VIVO_VCARD.Work]
           @rdf << [vcard_url, RDF::RDFS.label, "CAP public profile"]
-          @rdf << [vcard_url, RDF::Vocab::VCARD.hasValue, profiles_url]
+          @rdf << [vcard_url, RDF::VIVO_VCARD.url, profiles_url]
         end
       end
 
@@ -179,14 +177,14 @@ module Cap
               label = nil
             end
             contact_uri = vcard + "/clinicalContact/#{id}"
-            @rdf << [vcard, RDF::Vocab::VCARD.hasRelated, contact_uri]
-            @rdf << [contact_uri, RDF.type, RDF::Vocab::VCARD.Contact]
-            @rdf << [contact_uri, RDF.type, RDF::Vocab::VCARD.Work]
+            @rdf << [vcard, RDF::VIVO_VCARD.hasRelated, contact_uri]
+            @rdf << [contact_uri, RDF.type, RDF::VIVO_VCARD.Contact]
+            @rdf << [contact_uri, RDF.type, RDF::VIVO_VCARD.Work]
             @rdf << [contact_uri, RDF::RDFS.label, label] if label
             contact_address = contact_uri + "/address"
-            @rdf << [contact_uri, RDF::Vocab::VCARD.hasAddress, contact_address]
-            @rdf << [contact_address, RDF.type, RDF::Vocab::VCARD.Address]
-            @rdf << [contact_address, RDF.type, RDF::Vocab::VCARD.Work]
+            @rdf << [contact_uri, RDF::VIVO_VCARD.hasAddress, contact_address]
+            @rdf << [contact_address, RDF.type, RDF::VIVO_VCARD.Address]
+            @rdf << [contact_address, RDF.type, RDF::VIVO_VCARD.Work]
             @rdf << [contact_address, RDF::RDFS.label, label] if label
             profile_address(office, contact_address)
             profile_email(contact, contact_uri)
@@ -223,13 +221,13 @@ module Cap
       # @param parent_uri [RDF::URI] profile entity containing address
       def profile_address(parent, parent_uri)
         country = parent['country'] || 'United States'
-        @rdf << [parent_uri, RDF::Vocab::VCARD.send('country-name'), country]
-        @rdf << [parent_uri, RDF::Vocab::VCARD.region, parent['state']]
-        @rdf << [parent_uri, RDF::Vocab::VCARD.locality, parent['city']]
-        @rdf << [parent_uri, RDF::Vocab::VCARD.send('postal-code'), parent['zip']]
+        @rdf << [parent_uri, RDF::VIVO_VCARD.country, country]
+        @rdf << [parent_uri, RDF::VIVO_VCARD.region, parent['state']]
+        @rdf << [parent_uri, RDF::VIVO_VCARD.locality, parent['city']]
+        @rdf << [parent_uri, RDF::VIVO_VCARD.postalCode, parent['zip']]
         address = parent['address']
         address += ", #{parent['address2']}" if parent['address2']
-        @rdf << [parent_uri, RDF::Vocab::VCARD.send('street-address'), address]
+        @rdf << [parent_uri, RDF::VIVO_VCARD.streetAddress, address]
       end
 
       # Extract and add email data to the parent entity
@@ -238,9 +236,9 @@ module Cap
       def profile_email(parent, parent_uri, pref=false)
         if parent['email']
           vcard_email = parent_uri + '/email'
-          @rdf << [parent_uri, RDF::Vocab::VCARD.hasEmail, vcard_email]
-          @rdf << [vcard_email, RDF.type, RDF::Vocab::VCARD.Work]
-          @rdf << [vcard_email, RDF.type, RDF::Vocab::VCARD.Pref] if pref
+          @rdf << [parent_uri, RDF::VIVO_VCARD.hasEmail, vcard_email]
+          @rdf << [vcard_email, RDF.type, RDF::VIVO_VCARD.Work]
+          # @rdf << [vcard_email, RDF.type, RDF::Vocab::VCARD.Pref] if pref
           label = parent['type'] || parent['label'] || ''
           @rdf << [vcard_email, RDF::RDFS.label, label] unless label.empty?
           # The 'email' field might contain multiple entries, separated by
@@ -254,13 +252,13 @@ module Cap
 
           # temporarily disable parsing email to log errors.
           email = RDF::URI.parse("mailto:#{parent['email']}")
-          @rdf << [vcard_email, RDF::Vocab::VCARD.hasValue, email]
+          @rdf << [vcard_email, RDF::VIVO_VCARD.email, email]
 
           # emails = parent['email'].split
           # emails.each do |email|
           #   email = email.gsub(/,\z/,'').gsub(/>.*/,'').gsub(/\A</,'')
           #   email = RDF::URI.parse("mailto:#{email}")
-          #   @rdf << [vcard_email, RDF::Vocab::VCARD.hasValue, email]
+          #   @rdf << [vcard_email, RDF::VIVO_VCARD.email, email]
           # end
         end
       end
@@ -286,11 +284,11 @@ module Cap
           phones = phones.map {|p| p.gsub(/\W+/,'') }.to_set
           phones.each do |p|
             vcard_phone = parent_uri + "/phone/#{p}"
-            @rdf << [parent_uri, RDF::Vocab::VCARD.hasTelephone, vcard_phone]
-            @rdf << [vcard_phone, RDF.type, RDF::Vocab::VCARD.Voice]
-            @rdf << [vcard_phone, RDF.type, RDF::Vocab::VCARD.Work]
-            @rdf << [vcard_phone, RDF.type, RDF::Vocab::VCARD.Pref] if pref
-            @rdf << [vcard_phone, RDF::Vocab::VCARD.hasValue, p]
+            @rdf << [parent_uri, RDF::VIVO_VCARD.hasTelephone, vcard_phone]
+            @rdf << [vcard_phone, RDF.type, RDF::VIVO_VCARD.Work]
+            @rdf << [vcard_phone, RDF.type, RDF::VIVO_VCARD.Voice]
+            @rdf << [vcard_phone, RDF::VIVO_VCARD.telephone, p]
+            # @rdf << [vcard_phone, RDF.type, RDF::Vocab::VCARD.Pref] if pref
           end
         end
         faxes = [parent['fax']].flatten.compact
@@ -298,11 +296,11 @@ module Cap
           faxes = faxes.map {|fax| fax.gsub(/\W+/,'') }.to_set
           faxes.each do |fax|
             vcard_fax = parent_uri + "/fax/#{fax}"
-            @rdf << [parent_uri, RDF::Vocab::VCARD.hasTelephone, vcard_fax]
-            @rdf << [vcard_fax, RDF.type, RDF::Vocab::VCARD.Fax]
-            @rdf << [vcard_fax, RDF.type, RDF::Vocab::VCARD.Work]
-            @rdf << [vcard_fax, RDF.type, RDF::Vocab::VCARD.Pref] if pref
-            @rdf << [vcard_fax, RDF::Vocab::VCARD.hasValue, fax]
+            @rdf << [parent_uri, RDF::VIVO_VCARD.hasTelephone, vcard_fax]
+            @rdf << [vcard_fax, RDF.type, RDF::VIVO_VCARD.Work]
+            @rdf << [vcard_fax, RDF.type, RDF::VIVO_VCARD.Fax]
+            @rdf << [vcard_fax, RDF::VIVO_VCARD.telephone, fax]
+            # @rdf << [vcard_fax, RDF.type, RDF::Vocab::VCARD.Pref] if pref
           end
         end
       end
