@@ -9,6 +9,7 @@ module Cap
     attr_reader :cap_repo
     attr_reader :cap_replace
 
+    attr_reader :rdf_path
     attr_reader :rdf_repo
     attr_reader :rdf_replace
 
@@ -19,6 +20,7 @@ module Cap
       @cap_replace = env_boolean('CAP_API_REPLACE')
       rdf_repo
       @rdf_replace = env_boolean('CAP_RDF_REPLACE')
+      rdf_path
     end
 
     def env_boolean(var)
@@ -52,6 +54,16 @@ module Cap
       @logger.level = @debug ? Logger::DEBUG : Logger::INFO
     end
 
+    # Create an output path for storing VIVO RDF data
+    # ENV['CAP_REPO_PATH'] || './vivo_rdf'
+    def rdf_path
+      path = ENV['CAP_REPO_PATH'] || './vivo_rdf'
+      @rdf_path = File.absolute_path(path)
+      FileUtils.mkdir_p @rdf_path
+    end
+
+    # Create an RDF::FourStore::Repository for storing VIVO RDF data
+    # ENV['CAP_REPO_4STORE'] || 'http://localhost:9001'
     def rdf_repo
       @rdf_repo ||= begin
         repo = ENV['CAP_REPO_4STORE'].dup || 'http://localhost:9001'
@@ -59,6 +71,8 @@ module Cap
       end
     end
 
+    # Create a repository for storing CAP API json data
+    # Uses mongodb if ENV['CAP_REPO_MONGO'], otherwise Daybreak::DB
     def cap_repo
       @cap_repo ||= begin
         if ENV['CAP_REPO_MONGO']
@@ -69,6 +83,8 @@ module Cap
       end
     end
 
+    # Create an repository for storing CAP API json data
+    # Uses Daybreak::DB in log/cap_profiles.db
     def cap_repo_daybreak
       @cap_repo_daybreak ||= begin
         dir = File.dirname(@log_file)
@@ -78,6 +94,8 @@ module Cap
       end
     end
 
+    # Create a repository for storing CAP API json data
+    # ENV['CAP_REPO_MONGO'] || 'mongodb://127.0.0.1:27017/cap'
     def cap_repo_mongo
       @cap_repo_mongo ||= begin
         dir = File.dirname(@log_file)
