@@ -3,12 +3,12 @@ Dotenv.load
 
 require 'linkeddata'
 require 'rdf/4store'
+require_relative 'vivo/version'
+require_relative 'vivo/vivo_terms'
 require_relative 'vivo/configuration'
-require_relative 'vivo/mapper'
 require_relative 'vivo/orgs'
 require_relative 'vivo/prov'
-require_relative 'vivo/vivo_terms'
-require_relative 'vivo/version'
+require_relative 'vivo/mapper'
 
 # This is a utility working with Stanford CAP and VIVO data mappings.
 # https://github.com/sul-dlss/cap-vivo-mapper
