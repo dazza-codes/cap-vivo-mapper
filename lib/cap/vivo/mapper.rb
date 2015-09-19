@@ -34,34 +34,66 @@ module Cap
       # Convert CAP profile into VIVO linked data
       def create_vivo
         vivo_position
+        vivo_overview
         vivo_vcard
         prov
       end
 
+
       def vivo_position
+        # TODO: determine positions within orgs
+        # TODO: determine teacher/student relationships
+        # RDF::VIVO.Librarian
+        # RDF::VIVO.LibrarianPosition
         if faculty?
+          # RDF::VIVO.FacultyPosition
+          # RDF::VIVO.FacultyAdministrativePosition
+          # RDF::VIVO.PostdocOrFellowAdvisingRelationship
           @rdf << [@uri, RDF.type, RDF::VIVO.FacultyMember]
+          org = RDF::Node.new  # TODO: figure out the real org?
+          profile_position(RDF::VIVO.FacultyPosition, org)
         end
         # RDF::VIVO.Student in CAP?
         if md_student? || ms_student? || phd_student?
+          # RDF::VIVO.StudentOrganization
+          # RDF::VIVO.GraduateAdvisingRelationship
           @rdf << [@uri, RDF.type, RDF::VIVO.Student]
           @rdf << [@uri, RDF.type, RDF::VIVO.GraduateStudent]
         end
         if postdoc?
           @rdf << [@uri, RDF.type, RDF::VIVO.Postdoc]
+          # RDF::VIVO.PostdocPosition
+          # RDF::VIVO.PostdoctoralTraining
+          org = RDF::Node.new  # TODO: figure out the real org?
+          profile_position(RDF::VIVO.PostdocPosition, org)
         end
         if staff?
+          # RDF::VIVO.NonFacultyAcademic for research staff?
+          # RDF::VIVO.NonFacultyAcademicPosition
+          # RDF::VIVO.NonAcademicPosition
           @rdf << [@uri, RDF.type, RDF::VIVO.NonAcademic]
-          # OR RDF::VIVO.NonFacultyAcademic for research staff?
+          org = RDF::Node.new  # TODO: figure out the real org?
+          profile_position(RDF::VIVO.NonAcademicPosition, org)
         end
         # RDF::VIVO.MedicalResidency in CAP?
         # if physician?  # VIVO equivalent?
+      end
+
+      def vivo_overview
+        bio = profile['bio']
+        if bio
+          bio_doc = bio['text']
+          if bio_doc
+            @rdf << [@uri, RDF::VIVO.overview, bio_doc]
+          end
+        end
       end
 
       # Map names, addresses, contacts and web links to vcard data.
       def vivo_vcard
         vcard = @uri + '/vcard'
         @rdf << [@uri, HAS_CONTACT_INFO, vcard]
+        @rdf << [vcard, CONTACT_INFO_FOR, @uri]
         @rdf << [vcard, RDF.type, RDF::VIVO_VCARD.Individual]
         # Names
         profile['names'].each_pair do |type, name|
@@ -83,11 +115,11 @@ module Cap
             @rdf << [vcard_name, RDF::VIVO.middleName, mn]
           end
         end
-
-        # TODO:  Title
-        # <http://vivo.school.edu/individual/fac1307-vcard-title> a vcard:Title ;
-        # vcard:title "Professor" .
-
+        # Title
+        vcard_title = vcard + '/title'
+        @rdf << [vcard, RDF::VIVO_VCARD.hasTitle, vcard_title]
+        @rdf << [vcard_title, RDF.type, RDF::VIVO_VCARD.Title]
+        @rdf << [vcard_title, RDF::VIVO_VCARD.title, profile_title]
         # Addresses
         offices = profile['academicOffices'] || []
         offices.each do |office|
@@ -101,19 +133,26 @@ module Cap
           profile_address(office, vcard_address)
           profile_telephone(office, vcard_address)
         end
-        # Contacts (email and telephone)
-        contact_types = ['primaryContact', 'alternateContact']
-        contact_types.each do |contact_type|
-          contact = profile[contact_type]
-          if contact
-            contact_uri = vcard + "/#{contact_type}"
-            @rdf << [vcard, RDF::VIVO_VCARD.hasRelated, contact_uri]
-            @rdf << [contact_uri, RDF.type, RDF::VIVO_VCARD.Contact]
-            @rdf << [contact_uri, RDF.type, RDF::VIVO_VCARD.Work]
-            @rdf << [contact_uri, RDF::RDFS.label, contact_type]
-            profile_email(contact, contact_uri)
-            profile_telephone(contact, contact_uri)
-          end
+        # # Contacts (email and telephone)
+        # contact_types = ['primaryContact', 'alternateContact']
+        # contact_types.each do |contact_type|
+        #   contact = profile[contact_type]
+        #   if contact
+        #     pref = contact_type == 'primaryContact'
+        #     contact_uri = vcard + "/#{contact_type}"
+        #     @rdf << [vcard, RDF::VIVO_VCARD.hasRelated, contact_uri]
+        #     @rdf << [contact_uri, RDF.type, RDF::VIVO_VCARD.Contact]
+        #     @rdf << [contact_uri, RDF.type, RDF::VIVO_VCARD.Work]
+        #     @rdf << [contact_uri, RDF::RDFS.label, contact_type]
+        #     profile_email(contact, contact_uri, pref)
+        #     profile_telephone(contact, contact_uri, pref)
+        #   end
+        # end
+        contact = profile['primaryContact'] || profile['alternateContact']
+        if contact
+          pref = true
+          profile_email(contact, vcard, pref)
+          profile_telephone(contact, vcard, pref)
         end
         # Web Links
         profiles_url = profile_link('https://cap.stanford.edu/rel/public')
@@ -161,6 +200,19 @@ module Cap
         affiliations 'capPostdoc'
       end
 
+      # Position title
+      # profile['shortTitle']['title']
+      def profile_title
+        @title ||= profile['shortTitle']['title'].gsub(/["'\n]/,'')
+      end
+
+      def profile_position(type, org)
+        position = @uri + '/position'
+        @rdf << [@uri, RDF::VIVO.relatedBy, position]
+        @rdf << [position, RDF.type, type]
+        @rdf << [position, RDF::RDFS.label, profile_title]
+        @rdf << [position, RDF::VIVO.relates, org]
+      end
 
       # Extract and add physician VCard data to the VIVO RDF
       def vcard_physician(vcard)
@@ -190,6 +242,8 @@ module Cap
             profile_email(contact, contact_uri)
             profile_telephone(contact, contact_uri)
           end
+
+          # vivo:ClinicalRole
 
           # "californiaPhysicianLicense"=>"G17XXX",
           # "clinicalContacts"=>
@@ -237,7 +291,8 @@ module Cap
         if parent['email']
           vcard_email = parent_uri + '/email'
           @rdf << [parent_uri, RDF::VIVO_VCARD.hasEmail, vcard_email]
-          @rdf << [vcard_email, RDF.type, RDF::VIVO_VCARD.Work]
+          @rdf << [vcard_email, RDF.type, RDF::VIVO_VCARD.Email]
+          @rdf << [vcard_email, RDF.type, RDF::VIVO_VCARD.Work] if pref
           # @rdf << [vcard_email, RDF.type, RDF::Vocab::VCARD.Pref] if pref
           label = parent['type'] || parent['label'] || ''
           @rdf << [vcard_email, RDF::RDFS.label, label] unless label.empty?
@@ -251,7 +306,7 @@ module Cap
           #
 
           # temporarily disable parsing email to log errors.
-          email = RDF::URI.parse("mailto:#{parent['email']}")
+          email = parent['email']
           @rdf << [vcard_email, RDF::VIVO_VCARD.email, email]
 
           # emails = parent['email'].split
@@ -285,9 +340,10 @@ module Cap
           phones.each do |p|
             vcard_phone = parent_uri + "/phone/#{p}"
             @rdf << [parent_uri, RDF::VIVO_VCARD.hasTelephone, vcard_phone]
-            @rdf << [vcard_phone, RDF.type, RDF::VIVO_VCARD.Work]
+            @rdf << [vcard_phone, RDF.type, RDF::VIVO_VCARD.Telephone]
             @rdf << [vcard_phone, RDF.type, RDF::VIVO_VCARD.Voice]
             @rdf << [vcard_phone, RDF::VIVO_VCARD.telephone, p]
+            @rdf << [vcard_phone, RDF.type, RDF::VIVO_VCARD.Work] if pref
             # @rdf << [vcard_phone, RDF.type, RDF::Vocab::VCARD.Pref] if pref
           end
         end
@@ -297,9 +353,10 @@ module Cap
           faxes.each do |fax|
             vcard_fax = parent_uri + "/fax/#{fax}"
             @rdf << [parent_uri, RDF::VIVO_VCARD.hasTelephone, vcard_fax]
-            @rdf << [vcard_fax, RDF.type, RDF::VIVO_VCARD.Work]
+            @rdf << [vcard_phone, RDF.type, RDF::VIVO_VCARD.Telephone]
             @rdf << [vcard_fax, RDF.type, RDF::VIVO_VCARD.Fax]
             @rdf << [vcard_fax, RDF::VIVO_VCARD.telephone, fax]
+            @rdf << [vcard_fax, RDF.type, RDF::VIVO_VCARD.Work] if pref
             # @rdf << [vcard_fax, RDF.type, RDF::Vocab::VCARD.Pref] if pref
           end
         end
@@ -329,7 +386,20 @@ module Cap
       end
 
       def save
-        @rdf.each_statement {|s| @config.rdf_repo.insert_statement s};
+        # save to triple store
+        begin
+          @rdf.each_statement {|s| @config.rdf_repo.insert_statement s}
+        rescue => e
+          @config.logger.error e.message
+        end
+        # save to turtle file
+        begin
+          f = File.open(File.join(@config.rdf_path, "#{@id}.ttl"), 'w')
+          f.write to_ttl
+          f.close
+        rescue => e
+          @config.logger.error e.message
+        end
       end
 
       def to_jsonld

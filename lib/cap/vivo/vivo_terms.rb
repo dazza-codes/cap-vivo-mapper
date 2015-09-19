@@ -10,6 +10,7 @@ module Cap
       VCARD_familyName = VCARD_PREFIX + 'familyName'
 
       HAS_CONTACT_INFO = RDF::URI.parse 'http://purl.obolibrary.org/obo/ARG_2000028'
+      CONTACT_INFO_FOR = RDF::URI.parse 'http://purl.obolibrary.org/obo/ARG_2000029'
 
     end
   end

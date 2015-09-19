@@ -9,12 +9,14 @@ module Cap
 
       attr_reader :cap_repo
       attr_reader :rdf_repo
+      attr_reader :rdf_path
 
       def initialize
         self.debug = env_boolean('DEBUG')
         logger_init
         @cap_repo = Cap.configuration.cap_repo
         @rdf_repo = Cap.configuration.rdf_repo
+        @rdf_path = Cap.configuration.rdf_path
       end
 
       def env_boolean(var)
