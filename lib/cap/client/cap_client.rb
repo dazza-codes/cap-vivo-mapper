@@ -427,6 +427,7 @@ module Cap
           @processed.drop
           @processed.create
         end
+        puts "Cleared saved profiles."
       end
 
       private
