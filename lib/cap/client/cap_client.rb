@@ -92,7 +92,6 @@ module Cap
             pages = 0
             total = 0
             begin
-              repo_clean
               while true
                 params = "?p=#{page}&ps=100"
                 response = @cap_api.get "#{@cap_profiles}#{params}"
@@ -106,7 +105,7 @@ module Cap
                     puts "Retrieved #{page} of #{pages} pages."
                   end
                   profiles = data['values']
-                  profiles.each {|profile| profile_insert(profile) }
+                  profiles.each {|profile| profile_save(profile) }
                   @profiles.flush if @profiles.is_a? Daybreak::DB
                   page += 1
                   break if data['lastPage']
@@ -299,9 +298,9 @@ module Cap
         end
       end
 
-      # Insert profile data in local repo
+      # Save profile data in local repo
       # @param profile [Hash] CAP profile data
-      def profile_insert(profile)
+      def profile_save(profile)
         profile_clean(profile)
         if @profiles.is_a? Daybreak::DB
           id = profile["profileId"]

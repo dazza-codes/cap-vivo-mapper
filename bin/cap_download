@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
+
+require 'cap'
+require 'cap/client'
+
+# init configs
+config = Cap.configuration
+
+# client will load profile data from a local repo; if it is empty, it
+# can be populated from the CAP API using `client.get_profiles`.  The
+# profile data is available in `client.profiles`.
+client = Cap::Client::Client.new
+client.repo_clean if config.cap_replace
+client.get_profiles
