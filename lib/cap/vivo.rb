@@ -4,6 +4,7 @@ Dotenv.load
 require 'linkeddata'
 require 'rdf/4store'
 require_relative 'vivo/version'
+require_relative 'vivo/graph_utils'
 require_relative 'vivo/vivo_terms'
 require_relative 'vivo/configuration'
 require_relative 'vivo/orgs'
