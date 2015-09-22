@@ -48,8 +48,14 @@ module Cap
           g << [MAPPING_ORG, RDF.type, RDF::PROV.Agent]
           g << [MAPPING_ORG, RDF.type, RDF::PROV.Organization]
           g << [MAPPING_ORG, RDF::FOAF.name, MAPPING_ORG_NAME]
-          g.each_statement do |s|
-            Cap::Vivo.configuration.rdf_repo.insert_statement s
+          if Cap::Vivo.configuration.rdf_prov
+            g.each_statement do |s|
+              Cap::Vivo.configuration.rdf_repo.insert_statement s
+            end
+            path = Cap::Vivo.configuration.rdf_path
+            f = File.open(File.join(path, "prov.ttl"), 'w')
+            f.write g.to_ttl
+            f.close
           end
           true
         rescue => e
