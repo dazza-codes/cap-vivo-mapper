@@ -307,44 +307,22 @@ module Cap
           @profiles[id] = profile
         elsif @profiles.is_a? Mongo::Collection
           # split out the publication data to accommodate size limit on mongo
-          id = profile.delete('profileId')
+          id = profile['profileId']
           profile['_id'] = id  # use 'profileId' as the mongo _id
           presentations = profile.delete('presentations') || []
-          presentations.each {|p| p.delete('detail')}
-          pres = {'_id' => id, 'presentations' => presentations}
-          begin
-            @presentations.insert_one(pres)
-          rescue
-            msg = "Profile #{id} presentations failed to save."
-            @config.logger.error msg
-          end
-          @pubs_fields ||= ['doiId', 'doiUrl', 'webOfScienceId', 'webOfScienceUrl']
+          presentations_save(id, presentations)
           publications = profile.delete('publications') || []
-          publications.each do |p|
-            p.keys {|k| p.delete(k) unless @pubs_fields.include? k }
-          end
-          pub = {'_id' => id, 'publications' => publications}
-          begin
-            @publications.insert_one(pub)
-          rescue
-            msg = "Profile #{id} publications failed to save."
-            @config.logger.error msg
-          end
+          publications_save(id, publications)
           begin
             @profiles.insert_one(profile)
-          rescue
-            msg = "Profile #{id} failed to save."
+          rescue => e
+            msg = "Profile #{id} failed to save: #{e.message}"
             @config.logger.error msg
           end
           begin
-            cap_modified = profile['lastModified'] || 0
-            cap_modified = Time.parse(cap_modified).to_i
-            data = process_data(id)
-            data['cap_modified'] = cap_modified
-            data['cap_retrieved'] = Time.now.to_i
-            process_update(id, data)
-          rescue
-            msg = "Profile #{id}: failed to update process data."
+            process_update(profile)
+          rescue => e
+            msg = "Profile #{id}: failed to update process data: #{e.message}"
             @config.logger.error msg
           end
         end
@@ -365,6 +343,20 @@ module Cap
         end
       end
 
+      # Save presentation data in local repo (mongodb)
+      # @param id [Integer] CAP profileId
+      # @param presentations [Hash] CAP profile presentations data
+      def presentations_save(id, presentations)
+        presentations.each {|p| p.delete('detail')}
+        pres = {'_id' => id, 'presentations' => presentations}
+        begin
+          @presentations.insert_one(pres)
+        rescue => e
+          msg = "Profile #{id} presentations failed to save: #{e.message}"
+          @config.logger.error msg
+        end
+      end
+
       # return publication data from local repo
       # @param id [Integer] A profileId number
       def publication(id)
@@ -376,6 +368,23 @@ module Cap
           end
         elsif @profiles.is_a? Mongo::Collection
           @publications.find({_id: id}).first
+        end
+      end
+
+      # Save publications data in local repo (mongodb)
+      # @param id [Integer] CAP profileId
+      # @param publications [Hash] CAP profile publications data
+      def publications_save(id, publications)
+        @pubs_fields ||= ['doiId', 'doiUrl', 'webOfScienceId', 'webOfScienceUrl']
+        publications.each do |p|
+          p.keys {|k| p.delete(k) unless @pubs_fields.include? k }
+        end
+        pub = {'_id' => id, 'publications' => publications}
+        begin
+          @publications.insert_one(pub)
+        rescue => e
+          msg = "Profile #{id} publications failed to save: #{e.message}"
+          @config.logger.error msg
         end
       end
 
@@ -395,15 +404,20 @@ module Cap
       end
 
       # Update a profile record with lastModified time and processing data.
-      # @param id [Integer] A profileId number
-      # @param data [Hash] Optional processing information
-      def process_update(id, data=nil)
+      # @param profile [Hash] CAP profile
+      def process_update(profile)
+        id = profile['profileId']
+        data = process_data(id)
+        cap_modified = profile['lastModified'] || 0
+        cap_modified = Time.parse(cap_modified).to_i
+        data['cap_modified'] = cap_modified
+        data['cap_retrieved'] = Time.now.to_i
         if @profiles.is_a? Daybreak::DB
           process_doc = {
             lastModified: Time.now.to_i,
             data: data
           }
-          @profiles[id.to_s]['processed'] = process_doc
+          @profiles[id]['processed'] = process_doc
         elsif @processed.is_a? Mongo::Collection
           process_doc = {
             _id: id,
@@ -440,6 +454,7 @@ module Cap
           puts "Stored #{@profiles.size} of #{total} profiles."
           puts "Stored profiles to #{@profiles.class} at: #{@profiles.file}."
         elsif @profiles.is_a? Mongo::Collection
+          index_names
           index_affiliations
           puts "Stored #{@profiles.find.count} of #{total} profiles."
           puts "Stored profiles to #{@profiles.class} at: #{@profiles.namespace}."
@@ -450,6 +465,11 @@ module Cap
         affiliations.each do |a|
           @profiles.indexes.create_one({"affiliation.#{a}" => 1})
         end
+      end
+
+      def index_names
+        @profiles.indexes.create_one({'names.legal.firstName' => 1})
+        @profiles.indexes.create_one({'names.legal.lastName'  => 1})
       end
 
       # # Migrate CAP API profile data from a Daybreak::DB into mongodb
