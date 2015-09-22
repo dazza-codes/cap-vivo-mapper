@@ -10,6 +10,7 @@ module Cap
       attr_reader :cap_repo
       attr_reader :rdf_repo
       attr_reader :rdf_path
+      attr_reader :rdf_prov
 
       def initialize
         self.debug = env_boolean('DEBUG')
@@ -17,6 +18,7 @@ module Cap
         @cap_repo = Cap.configuration.cap_repo
         @rdf_repo = Cap.configuration.rdf_repo
         @rdf_path = Cap.configuration.rdf_path
+        @rdf_prov = Cap.configuration.rdf_prov
       end
 
       def env_boolean(var)

@@ -12,6 +12,7 @@ module Cap
     attr_reader :rdf_path
     attr_reader :rdf_repo
     attr_reader :rdf_replace
+    attr_reader :rdf_prov
 
     def initialize
       self.debug = env_boolean('DEBUG')
@@ -21,6 +22,7 @@ module Cap
       rdf_repo
       @rdf_replace = env_boolean('CAP_RDF_REPLACE')
       rdf_path
+      @rdf_prov = env_boolean('CAP_RDF_PROV')
     end
 
     def env_boolean(var)

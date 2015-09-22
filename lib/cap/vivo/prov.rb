@@ -20,9 +20,9 @@ module Cap
       # @param cap_modified [String|] profile['lastModified']
       # @return rdf [RDF::Graph]  graph with PROV
       def prov_profile(rdf, vivo_uri, cap_uri, cap_modified)
+        prov_mapping  # create most of the PROV once
         cap_modified = time_modified(cap_modified)
         vivo_modified = time_modified
-        prov_mapping  # create most of the PROV once
         rdf << [vivo_uri, RDF.type, RDF::PROV.Entity]
         rdf << [cap_uri,  RDF.type, RDF::PROV.Entity]
         rdf << [cap_uri,  RDF::PROV.generatedAtTime, cap_modified]

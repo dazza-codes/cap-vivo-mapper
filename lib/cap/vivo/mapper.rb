@@ -1,3 +1,4 @@
+require_relative 'graph_utils'
 require_relative 'orgs'
 require_relative 'prov'
 require_relative 'vivo_terms'
@@ -10,8 +11,7 @@ module Cap
       include Cap::Vivo::Orgs
       include Cap::Vivo::Prov
       include Cap::Vivo::VivoTerms
-
-      PROFILE_URI_PREFIX = RDF::URI.parse 'https://profiles.stanford.edu/vivo'
+      include Cap::Vivo::GraphUtils
 
       attr_accessor :config
 
@@ -26,7 +26,8 @@ module Cap
         @config = Cap::Vivo.configuration
         @profile = profile
         @id = profile['profileId']
-        @uri = PROFILE_URI_PREFIX + "/#{@id}"
+        @uri = RDF::URI.parse(DATA_NAMESPACE + "/person/#{@id}")
+        @cap_uri = profile_link('https://cap.stanford.edu/rel/self')
         @rdf = RDF::Graph.new
         @rdf << [@uri, RDF.type, RDF::FOAF.Person]
       end
@@ -36,9 +37,7 @@ module Cap
         vivo_position
         vivo_overview
         vivo_vcard
-        prov
       end
-
 
       def vivo_position
         # TODO: determine positions within orgs
@@ -304,11 +303,8 @@ module Cap
           #
           # TODO: consider using regex:  /.+@.+\..+/i
           #
-
-          # temporarily disable parsing email to log errors.
           email = parent['email']
           @rdf << [vcard_email, RDF::VIVO_VCARD.email, email]
-
           # emails = parent['email'].split
           # emails.each do |email|
           #   email = email.gsub(/,\z/,'').gsub(/>.*/,'').gsub(/\A</,'')
@@ -379,35 +375,36 @@ module Cap
       end
 
       def prov
-        @vivo_uri ||= @uri
-        @cap_uri  ||= profile_link('https://cap.stanford.edu/rel/self')
-        cap_modified = profile['lastModified']
-        @rdf << prov_profile(@rdf, @vivo_uri, @cap_uri, cap_modified)
+        @prov ||= begin
+          prov = RDF::Graph.new
+          cap_modified = profile['lastModified']
+          prov_profile(prov, @uri, @cap_uri, cap_modified)
+        end
       end
 
       def save
         # save to triple store
         begin
           @rdf.each_statement {|s| @config.rdf_repo.insert_statement s}
+          if @config.rdf_prov
+            prov.each_statement {|s| @config.rdf_repo.insert_statement s}
+          end
         rescue => e
           @config.logger.error e.message
         end
         # save to turtle file
         begin
           f = File.open(File.join(@config.rdf_path, "#{@id}.ttl"), 'w')
-          f.write to_ttl
+          f.write @rdf.to_ttl
           f.close
+          if @config.rdf_prov
+            f = File.open(File.join(@config.rdf_path, "#{@id}_prov.ttl"), 'w')
+            f.write prov.to_ttl
+            f.close
+          end
         rescue => e
           @config.logger.error e.message
         end
-      end
-
-      def to_jsonld
-        @rdf.dump(:jsonld, standard_prefixes: true)
-      end
-
-      def to_ttl
-        @rdf.to_ttl
       end
 
     end
