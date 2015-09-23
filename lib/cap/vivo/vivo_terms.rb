@@ -12,6 +12,148 @@ module Cap
       HAS_CONTACT_INFO = RDF::URI.parse 'http://purl.obolibrary.org/obo/ARG_2000028'
       CONTACT_INFO_FOR = RDF::URI.parse 'http://purl.obolibrary.org/obo/ARG_2000029'
 
+      DATA_NAMESPACE = ENV['DATA_NAMESPACE'] || 'https://vivo.stanford.edu'
+
+      VIVO_CONTEXT = {
+        '@context' => {
+          '@base' => DATA_NAMESPACE,
+          'a' => '@type',
+          'uri' => '@id',
+          'foaf' => RDF::FOAF.to_s,
+          'obo' => 'http://purl.obolibrary.org/obo/',
+          'rdfs' => RDF::RDFS.to_s,
+          'vcard' => RDF::VIVO_VCARD.to_s,
+          'vivo' => RDF::VIVO.to_s,
+          'FacultyMember' => 'vivo:FacultyMember',
+          'label' => 'rdfs:label',
+          'firstName'  => 'vcard:givenName',
+          'lastName'   => 'vcard:familyName',
+          'middleName' => 'vivo:middleName',
+          'contact' => {
+              '@id' => 'obo:ARG_2000028',
+              '@type' => '@id',
+              'label' => 'has contact info'
+          },
+          'contactFor' => {
+              '@id' => 'obo:ARG_2000029',
+              '@type' => '@id',
+              'label' => 'contact info for'
+          },
+          # 'vcard:hasName' => {
+          #     '@id' => 'vcard:hasName',
+          #     '@type' => '@id'
+          # },
+          # 'vcard:hasTitle' => {
+          #     '@id' => 'vcard:hasTitle',
+          #     '@type' => '@id'
+          # },
+          # 'vcard:hasAddress' => {
+          #     '@id' => 'vcard:hasAddress',
+          #     '@type' => '@id'
+          # },
+          # 'vcard:hasEmail' => {
+          #     '@id' => 'vcard:hasEmail',
+          #     '@type' => '@id'
+          # },
+          # 'vcard:hasPhone' => {
+          #     '@id' => 'vcard:hasTelephone',
+          #     '@type' => '@id'
+          # },
+          # 'vcard:hasFax' => {
+          #     '@id' => 'vcard:hasTelephone',
+          #     '@type' => '@id'
+          # },
+          # 'vcard:hasURL' => {
+          #     '@id' => 'vcard:hasURL',
+          #     '@type' => '@id'
+          # },
+        }
+      }
+
+      # Extract vcard address from data
+      # @param data [Hash] data containing address fields
+      # @return address [Hash] vard address data
+      def vcard_address(data)
+        address = data['address']
+        address += ", #{data['address2']}" if data['address2']
+        {
+          'a' => 'vcard:Address',
+          'vcard:country' => data['country'] || 'United States',
+          'vcard:region' => data['state'],
+          'vcard:locality' => data['city'],
+          'vcard:postalCode' => data['zip'],
+          'vcard:streetAddress' => address
+        }
+      end
+
+      # Extract email from data
+      # @param data [Hash] data containing 'email' field
+      # @param uri [RDF::URI] the URI prefix for the email uri
+      # @return email [Hash] vcard email data
+      def vcard_emails(data, uri)
+        # TODO: consider using regex:  /.+@.+\..+/i
+        # The 'email' field might contain multiple entries, separated by
+        # various kinds of delimiter and each item is not necessarily
+        # validated, so this is an attempt to clean up some things, but
+        # it's not fool proof.  For more on this topic, see
+        # http://davidcel.is/posts/stop-validating-email-addresses-with-regex/
+        emails = []
+        collect = data['email'].split rescue []
+        collect.each_with_index do |email, i|
+          email = email.gsub(/,\z/,'').gsub(/>.*/,'').gsub(/\A</,'')
+          emails << {
+            '@id' => uri + "/email/#{i}",
+            'a' => 'vcard:Email',
+            'vcard:email' => email
+          }
+        end
+        emails
+      end
+
+      # Extract telephone data
+      # @param data [Hash] data containing 'phoneNumbers' field
+      # @param uri [RDF::URI] the URI prefix for the telephone uri
+      # @return telephones [Array<Hash>] telephone data
+      def vcard_telephones(data, uri)
+        #
+        # TODO: differentiate between phone types, e.g.
+        #       http://www.w3.org/TR/vcard-rdf/#Code_Sets for Telephone Type
+        #
+        #       VCARD.Cell  - mobile phones
+        #       VCARD.Car   - car phones
+        #       VCARD.Msg   - voice message service
+        #       VCARD.Pager - paging service
+        #       VCARD.Pref  - preferred {address, email, phone}
+        #       VCARD.Text  - simple message service (SMS)
+        #       VCARD.Video - video message service
+        #
+        phones = [data['phoneNumbers']].flatten.compact
+        phones = phones.map {|p| p.gsub(/\W+/,'') }.to_set
+        phones.collect do |p|
+          {
+            '@id' => uri + "/phone/#{p}",
+            'a' => ['vcard:Telephone','vcard:Voice'],
+            'vcard:telephone' => p
+          }
+        end
+      end
+
+      # Extract fax data
+      # @param data [Hash] data containing 'fax' field
+      # @param uri [RDF::URI] the URI prefix for the fax uri
+      # @return faxes [Array<Hash>] fax data
+      def vcard_faxes(data, uri)
+        faxes = [data['fax']].flatten.compact
+        faxes = faxes.map {|fax| fax.gsub(/\W+/,'') }.to_set
+        faxes.collect do |fax|
+          {
+            '@id' => uri + "/fax/#{fax}",
+            'a' => ['vcard:Telephone','vcard:Fax'],
+            'vcard:telephone' => fax
+          }
+        end
+      end
+
     end
   end
 end
