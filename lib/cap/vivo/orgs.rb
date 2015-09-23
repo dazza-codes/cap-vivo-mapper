@@ -6,30 +6,44 @@ module Cap
 
       def org_strings2things(org)
         case org
-        when 'Stanford Medical School'
+        when /stanford.*(library|libraries)/i
+          stanford_libraries
+        when /stanford medical school/i
           stanford_medical_school
+        end
+      end
+
+      def stanford_libraries
+        @@stanford_libraries ||= begin
+            org_name = "Stanford Univerity Libraries"
+            org_uri = RDF::URI.parse 'http://library.stanford.edu'
+            g = RDF::Graph.new
+            g << [org_uri, RDF.type, RDF::FOAF.Organization]
+            g << [org_uri, RDF::FOAF.name, org_name]
+            vcard = org_uri + '/vcard'
+            g << [org_uri, HAS_CONTACT_INFO, vcard]
+            g << [vcard, RDF.type, RDF::VIVO_VCARD.Organization]
+            vcard_name = vcard + "/name"
+            g << [vcard, RDF::VIVO_VCARD.hasName, vcard_name]
+            g << [vcard_name, RDF.type, RDF::VIVO_VCARD.Name]
+            g << [vcard_name, RDF::VIVO_VCARD.givenName, org_name]
         end
       end
 
       def stanford_medical_school
         @@stanford_medical_school ||= begin
+            org_name = "Stanford Medical School"
             org_uri = RDF::URI.parse('http://med.stanford.edu')
             g = RDF::Graph.new
             g << [org_uri, RDF.type, RDF::FOAF.Organization]
             g << [org_uri, RDF.type, RDF::VIVO.School]
             vcard = org_uri + '/vcard'
             g << [org_uri, HAS_CONTACT_INFO, vcard]
-            g << [vcard, RDF.type, RDF::Vocab::VCARD.Organization]
-
+            g << [vcard, RDF.type, RDF::VIVO_VCARD.Organization]
             vcard_name = vcard + "/name"
-            g << [vcard, RDF::Vocab::VCARD.hasName, vcard_name]
-            g << [vcard_name, RDF.type, RDF::Vocab::VCARD.Name]
-            g << [vcard_name, RDF::RDFS.label, type]
-            g << [vcard_name, RDF::Vocab::VCARD.send('given-name'), fn]
-            g << [vcard_name, RDF::Vocab::VCARD.send('family-name'), ln]
-            #     vcard:hasName [
-            #         a vcard:Name;
-            #         vcard:givenName "Stanford Medical School"@en.
+            g << [vcard, RDF::VIVO_VCARD.hasName, vcard_name]
+            g << [vcard_name, RDF.type, RDF::VIVO_VCARD.Name]
+            g << [vcard_name, RDF::VIVO_VCARD.givenName, org_name]
 
             #     vcard:hasAddress [
             #         a vcard:Address, vcard:Work;
@@ -57,10 +71,6 @@ module Cap
             g
         end
       end
-
-
-      # MAPPING_ORG = RDF::URI.parse('http://library.stanford.edu')
-      # MAPPING_ORG_NAME = RDF::Literal.new('Stanford Univerity Libraries')
 
     end
   end
