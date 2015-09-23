@@ -33,7 +33,7 @@ module Cap
       end
 
       # Convert CAP profile into VIVO linked data
-      def create_vivo
+      def vivo
         vivo_position
         vivo_overview
         vivo_vcard
