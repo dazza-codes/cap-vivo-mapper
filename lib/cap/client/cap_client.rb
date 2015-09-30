@@ -261,6 +261,58 @@ module Cap
         end
       end
 
+      # Extract all the education organization names and return a unique
+      # set of names, sorted alphabetically.  TODO: match the organization
+      # names to authorities and/or ISNI/ORCID/VIAF identifiers? e.g. see
+      # http://id.loc.gov/search/?q=Agricultural+University+Shandong&format=json
+      # @return orgs [Array<String>] a set of the education institution names
+      def education_org_names
+        @education_org_names ||= begin
+          edu = @profiles.find.projection({'_id' => 0, 'education' => 1})
+          orgs = edu.map do |doc|
+            # the 'education' field is an array
+            edu = doc['education'] || []
+            edu.map {|e| e['organization']}.flatten.compact
+          end
+          orgs.flatten.to_set.to_a.sort
+        end
+      end
+
+      # Extract all the education degree names and return a unique
+      # set of names, sorted alphabetically.
+      def education_degrees
+        @education_degree_names ||= begin
+          edu = @profiles.find.projection({'_id' => 0, 'education' => 1})
+          degrees = edu.map do |doc|
+            # the 'education' field is an array
+            edu = doc['education'] || []
+            # edu.map {|e| education_parser(e)['degree']}.flatten.compact
+            edu.map {|e| e['degree']}.flatten.compact
+          end
+          degrees.flatten.to_set.to_a.sort
+        end
+      end
+
+      # Attempt to parse an education entry
+      # @param education [Hash] an entry in the profile education array
+      # @return education [Hash]
+      def education_parser(edu)
+        edu_out = edu
+        degree = edu['degree']
+        if degree.nil?
+          # Sometimes the degree etc. is in the label
+          label = edu['label']['text'] rescue ''
+          degree = label.split(':').first || label.split(',').first
+        end
+        # There are a ton of non-normative strings that could be translated
+        # to a normative form, but it's not yet clear how to do this well.
+        # if degree
+        #   degree = degree.split.map {|w| w.capitalize }.join(' ')
+        #   edu_out['degree'] = degree.tr('.()-/','')
+        # end
+        edu_out['degree'] = degree if degree
+        edu_out
+      end
 
       # Run a mongo find on profiles with query doc
       # @param query_doc [Hash] profiles.find({query_doc})

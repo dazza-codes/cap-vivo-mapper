@@ -85,14 +85,17 @@ module Cap
         @vcard_uri ||= @uri + '/vcard'
       end
 
+      def legal_name
+        @legal_name  ||= profile['names']['legal']
+      end
       def first_name
-        @first_name  ||= profile['names']['legal']['firstName'] || ''
+        @first_name  ||= legal_name['firstName'] || ''
       end
       def middle_name
-        @middle_name ||= profile['names']['legal']['middleName'] || ''
+        @middle_name ||= legal_name['middleName'] || ''
       end
       def last_name
-        @last_name   ||= profile['names']['legal']['lastName'] || ''
+        @last_name   ||= legal_name['lastName'] || ''
       end
 
       def vcard_name
@@ -136,6 +139,14 @@ module Cap
           end
         end
       end
+
+      # TODO: try to find an ORCID
+      # Use a publication DOI to identify an author's ORCID
+      # http://members.orcid.org/api/tutorial-retrieve-data-public-api-curl-12-and-earlier
+      # http://members.orcid.org/api/code-examples
+      # http://members.orcid.org/finding-orcid-record-holders-your-institution
+      # http://members.orcid.org/api/tutorial-searching-api-12-and-earlier
+
 
       # Email
       def vcard_email

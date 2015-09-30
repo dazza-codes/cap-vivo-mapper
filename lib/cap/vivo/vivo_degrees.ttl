@@ -1,0 +1,611 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vivo: <http://vivoweb.org/ontology/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://vivoweb.org/ontology/degree/academicDegree1> a vivo:AcademicDegree;
+   rdfs:label "A.B. Bachelor of Arts"@en-US;
+   vivo:abbreviation "A.B." .
+
+<http://vivoweb.org/ontology/degree/academicDegree10> a vivo:AcademicDegree;
+   rdfs:label "B.Ag. Bachelor of Agriculture"@en-US;
+   vivo:abbreviation "B.Ag." .
+
+<http://vivoweb.org/ontology/degree/academicDegree100> a vivo:AcademicDegree;
+   rdfs:label "Sc.D. Doctor of Science"@en-US;
+   vivo:abbreviation "Sc.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree101> a vivo:AcademicDegree;
+   rdfs:label "S.J.D. Doctor of Juridical Science"@en-US;
+   vivo:abbreviation "S.J.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree102> a vivo:AcademicDegree;
+   rdfs:label "S.J.D. Doctor of the Science of Law"@en-US;
+   vivo:abbreviation "S.J.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree103> a vivo:AcademicDegree;
+   rdfs:label "S.Sc.D. Doctor of Social Science"@en-US;
+   vivo:abbreviation "S.Sc.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree104> a vivo:AcademicDegree;
+   rdfs:label "S.T.B. Bachelor of Sacred Theology"@en-US;
+   vivo:abbreviation "S.T.B." .
+
+<http://vivoweb.org/ontology/degree/academicDegree105> a vivo:AcademicDegree;
+   rdfs:label "S.T.D. Doctor of Sacred Theology"@en-US;
+   vivo:abbreviation "S.T.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree106> a vivo:AcademicDegree;
+   rdfs:label "S.T.M. Master of Sacred Theology"@en-US;
+   vivo:abbreviation "S.T.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree107> a vivo:AcademicDegree;
+   rdfs:label "Th.B. Bachelor of Theology"@en-US;
+   vivo:abbreviation "Th.B." .
+
+<http://vivoweb.org/ontology/degree/academicDegree108> a vivo:AcademicDegree;
+   rdfs:label "Th.D. Doctor of Theology"@en-US;
+   vivo:abbreviation "Th.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree109> a vivo:AcademicDegree;
+   rdfs:label "Th.M. Master of Theology"@en-US;
+   vivo:abbreviation "Th.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree11> a vivo:AcademicDegree;
+   rdfs:label "B.A.M. Bachelor of Applied Mathematics"@en-US;
+   vivo:abbreviation "B.A.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree110> a vivo:AcademicDegree;
+   rdfs:label "B.Sc. Bachelor of Science"@en-US;
+   vivo:abbreviation "B.Sc."^^rdfs:Literal;
+   vivo:description "Abbreviation commonly used by Canadian and British universities." .
+
+<http://vivoweb.org/ontology/degree/academicDegree111> a vivo:AcademicDegree;
+   rdfs:label "M.Phil. Master of Philosophy "@en-US;
+   vivo:abbreviation "M.Phil.";
+   vivo:description "Abbreviation commonly used by Canadian and British universities." .
+
+<http://vivoweb.org/ontology/degree/academicDegree112> a vivo:AcademicDegree;
+   rdfs:label "D.Phil. Doctor of Philosophy"@en-US;
+   vivo:abbreviation "D.Phil.";
+   vivo:description "Abbreviation commonly used by Canadian and British universities." .
+
+<http://vivoweb.org/ontology/degree/academicDegree113> a vivo:AcademicDegree;
+   rdfs:label "M.P.H. Master of Public Health"@en-US;
+   vivo:abbreviation "M.P.H."^^rdfs:Literal;
+   vivo:description """<p>Professional public health degree. (contrast with M.S.P.H.)</p>
+<p>See the Wikipedia entry at: http://en.wikipedia.org/wiki/Professional_degrees_of_public_health</p>""" .
+
+<http://vivoweb.org/ontology/degree/academicDegree114> a vivo:AcademicDegree;
+   rdfs:label "M.S.P.H. Master of Science in Public Health"@en-US;
+   vivo:abbreviation "M.S.P.H.";
+   vivo:description """<p>Academic public health degree. (contrast with M.P.H.).&nbsp; The M.S.P.H. is more research-oriented than the M.P.H.</p>
+<p>See the Wikipedia entry at:  http://en.wikipedia.org/wiki/Professional_degrees_of_public_health</p>""" .
+
+<http://vivoweb.org/ontology/degree/academicDegree115> a vivo:AcademicDegree;
+   rdfs:label "M.L.I.S. Master of Library and Information Science"@en-US;
+   vivo:abbreviation "M.L.I.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree116> a vivo:AcademicDegree;
+   rdfs:label "Dip.Ed. Diploma of Education"@en-US ;
+   vivo:abbreviation "Dip.Ed." .
+
+<http://vivoweb.org/ontology/degree/academicDegree117> a vivo:AcademicDegree;
+   rdfs:label "M.Sc. Master of Science"@en-US;
+   vivo:abbreviation "M.Sc." .
+
+<http://vivoweb.org/ontology/degree/academicDegree118> a vivo:AcademicDegree;
+   rdfs:label "A.D.N. Associate Degree Nursing"@en-US;
+   vivo:abbreviation "A.D.N." .
+
+<http://vivoweb.org/ontology/degree/academicDegree119> a vivo:AcademicDegree;
+   rdfs:label "Psy.D. Doctor of Psychology"@en-US;
+   vivo:abbreviation "Psy.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree12> a vivo:AcademicDegree;
+   rdfs:label "B.Arch. Bachelor of Architecture"@en-US;
+   vivo:abbreviation "B.Arch." .
+
+<http://vivoweb.org/ontology/degree/academicDegree120> a vivo:AcademicDegree;
+   rdfs:label "B.S.E. Bachelor of Science in Engineering"@en-US;
+   vivo:abbreviation "B.S.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree121> a vivo:AcademicDegree;
+   rdfs:label "Sc.B. Bachelor of Science"@en-US;
+   vivo:abbreviation "Sc.B." .
+
+<http://vivoweb.org/ontology/degree/academicDegree122> a vivo:AcademicDegree;
+   rdfs:label "M.H.S. Master of Health Science"@en-US;
+   vivo:abbreviation "M.H.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree123> a vivo:AcademicDegree;
+   rdfs:label "Sc.M. Master of Science"@en-US;
+   vivo:abbreviation "Sc.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree124> a vivo:AcademicDegree;
+   rdfs:label "B.A.S. Bachelor of Applied Science"@en-US;
+   vivo:abbreviation "B.A.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree125> a vivo:AcademicDegree;
+   rdfs:label "D.M.Sc. Doctor of Medical Science"@en-US;
+   vivo:abbreviation "D.M.Sc." .
+
+<http://vivoweb.org/ontology/degree/academicDegree126> a vivo:AcademicDegree;
+   rdfs:label "M.M.S. Master of Management Studies"@en-US;
+   vivo:abbreviation "M.M.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree127> a vivo:AcademicDegree;
+   rdfs:label "A.S. Associate of Science"@en-US;
+   vivo:abbreviation "A.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree128> a vivo:AcademicDegree;
+   rdfs:label "B.V.S. Bachelor of Veterinary Science"@en-US;
+   vivo:abbreviation "B.V.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree129> a vivo:AcademicDegree;
+   rdfs:label "M.V.Sc. Master of Veterinary Science"@en-US;
+   vivo:abbreviation "M.V.Sc." .
+
+<http://vivoweb.org/ontology/degree/academicDegree13> a vivo:AcademicDegree;
+   rdfs:label "B.B.A. Bachelor of Business Administration"@en-US;
+   vivo:abbreviation "B.B.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree130> a vivo:AcademicDegree;
+   rdfs:label "B.S.N. Bachelor of Science in Nursing"@en-US;
+   vivo:abbreviation "B.S.N." .
+
+<http://vivoweb.org/ontology/degree/academicDegree131> a vivo:AcademicDegree;
+   rdfs:label "M.Med. Master of Medicine"@en-US;
+   vivo:abbreviation "M.Med." .
+
+<http://vivoweb.org/ontology/degree/academicDegree132> a vivo:AcademicDegree;
+   rdfs:label "A.A. Associate of Arts"@en-US;
+   vivo:abbreviation "A.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree133> a vivo:AcademicDegree;
+   rdfs:label "Ed.M. Master of Education"@en-US;
+   vivo:abbreviation "Ed.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree134> a vivo:AcademicDegree;
+   rdfs:label "M.S.E. Master of Science in Engineering"@en-US;
+   vivo:abbreviation "M.S.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree135> a vivo:AcademicDegree;
+   rdfs:label "F.R.C.S. Fellowship of the Royal College of Surgeons"@en-US;
+   vivo:abbreviation "F.R.C.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree136> a vivo:AcademicDegree;
+   rdfs:label "B.S.F.S. Bachelor of Science in Forensic Science"@en-US;
+   vivo:abbreviation "B.S.F.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree137> a vivo:AcademicDegree;
+   rdfs:label "M.I.A. Master of International Affairs"@en-US;
+   vivo:abbreviation "M.I.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree138> a vivo:AcademicDegree;
+   rdfs:label "B.N.S. Bachelor of Science in Nursing"@en-US;
+   vivo:abbreviation "B.N.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree139> a vivo:AcademicDegree;
+   rdfs:label "D.P.M. Doctor of Podiatric Medicine"@en-US;
+   vivo:abbreviation "D.P.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree14> a vivo:AcademicDegree;
+   rdfs:label "B.C.E. Bachelor of Civil Engineering"@en-US;
+   vivo:abbreviation "B.C.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree140> a vivo:AcademicDegree;
+   rdfs:label "M.Ch.E. Master of Chemical Engineering"@en-US;
+   vivo:abbreviation "M.Ch.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree141> a vivo:AcademicDegree;
+   rdfs:label "M.B.E. Master of Business Engineering"@en-US;
+   vivo:abbreviation "M.B.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree142> a vivo:AcademicDegree;
+   rdfs:label "Pharm.B. Bachelor of Pharmacy"@en-US;
+   vivo:abbreviation "Pharm.B." .
+
+<http://vivoweb.org/ontology/degree/academicDegree143> a vivo:AcademicDegree;
+   rdfs:label "Pharm.M. Master of Pharmacy"@en-US;
+   vivo:abbreviation "Pharm.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree144> a vivo:AcademicDegree;
+   rdfs:label "V.M.D. Veterinariae Medicinae Doctoris"@en-US;
+   vivo:abbreviation "V.M.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree145> a vivo:AcademicDegree;
+   rdfs:label "Au.D. Doctor of Audiology"@en-US;
+   vivo:abbreviation "Au.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree146> a vivo:AcademicDegree;
+   rdfs:label "D.H.Ed. Doctor of Health Education"@en-US;
+   vivo:abbreviation "D.H.Ed." .
+
+<http://vivoweb.org/ontology/degree/academicDegree147> a vivo:AcademicDegree;
+   rdfs:label "M.P.A.S. Master in Physician Assistant Studies"@en-US;
+   vivo:abbreviation "M.P.A.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree148> a vivo:AcademicDegree;
+   rdfs:label "Dr.P.H. Doctor of Public Health"@en-US;
+   vivo:abbreviation "Dr.P.H." .
+
+<http://vivoweb.org/ontology/degree/academicDegree149> a vivo:AcademicDegree;
+   rdfs:label "H.S.C. Higher School Certificate"@en-US;
+   vivo:abbreviation "H.S.C." .
+
+<http://vivoweb.org/ontology/degree/academicDegree15> a vivo:AcademicDegree;
+   rdfs:label "B.Ch.E Bachelor of Chemical Engineering"@en-US;
+   vivo:abbreviation "B.Ch.E" .
+
+<http://vivoweb.org/ontology/degree/academicDegree150> a vivo:AcademicDegree;
+   rdfs:label "M.M.Sc. Master of Medical Science"@en-US;
+   vivo:abbreviation "M.M.Sc." .
+
+<http://vivoweb.org/ontology/degree/academicDegree16> a vivo:AcademicDegree;
+   rdfs:label "B.C.L. Bachelor of Canon Law"@en-US;
+   vivo:abbreviation "B.C.L." .
+
+<http://vivoweb.org/ontology/degree/academicDegree17> a vivo:AcademicDegree;
+   rdfs:label "B.D. Bachelor of Divinity"@en-US;
+   vivo:abbreviation "B.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree18> a vivo:AcademicDegree;
+   rdfs:label "B.E. Bachelor of Education"@en-US;
+   vivo:abbreviation "B.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree19> a vivo:AcademicDegree;
+   rdfs:label "B.E. Bachelor of Engineering"@en-US;
+   vivo:abbreviation "B.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree2> a vivo:AcademicDegree;
+   rdfs:label "AeEng. Aeronautical Engineer"@en-US;
+   vivo:abbreviation "AeEng." .
+
+<http://vivoweb.org/ontology/degree/academicDegree20> a vivo:AcademicDegree;
+   rdfs:label "B.E.E. Bachelor of Electrical Engineering"@en-US;
+   vivo:abbreviation "B.E.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree21> a vivo:AcademicDegree;
+   rdfs:label "B.F. Bachelor of Forestry"@en-US;
+   vivo:abbreviation "B.F." .
+
+<http://vivoweb.org/ontology/degree/academicDegree22> a vivo:AcademicDegree;
+   rdfs:label "B.F.A. Bachelor of Fine Arts"@en-US;
+   vivo:abbreviation "B.F.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree23> a vivo:AcademicDegree;
+   rdfs:label "B.J. Bachelor of Journalism"@en-US;
+   vivo:abbreviation "B.J." .
+
+<http://vivoweb.org/ontology/degree/academicDegree24> a vivo:AcademicDegree;
+   rdfs:label "B.L.S. Bachelor of Liberal Studies"@en-US;
+   vivo:abbreviation "B.L.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree25> a vivo:AcademicDegree;
+   rdfs:label "B.L.S. Bachelor of Library Science"@en-US;
+   vivo:abbreviation "B.L.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree26> a vivo:AcademicDegree;
+   rdfs:label "B.Lit. Bachelor of Literature"@en-US;
+   vivo:abbreviation "B.Lit." .
+
+<http://vivoweb.org/ontology/degree/academicDegree27> a vivo:AcademicDegree;
+   rdfs:label "B.M. Bachelor of Medicine"@en-US;
+   vivo:abbreviation "B.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree28> a vivo:AcademicDegree;
+   rdfs:label "B.M. Bachelor of Music"@en-US;
+   vivo:abbreviation "B.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree29> a vivo:AcademicDegree;
+   rdfs:label "B.M.S. Bachelor of Marine Science"@en-US;
+   vivo:abbreviation "B.M.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree3> a vivo:AcademicDegree;
+   rdfs:label "A.M.T. Master of Arts in Teaching"@en-US;
+   vivo:abbreviation "A.M.T." .
+
+<http://vivoweb.org/ontology/degree/academicDegree30> a vivo:AcademicDegree;
+   rdfs:label "B.N. Bachelor of Nursing"@en-US;
+   vivo:abbreviation "B.N." .
+
+<http://vivoweb.org/ontology/degree/academicDegree31> a vivo:AcademicDegree;
+   rdfs:label "B.Pharm. Bachelor of Pharmacy"@en-US;
+   vivo:abbreviation "B.Pharm." .
+
+<http://vivoweb.org/ontology/degree/academicDegree32> a vivo:AcademicDegree;
+   rdfs:label "B.R.E. Bachelor of Religious Education"@en-US;
+   vivo:abbreviation "B.R.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree33> a vivo:AcademicDegree;
+   rdfs:label "B.S. Bachelor of Science"@en-US;
+   vivo:abbreviation "B.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree34> a vivo:AcademicDegree;
+   rdfs:label "B.S.Ed. Bachelor of Science in Education"@en-US;
+   vivo:abbreviation "B.S.Ed." .
+
+<http://vivoweb.org/ontology/degree/academicDegree35> a vivo:AcademicDegree;
+   rdfs:label "C.E. Civil Engineer"@en-US;
+   vivo:abbreviation "C.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree36> a vivo:AcademicDegree;
+   rdfs:label "Ch.E. Chemical Engineer"@en-US;
+   vivo:abbreviation "Ch.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree37> a vivo:AcademicDegree;
+   rdfs:label "D.A. Doctor of Arts"@en-US;
+   vivo:abbreviation "D.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree38> a vivo:AcademicDegree;
+   rdfs:label "D.A.S. Doctor of Applied Science"@en-US;
+   vivo:abbreviation "D.A.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree39> a vivo:AcademicDegree;
+   rdfs:label "D.B.A. Doctor of Business Administration"@en-US;
+   vivo:abbreviation "D.B.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree4> a vivo:AcademicDegree;
+   rdfs:label "B.A. Bachelor of Arts"@en-US;
+   vivo:abbreviation "B.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree40> a vivo:AcademicDegree;
+   rdfs:label "D.C. Doctor of Chiropractic"@en-US;
+   vivo:abbreviation "D.C." .
+
+<http://vivoweb.org/ontology/degree/academicDegree41> a vivo:AcademicDegree;
+   rdfs:label "D.D. Doctor of Divinity"@en-US;
+   vivo:abbreviation "D.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree42> a vivo:AcademicDegree;
+   rdfs:label "D.D.S. Doctor of Dental Surgery"@en-US;
+   vivo:abbreviation "D.D.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree43> a vivo:AcademicDegree;
+   rdfs:label "D.D.S. Doctor of Dental Science"@en-US;
+   vivo:abbreviation "D.D.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree44> a vivo:AcademicDegree;
+   rdfs:label "D.Ed. Doctor of Education"@en-US;
+   vivo:abbreviation "D.Ed." .
+
+<http://vivoweb.org/ontology/degree/academicDegree45> a vivo:AcademicDegree;
+   rdfs:label "D.L.S. Doctor of Library Science"@en-US;
+   vivo:abbreviation "D.L.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree46> a vivo:AcademicDegree;
+   rdfs:label "D.M.D. Doctor of Dental Medicine"@en-US;
+   vivo:abbreviation "D.M.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree47> a vivo:AcademicDegree;
+   rdfs:label "D.O. Doctor of Osteopathic Medicine"@en-US;
+   vivo:abbreviation "D.O." .
+
+<http://vivoweb.org/ontology/degree/academicDegree48> a vivo:AcademicDegree;
+   rdfs:label "D.M.S. Doctor of Medical Science"@en-US;
+   vivo:abbreviation "D.M.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree49> a vivo:AcademicDegree;
+   rdfs:label "D.P.A. Doctor of Public Administration"@en-US;
+   vivo:abbreviation "D.P.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree5> a vivo:AcademicDegree;
+   rdfs:label "B.A.E. Bachelor of Arts in Education"@en-US;
+   vivo:abbreviation "B.A.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree50> a vivo:AcademicDegree;
+   rdfs:label "D.P.H. Doctor of Public Health"@en-US;
+   vivo:abbreviation "D.P.H." .
+
+<http://vivoweb.org/ontology/degree/academicDegree51> a vivo:AcademicDegree;
+   rdfs:label "D.R.E. Doctor of Religious Education"@en-US;
+   vivo:abbreviation "D.R.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree52> a vivo:AcademicDegree;
+   rdfs:label "D.S.W. Doctor of Social Welfare"@en-US;
+   vivo:abbreviation "D.S.W." .
+
+<http://vivoweb.org/ontology/degree/academicDegree53> a vivo:AcademicDegree;
+   rdfs:label "D.S.W. Doctor of Social Work"@en-US;
+   vivo:abbreviation "D.S.W." .
+
+<http://vivoweb.org/ontology/degree/academicDegree54> a vivo:AcademicDegree;
+   rdfs:label "D.Sc. Doctor of Science"@en-US;
+   vivo:abbreviation "D.Sc." .
+
+<http://vivoweb.org/ontology/degree/academicDegree55> a vivo:AcademicDegree;
+   rdfs:label "D.V.M. Doctor of Veterinary Medicine"@en-US;
+   vivo:abbreviation "D.V.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree56> a vivo:AcademicDegree;
+   rdfs:label "Ed.D. Doctor of Education"@en-US;
+   vivo:abbreviation "Ed.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree57> a vivo:AcademicDegree;
+   rdfs:label "Ed.S. Education Specialist"@en-US;
+   vivo:abbreviation "Ed.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree58> a vivo:AcademicDegree;
+   rdfs:label "E.E. Electrical Engineer"@en-US;
+   vivo:abbreviation "E.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree59> a vivo:AcademicDegree;
+   rdfs:label "E.M. Engineer of Mines"@en-US;
+   vivo:abbreviation "E.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree6> a vivo:AcademicDegree;
+   rdfs:label "B.A.E. Bachelor of Art Education"@en-US;
+   vivo:abbreviation "B.A.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree60> a vivo:AcademicDegree;
+   rdfs:label "E.Met. Engineer of Metallurgy"@en-US;
+   vivo:abbreviation "E.Met." .
+
+<http://vivoweb.org/ontology/degree/academicDegree61> a vivo:AcademicDegree;
+   rdfs:label "I.E. Industrial Engineer"@en-US;
+   vivo:abbreviation "I.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree62> a vivo:AcademicDegree;
+   rdfs:label "I.E. Industrial Engineering"@en-US;
+   vivo:abbreviation "I.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree63> a vivo:AcademicDegree;
+   rdfs:label "J.D. Doctor of Laws"@en-US;
+   vivo:abbreviation "J.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree64> a vivo:AcademicDegree;
+   rdfs:label "J.S.D. Doctor of Juristic Science"@en-US;
+   vivo:abbreviation "J.S.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree65> a vivo:AcademicDegree;
+   rdfs:label "L.H.D. Doctor of Humane Letters"@en-US;
+   vivo:abbreviation "L.H.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree66> a vivo:AcademicDegree;
+   rdfs:label "Litt.B. Bachelor of Letters"@en-US;
+   vivo:abbreviation "Litt.B." .
+
+<http://vivoweb.org/ontology/degree/academicDegree67> a vivo:AcademicDegree;
+   rdfs:label "Litt.M. Master of Letters"@en-US;
+   vivo:abbreviation "Litt.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree68> a vivo:AcademicDegree;
+   rdfs:label "LL.B. Bachelor of Laws"@en-US;
+   vivo:abbreviation "LL.B." .
+
+<http://vivoweb.org/ontology/degree/academicDegree69> a vivo:AcademicDegree;
+   rdfs:label "LL.D. Doctor of Laws"@en-US;
+   vivo:abbreviation "LL.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree7> a vivo:AcademicDegree;
+   rdfs:label "B.A.E. Aeronautical Engineering"@en-US;
+   vivo:abbreviation "B.A.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree70> a vivo:AcademicDegree;
+   rdfs:label "LL.M. Master of Laws"@en-US;
+   vivo:abbreviation "LL.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree71> a vivo:AcademicDegree;
+   rdfs:label "M.A. Master of Arts"@en-US;
+   vivo:abbreviation "M.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree72> a vivo:AcademicDegree;
+   rdfs:label "M.Aero.E. Master of Aeronautical Engineering"@en-US;
+   vivo:abbreviation "M.Aero.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree73> a vivo:AcademicDegree;
+   rdfs:label "M.B.A. Master of Business Administration"@en-US;
+   vivo:abbreviation "M.B.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree74> a vivo:AcademicDegree;
+   rdfs:label "M.C.E. Master of Christian Education "@en-US;
+   vivo:abbreviation "M.C.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree75> a vivo:AcademicDegree;
+   rdfs:label "M.C.E. Master of Civil Engineering"@en-US;
+   vivo:abbreviation "M.C.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree76> a vivo:AcademicDegree;
+   rdfs:label "M.C.S. Master of Computer Science"@en-US;
+   vivo:abbreviation "M.C.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree77> a vivo:AcademicDegree;
+   rdfs:label "M.D. Doctor of Medicine"@en-US;
+   vivo:abbreviation "M.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree78> a vivo:AcademicDegree;
+   rdfs:label "M.Div. Master of Divinity"@en-US;
+   vivo:abbreviation "M.Div." .
+
+<http://vivoweb.org/ontology/degree/academicDegree79> a vivo:AcademicDegree;
+   rdfs:label "M.E. Master of Engineering"@en-US;
+   vivo:abbreviation "M.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree8> a vivo:AcademicDegree;
+   rdfs:label "B.A.E. Agricultural Engineering"@en-US;
+   vivo:abbreviation "B.A.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree80> a vivo:AcademicDegree;
+   rdfs:label "M.Ed. Master of Education"@en-US;
+   vivo:abbreviation "M.Ed." .
+
+<http://vivoweb.org/ontology/degree/academicDegree81> a vivo:AcademicDegree;
+   rdfs:label "M.Eng. Master of Engineering"@en-US;
+   vivo:abbreviation "M.Eng." .
+
+<http://vivoweb.org/ontology/degree/academicDegree82> a vivo:AcademicDegree;
+   rdfs:label "M.F.A. Master of Fine Arts"@en-US;
+   vivo:abbreviation "M.F.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree83> a vivo:AcademicDegree;
+   rdfs:label "M.H.A. Master of Hospital Administration"@en-US;
+   vivo:abbreviation "M.H.A." .
+
+<http://vivoweb.org/ontology/degree/academicDegree84> a vivo:AcademicDegree;
+   rdfs:label "M.L.S. Master of Library Science"@en-US;
+   vivo:abbreviation "M.L.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree85> a vivo:AcademicDegree;
+   rdfs:label "M.M. Master of Music"@en-US;
+   vivo:abbreviation "M.M." .
+
+<http://vivoweb.org/ontology/degree/academicDegree86> a vivo:AcademicDegree;
+   rdfs:label "M.M.E. Master of Mechanical Engineering"@en-US;
+   vivo:abbreviation "M.M.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree87> a vivo:AcademicDegree;
+   rdfs:label "M.M.E. Master of Music Education"@en-US;
+   vivo:abbreviation "M.M.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree88> a vivo:AcademicDegree;
+   rdfs:label "M.Mus. Master of Music"@en-US;
+   vivo:abbreviation "M.Mus." .
+
+<http://vivoweb.org/ontology/degree/academicDegree89> a vivo:AcademicDegree;
+   rdfs:label "M.N. Master of Nursing"@en-US;
+   vivo:abbreviation "M.N." .
+
+<http://vivoweb.org/ontology/degree/academicDegree9> a vivo:AcademicDegree;
+   rdfs:label "B.A.E. Architectural Engineering"@en-US;
+   vivo:abbreviation "B.A.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree90> a vivo:AcademicDegree;
+   rdfs:label "M.R.E. Master of Religious Education"@en-US;
+   vivo:abbreviation "M.R.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree91> a vivo:AcademicDegree;
+   rdfs:label "M.S. Master of Science"@en-US;
+   vivo:abbreviation "M.S." .
+
+<http://vivoweb.org/ontology/degree/academicDegree92> a vivo:AcademicDegree;
+   rdfs:label "M.S.W. Master of Social Work"@en-US;
+   vivo:abbreviation "M.S.W." .
+
+<http://vivoweb.org/ontology/degree/academicDegree93> a vivo:AcademicDegree;
+   rdfs:label "M.Th. Master of Theology"@en-US;
+   vivo:abbreviation "M.Th." .
+
+<http://vivoweb.org/ontology/degree/academicDegree94> a vivo:AcademicDegree;
+   rdfs:label "Nuc.E. Nuclear Engineer"@en-US;
+   vivo:abbreviation "Nuc.E." .
+
+<http://vivoweb.org/ontology/degree/academicDegree95> a vivo:AcademicDegree;
+   rdfs:label "O.D. Doctor of Optometry"@en-US;
+   vivo:abbreviation "O.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree96> a vivo:AcademicDegree;
+   rdfs:label "Pharm.D. Doctor of Pharmacy"@en-US;
+   vivo:abbreviation "Pharm.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree97> a vivo:AcademicDegree;
+   rdfs:label "Ph.B. Bachelor of Philosophy"@en-US;
+   vivo:abbreviation "Ph.B." .
+
+<http://vivoweb.org/ontology/degree/academicDegree98> a vivo:AcademicDegree;
+   rdfs:label "Ph.D. Doctor of Philosophy"@en-US;
+   vivo:abbreviation "Ph.D." .
+
+<http://vivoweb.org/ontology/degree/academicDegree99> a vivo:AcademicDegree;
+   rdfs:label "S.B. Bachelor of Science"@en-US;
+   vivo:abbreviation "S.B." .
