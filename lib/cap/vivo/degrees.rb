@@ -129,12 +129,45 @@ module Cap
         abbrevs = abbrevs.sort.reverse.map {|a| a[1] }.compact[0..2]
       end
 
+      # A VIVO degree prefix for Stanford
+      # @return uri [RDF::URI] A VIVO degree prefix for Stanford
+      def degree_prefix
+        @degree_prefix ||= RDF::URI.parse "http://vivo.stanford.edu/degree/"
+      end
+
       # Create a URI for a degree string
       # @parameter degree [String] a degree designation
       # @return uri [RDF::URI]
       def degree_uri(degree)
         name = degree.gsub(/\W+/,'').downcase
         RDF::URI.parse "http://vivo.stanford.edu/degree/#{name}/"
+      end
+
+      # A graph of academic degrees
+      # @return rdf [RDF::Graph]
+      def degrees_graph
+        @degrees_graph ||= begin
+          g = RDF::Graph.new
+          mit_degrees.each do |acronym, description|
+            uri = degree_prefix + acronym
+            abbrev = acronym.chars.join('.') + '.'
+            label = "#{abbrev} #{description}"
+            g << [uri, RDF.type, RDF::VIVO.AcademicDegree]
+            g << [uri, RDF::RDFS.label, label]
+            g << [uri, RDF::VIVO.abbreviation, abbrev]
+            g << [uri, RDF::VIVO.abbreviation, acronym]
+          end
+          vivo_degree_labels.each do |label|
+            abbrev = label.split.first
+            acronym = abbrev.gsub(/\W/,'')
+            uri = degree_prefix + acronym
+            g << [uri, RDF.type, RDF::VIVO.AcademicDegree]
+            g << [uri, RDF::RDFS.label, label]
+            g << [uri, RDF::VIVO.abbreviation, abbrev]
+            g << [uri, RDF::VIVO.abbreviation, acronym]
+          end
+          g
+        end
       end
 
       def vivo_degrees
@@ -153,12 +186,31 @@ module Cap
         end
       end
 
+      # @return uris [Hash] VIVO degree uris
+      def vivo_degree_uris
+        @vivo_degree_uris || begin
+          # define the uris using the abbreviations method where it can
+          # gather both uris and abbreviations efficiently.
+          vivo_degree_abbreviations
+          @vivo_degree_uris
+        end
+      end
+
       # @return abbreviations [Hash] VIVO degree abbreviations
       def vivo_degree_abbreviations
-        @vivo_degree_abbreviations ||= begin
+        @vivo_degree_abbreviations || begin
+          @vivo_degree_uris = {}
+          @vivo_degree_abbreviations = {}
           q = [nil, RDF::VIVO.abbreviation, nil]
-          abbrevs = vivo_degrees.query(q).objects
-          abbrevs.map {|o| [o.to_s, vivo_degree_acronym(o.to_s)] }.to_h
+          results = vivo_degrees.query(q).statements
+          results.each do |statement|
+            uri = statement.subject
+            abbrev = statement.object.to_s
+            acronym = vivo_degree_acronym(abbrev)
+            @vivo_degree_abbreviations[abbrev] = acronym
+            @vivo_degree_uris[abbrev] = uri
+          end
+          @vivo_degree_abbreviations
         end
       end
 
@@ -213,6 +265,7 @@ module Cap
           degrees.split("\n").map{|d| d.split('-').map {|i| i.strip}}.to_h
         end
       end
+
 
       # MIT degree word sets are a hash with the degree abbreviation keys
       # and the values are significant words that identify the degree (lowercase)

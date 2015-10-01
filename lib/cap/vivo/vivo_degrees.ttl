@@ -251,12 +251,12 @@
    vivo:abbreviation "B.D." .
 
 <http://vivoweb.org/ontology/degree/academicDegree18> a vivo:AcademicDegree;
-   rdfs:label "B.E. Bachelor of Education"@en-US;
-   vivo:abbreviation "B.E." .
+   rdfs:label "B.Ed. Bachelor of Education"@en-US;
+   vivo:abbreviation "B.Ed." .
 
 <http://vivoweb.org/ontology/degree/academicDegree19> a vivo:AcademicDegree;
-   rdfs:label "B.E. Bachelor of Engineering"@en-US;
-   vivo:abbreviation "B.E." .
+   rdfs:label "B.Eng. Bachelor of Engineering"@en-US;
+   vivo:abbreviation "B.Eng." .
 
 <http://vivoweb.org/ontology/degree/academicDegree2> a vivo:AcademicDegree;
    rdfs:label "AeEng. Aeronautical Engineer"@en-US;
@@ -295,8 +295,8 @@
    vivo:abbreviation "B.M." .
 
 <http://vivoweb.org/ontology/degree/academicDegree28> a vivo:AcademicDegree;
-   rdfs:label "B.M. Bachelor of Music"@en-US;
-   vivo:abbreviation "B.M." .
+   rdfs:label "B.Mus. Bachelor of Music"@en-US;
+   vivo:abbreviation "B.Mus." .
 
 <http://vivoweb.org/ontology/degree/academicDegree29> a vivo:AcademicDegree;
    rdfs:label "B.M.S. Bachelor of Marine Science"@en-US;
@@ -315,8 +315,8 @@
    vivo:abbreviation "B.Pharm." .
 
 <http://vivoweb.org/ontology/degree/academicDegree32> a vivo:AcademicDegree;
-   rdfs:label "B.R.E. Bachelor of Religious Education"@en-US;
-   vivo:abbreviation "B.R.E." .
+   rdfs:label "B.R.Ed. Bachelor of Religious Education"@en-US;
+   vivo:abbreviation "B.R.Ed." .
 
 <http://vivoweb.org/ontology/degree/academicDegree33> a vivo:AcademicDegree;
    rdfs:label "B.S. Bachelor of Science"@en-US;
@@ -391,16 +391,16 @@
    vivo:abbreviation "D.P.A." .
 
 <http://vivoweb.org/ontology/degree/academicDegree5> a vivo:AcademicDegree;
-   rdfs:label "B.A.E. Bachelor of Arts in Education"@en-US;
-   vivo:abbreviation "B.A.E." .
+   rdfs:label "B.A.Ed. Bachelor of Arts in Education"@en-US;
+   vivo:abbreviation "B.A.Ed." .
 
 <http://vivoweb.org/ontology/degree/academicDegree50> a vivo:AcademicDegree;
    rdfs:label "D.P.H. Doctor of Public Health"@en-US;
    vivo:abbreviation "D.P.H." .
 
 <http://vivoweb.org/ontology/degree/academicDegree51> a vivo:AcademicDegree;
-   rdfs:label "D.R.E. Doctor of Religious Education"@en-US;
-   vivo:abbreviation "D.R.E." .
+   rdfs:label "D.R.Ed. Doctor of Religious Education"@en-US;
+   vivo:abbreviation "D.R.Ed." .
 
 <http://vivoweb.org/ontology/degree/academicDegree52> a vivo:AcademicDegree;
    rdfs:label "D.S.W. Doctor of Social Welfare"@en-US;
@@ -435,8 +435,8 @@
    vivo:abbreviation "E.M." .
 
 <http://vivoweb.org/ontology/degree/academicDegree6> a vivo:AcademicDegree;
-   rdfs:label "B.A.E. Bachelor of Art Education"@en-US;
-   vivo:abbreviation "B.A.E." .
+   rdfs:label "B.A.Ed. Bachelor of Art Education"@en-US;
+   vivo:abbreviation "B.A.Ed." .
 
 <http://vivoweb.org/ontology/degree/academicDegree60> a vivo:AcademicDegree;
    rdfs:label "E.Met. Engineer of Metallurgy"@en-US;
@@ -499,8 +499,8 @@
    vivo:abbreviation "M.B.A." .
 
 <http://vivoweb.org/ontology/degree/academicDegree74> a vivo:AcademicDegree;
-   rdfs:label "M.C.E. Master of Christian Education "@en-US;
-   vivo:abbreviation "M.C.E." .
+   rdfs:label "M.C.Ed. Master of Christian Education "@en-US;
+   vivo:abbreviation "M.C.Ed." .
 
 <http://vivoweb.org/ontology/degree/academicDegree75> a vivo:AcademicDegree;
    rdfs:label "M.C.E. Master of Civil Engineering"@en-US;
@@ -547,16 +547,16 @@
    vivo:abbreviation "M.L.S." .
 
 <http://vivoweb.org/ontology/degree/academicDegree85> a vivo:AcademicDegree;
-   rdfs:label "M.M. Master of Music"@en-US;
-   vivo:abbreviation "M.M." .
+   rdfs:label "M.Mus. Master of Music"@en-US;
+   vivo:abbreviation "M.Mus." .
 
 <http://vivoweb.org/ontology/degree/academicDegree86> a vivo:AcademicDegree;
    rdfs:label "M.M.E. Master of Mechanical Engineering"@en-US;
    vivo:abbreviation "M.M.E." .
 
 <http://vivoweb.org/ontology/degree/academicDegree87> a vivo:AcademicDegree;
-   rdfs:label "M.M.E. Master of Music Education"@en-US;
-   vivo:abbreviation "M.M.E." .
+   rdfs:label "M.Mus.Ed. Master of Music Education"@en-US;
+   vivo:abbreviation "M.Mus.Ed." .
 
 <http://vivoweb.org/ontology/degree/academicDegree88> a vivo:AcademicDegree;
    rdfs:label "M.Mus. Master of Music"@en-US;
@@ -571,8 +571,8 @@
    vivo:abbreviation "B.A.E." .
 
 <http://vivoweb.org/ontology/degree/academicDegree90> a vivo:AcademicDegree;
-   rdfs:label "M.R.E. Master of Religious Education"@en-US;
-   vivo:abbreviation "M.R.E." .
+   rdfs:label "M.R.Ed. Master of Religious Education"@en-US;
+   vivo:abbreviation "M.R.Ed." .
 
 <http://vivoweb.org/ontology/degree/academicDegree91> a vivo:AcademicDegree;
    rdfs:label "M.S. Master of Science"@en-US;
