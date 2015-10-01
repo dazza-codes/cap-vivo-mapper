@@ -63,39 +63,70 @@ module Cap
       # @parameter degree [String] a degree designation
       # @return acronyms [Array<String>]
       def degree_acronyms(degree)
+        # Cleanup the degree
+        degree = degree.strip.gsub(/['"]/,'')
+        # Find all the capital letters
+        degree_caps = capitals(degree)
+        abbrevs = []
 
-        # TODO: split the degree on any punctuation, except '.'
+        # TODO: evaluate ruby libraries for smart string handling, e.g.
+        # http://flori.github.io/amatch/doc/index.html
+        # https://github.com/diasks2/ruby-nlp
+        # https://github.com/diasks2/ruby-nlp#text-similarity
 
+        # Find candidate degree abbreviations in the degree description;
+        # e.g. degree='MA' and {k: v} = {'M.A.' => 'MA'}, return 'M.A.'
+        # Split the description on non-words (except '.'); take the first
+        # two items and remove any non-word chars.  Most of the acronyms will
+        # be capital letters in acros[0], but sometimes the acronym will be
+        # in acros.join and rarely acros[1] will also be a degree acronym.
+        acros = degree.split(/[^\w.]/)[0..1].map do |i|
+          i.gsub!(/\W/,'')
+          i.empty? ? nil : i
+        end.compact
+        vivo_degree_abbreviations.each do |k,v|
+          abbrevs.push([99,k]) if acros[0] == v
+          abbrevs.push([88,k]) if acros[1] == v
+          abbrevs.push([77,k]) if acros.join =~ /^#{v}|#{v}$/
+        end
         # Find candidate degree labels that contain the degree description.
         # The degree labels are more authoritative than the degree abbreviations,
         # because some abbreviations match multiple labels (see the results in
         # vivo_degree_abbreviation_ambiguous).
-        abbrevs = []
-        if degree.length > 6
-          # the degree might be spelled out, not just an acronym
-          degree_words = wordset(degree.split)
-          vivo_degree_wordsets.each_pair do |abbrev, words|
-            # only match when all the vivo degree words are in degree
-            i = words.intersection(degree_words)
-            if i.length == words.length
-              # Good, all the vivo words are in this degree description;
-              # but the degree description could contain more words.
-              if words.length == degree_words.length
-                # This is an exact match, stop here.
-                return [abbrev]
-              else
-                # This is a good candidate, although not an exact match.
-                abbrevs.push(abbrev)
-              end
+        degree_words = wordset(degree.split)
+        vivo_degree_wordsets.each_pair do |abbrev, words|
+          # only match when all the vivo degree words are in degree
+          word_count = words.intersection(degree_words).length
+          if word_count == degree_words.length
+            # an exact match must be highly ranked
+            abbrevs.push([99, abbrev])
+          elsif word_count > 0
+            abbrevs.push([word_count, abbrev])
+          end
+        end
+        # Sort the results and choose the top 20 options.
+        abbrevs = abbrevs.sort.reverse.map {|a| a[1] }[0..19].uniq
+        # Filter the abbreviations based on how well they match the
+        # capital letters in the degree description.
+        abbrevs = abbrevs.map do |abbrev|
+          # Count the number of capitals in the abbrev that are in the degree.
+          caps = capitals(abbrev).chars
+          if caps.length > degree_caps.length
+            # Don't exceed the number of caps in the degree.
+            []
+          else
+            counts = caps.map {|c| degree_caps.include?(c) ? 1 : 0 }
+            if counts.include? 0
+              # exclude any acronymn with a capital not in the degree.
+              []
+            else
+              metric = counts.reduce(0,:+)
+              [metric, abbrev]
             end
           end
         end
-        # Find candidate degree acronyms in the degree description;
-        # e.g. a='MA' and {k: v} = {'M.A.' => 'MA'}, return 'M.A.'
-        # Match at the beginning or the end of the degree description.
-        a = degree.gsub(/\W*/,'').upcase
-        abbrevs.push vivo_degree_abbreviations.select {|k,v| a =~ /^#{v}|#{v}$/}.keys
-        abbrevs.flatten.compact.uniq
+        # Sort the results and choose the top 3 options.
+        abbrevs = abbrevs.sort.reverse.map {|a| a[1] }.compact[0..2]
       end
 
       # Create a URI for a degree string
@@ -204,6 +235,13 @@ module Cap
       # @return nonwords [Set<String>]
       def nonwords
         @nonwords ||= %w(& of in the and).map{|w| w.to_sym}.to_set
+      end
+
+      # Extract a set of capital letters
+      # @param string [String]
+      # @return capitals [String] capital letters in string
+      def capitals(string)
+        string.gsub(/\W|[a-z_]/,'')
       end
 
     end
