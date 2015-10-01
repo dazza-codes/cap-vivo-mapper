@@ -4,6 +4,19 @@ module Cap
 
       HAS_CONTACT_INFO = RDF::URI.parse 'http://purl.obolibrary.org/obo/ARG_2000028'
 
+
+      # TODO: determine organization types from the names.  Example data:
+      # <http://vivo.school.edu/individual/org100000> a vivo:University ;
+      #     rdfs:label "University of VIVO" .
+      # <http://vivo.school.edu/individual/org101000> a vivo:College ;
+      #     rdfs:label "College of Science" .
+      # <http://vivo.school.edu/individual/org101028> a vivo:Department ;
+      #     rdfs:label "Energy Sciences Department" .
+      # <http://vivo.school.edu/individual/org102000> a vivo:College ;
+      #     rdfs:label "College of Research" .
+      # <http://vivo.school.edu/individual/org102017> a vivo:Department ;
+      #     rdfs:label "Geothermal Technology Department" .
+
       # Resolve an organization name into a VIVO representation
       # @parameter org_name [String] an organization name
       # @return vivo_rdf [RDF::Graph]
