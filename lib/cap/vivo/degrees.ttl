@@ -1,5 +1,6 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix vivo: <http://vivoweb.org/ontology/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -7,1044 +8,1312 @@
    rdfs:label "A.A. Associate in Arts",
      "A.A. Associate of Arts";
    vivo:abbreviation "A.A.",
-     "AA" .
+     "AA";
+   skos:prefLabel "A.A. Associate in Arts",
+     "A.A. Associate of Arts" .
 
 <http://vivo.stanford.edu/degree/AB> a vivo:AcademicDegree;
    rdfs:label "A.B. Bachelor in Arts",
      "A.B. Bachelor of Arts";
    vivo:abbreviation "A.B.",
-     "AB" .
+     "AB";
+   skos:prefLabel "A.B. Bachelor in Arts",
+     "A.B. Bachelor of Arts" .
 
 <http://vivo.stanford.edu/degree/ADN> a vivo:AcademicDegree;
    rdfs:label "A.D.N. Associate Degree Nursing";
    vivo:abbreviation "A.D.N.",
-     "ADN" .
+     "ADN";
+   skos:prefLabel "A.D.N. Associate Degree Nursing" .
 
 <http://vivo.stanford.edu/degree/AE> a vivo:AcademicDegree;
    rdfs:label "A.E. Aeronautical Engineer";
    vivo:abbreviation "A.E.",
-     "AE" .
+     "AE";
+   skos:prefLabel "A.E. Aeronautical Engineer" .
 
 <http://vivo.stanford.edu/degree/AM> a vivo:AcademicDegree;
    rdfs:label "A.M. Master of Arts";
    vivo:abbreviation "A.M.",
-     "AM" .
+     "AM";
+   skos:altLabel "A.M. artium magister";
+   skos:prefLabel "A.M. Master of Arts" .
 
 <http://vivo.stanford.edu/degree/AMT> a vivo:AcademicDegree;
    rdfs:label "A.M.T. Master of Arts in Teaching";
    vivo:abbreviation "A.M.T.",
-     "AMT" .
+     "AMT";
+   skos:prefLabel "A.M.T. Master of Arts in Teaching" .
 
 <http://vivo.stanford.edu/degree/AN> a vivo:AcademicDegree;
    rdfs:label "A.N. Associate in Nursing";
    vivo:abbreviation "A.N.",
-     "AN" .
+     "AN";
+   skos:prefLabel "A.N. Associate in Nursing" .
 
 <http://vivo.stanford.edu/degree/AS> a vivo:AcademicDegree;
    rdfs:label "A.S. Associate in Science",
      "A.S. Associate of Science";
    vivo:abbreviation "A.S.",
-     "AS" .
+     "AS";
+   skos:prefLabel "A.S. Associate in Science",
+     "A.S. Associate of Science" .
 
 <http://vivo.stanford.edu/degree/AeEng> a vivo:AcademicDegree;
    rdfs:label "AeEng. Aeronautical Engineer";
    vivo:abbreviation "AeEng.",
-     "AeEng" .
+     "AeEng";
+   skos:prefLabel "AeEng. Aeronautical Engineer" .
+
+<http://vivo.stanford.edu/degree/ArtD> a vivo:AcademicDegree;
+   rdfs:label "Art.D. Doctor of Arts";
+   vivo:abbreviation "Art.D.",
+     "ArtD";
+   skos:altLabel "Art.D. artium doctor";
+   skos:prefLabel "Art.D. Doctor of Arts" .
 
 <http://vivo.stanford.edu/degree/AuD> a vivo:AcademicDegree;
    rdfs:label "Au.D. Doctor of Audiology";
    vivo:abbreviation "Au.D.",
-     "AuD" .
+     "AuD";
+   skos:prefLabel "Au.D. Doctor of Audiology" .
 
 <http://vivo.stanford.edu/degree/BA> a vivo:AcademicDegree;
    rdfs:label "B.A. Bachelor of Arts";
    vivo:abbreviation "B.A.",
-     "BA" .
+     "BA";
+   skos:prefLabel "B.A. Bachelor of Arts" .
 
 <http://vivo.stanford.edu/degree/BAC> a vivo:AcademicDegree;
    rdfs:label "B.A.C. Bachelor of Accountancy";
    vivo:abbreviation "B.A.C.",
-     "BAC" .
+     "BAC";
+   skos:prefLabel "B.A.C. Bachelor of Accountancy" .
 
 <http://vivo.stanford.edu/degree/BAE> a vivo:AcademicDegree;
    rdfs:label "B.A.E. Aeronautical Engineering",
      "B.A.E. Agricultural Engineering",
      "B.A.E. Architectural Engineering";
    vivo:abbreviation "B.A.E.",
-     "BAE" .
+     "BAE";
+   skos:prefLabel "B.A.E. Aeronautical Engineering",
+     "B.A.E. Agricultural Engineering",
+     "B.A.E. Architectural Engineering" .
 
 <http://vivo.stanford.edu/degree/BAEd> a vivo:AcademicDegree;
    rdfs:label "B.A.Ed. Bachelor of Art Education",
      "B.A.Ed. Bachelor of Arts in Education";
    vivo:abbreviation "B.A.Ed.",
-     "BAEd" .
+     "BAEd";
+   skos:prefLabel "B.A.Ed. Bachelor of Art Education",
+     "B.A.Ed. Bachelor of Arts in Education" .
 
 <http://vivo.stanford.edu/degree/BAM> a vivo:AcademicDegree;
    rdfs:label "B.A.M. Bachelor of Applied Mathematics";
    vivo:abbreviation "B.A.M.",
-     "BAM" .
+     "BAM";
+   skos:prefLabel "B.A.M. Bachelor of Applied Mathematics" .
 
 <http://vivo.stanford.edu/degree/BAR> a vivo:AcademicDegree;
    rdfs:label "B.A.R. Bachelor in Architecture";
    vivo:abbreviation "B.A.R.",
-     "BAR" .
+     "BAR";
+   skos:prefLabel "B.A.R. Bachelor in Architecture" .
 
 <http://vivo.stanford.edu/degree/BAS> a vivo:AcademicDegree;
    rdfs:label "B.A.S. Bachelor of Applied Science";
    vivo:abbreviation "B.A.S.",
-     "BAS" .
+     "BAS";
+   skos:prefLabel "B.A.S. Bachelor of Applied Science" .
 
 <http://vivo.stanford.edu/degree/BAg> a vivo:AcademicDegree;
    rdfs:label "B.Ag. Bachelor of Agriculture";
    vivo:abbreviation "B.Ag.",
-     "BAg" .
+     "BAg";
+   skos:prefLabel "B.Ag. Bachelor of Agriculture" .
 
 <http://vivo.stanford.edu/degree/BArch> a vivo:AcademicDegree;
    rdfs:label "B.Arch. Bachelor of Architecture";
    vivo:abbreviation "B.Arch.",
-     "BArch" .
+     "BArch";
+   skos:prefLabel "B.Arch. Bachelor of Architecture" .
 
 <http://vivo.stanford.edu/degree/BBA> a vivo:AcademicDegree;
    rdfs:label "B.B.A. Bachelor in Business Administration",
      "B.B.A. Bachelor of Business Administration";
    vivo:abbreviation "B.B.A.",
-     "BBA" .
+     "BBA";
+   skos:prefLabel "B.B.A. Bachelor in Business Administration",
+     "B.B.A. Bachelor of Business Administration" .
 
 <http://vivo.stanford.edu/degree/BCE> a vivo:AcademicDegree;
    rdfs:label "B.C.E. Bachelor of Civil Engineering";
    vivo:abbreviation "B.C.E.",
-     "BCE" .
+     "BCE";
+   skos:prefLabel "B.C.E. Bachelor of Civil Engineering" .
 
 <http://vivo.stanford.edu/degree/BCH> a vivo:AcademicDegree;
    rdfs:label "B.C.H. Bachelor of Chemistry";
    vivo:abbreviation "B.C.H.",
-     "BCH" .
+     "BCH";
+   skos:prefLabel "B.C.H. Bachelor of Chemistry" .
 
 <http://vivo.stanford.edu/degree/BCL> a vivo:AcademicDegree;
    rdfs:label "B.C.L. Bachelor of Canon Law";
    vivo:abbreviation "B.C.L.",
-     "BCL" .
+     "BCL";
+   skos:prefLabel "B.C.L. Bachelor of Canon Law" .
 
 <http://vivo.stanford.edu/degree/BCP> a vivo:AcademicDegree;
    rdfs:label "B.C.P. Bachelor in City Planning";
    vivo:abbreviation "B.C.P.",
-     "BCP" .
+     "BCP";
+   skos:prefLabel "B.C.P. Bachelor in City Planning" .
 
 <http://vivo.stanford.edu/degree/BChE> a vivo:AcademicDegree;
    rdfs:label "B.Ch.E Bachelor of Chemical Engineering";
    vivo:abbreviation "B.Ch.E",
-     "BChE" .
+     "BChE";
+   skos:prefLabel "B.Ch.E Bachelor of Chemical Engineering" .
 
 <http://vivo.stanford.edu/degree/BD> a vivo:AcademicDegree;
    rdfs:label "B.D. Bachelor of Divinity";
    vivo:abbreviation "B.D.",
-     "BD" .
+     "BD";
+   skos:prefLabel "B.D. Bachelor of Divinity" .
 
 <http://vivo.stanford.edu/degree/BE> a vivo:AcademicDegree;
    rdfs:label "B.E. Building Engineer";
    vivo:abbreviation "B.E.",
-     "BE" .
+     "BE";
+   skos:prefLabel "B.E. Building Engineer" .
 
 <http://vivo.stanford.edu/degree/BEC> a vivo:AcademicDegree;
    rdfs:label "B.E.C. Bachelor of Economics";
    vivo:abbreviation "B.E.C.",
-     "BEC" .
+     "BEC";
+   skos:prefLabel "B.E.C. Bachelor of Economics" .
 
 <http://vivo.stanford.edu/degree/BED> a vivo:AcademicDegree;
    rdfs:label "B.E.D. Bachelor of Education";
    vivo:abbreviation "B.E.D.",
-     "BED" .
+     "BED";
+   skos:prefLabel "B.E.D. Bachelor of Education" .
 
 <http://vivo.stanford.edu/degree/BEE> a vivo:AcademicDegree;
    rdfs:label "B.E.E. Bachelor of Electrical Engineering";
    vivo:abbreviation "B.E.E.",
-     "BEE" .
+     "BEE";
+   skos:prefLabel "B.E.E. Bachelor of Electrical Engineering" .
 
 <http://vivo.stanford.edu/degree/BEd> a vivo:AcademicDegree;
    rdfs:label "B.Ed. Bachelor of Education";
    vivo:abbreviation "B.Ed.",
-     "BEd" .
+     "BEd";
+   skos:prefLabel "B.Ed. Bachelor of Education" .
 
 <http://vivo.stanford.edu/degree/BEng> a vivo:AcademicDegree;
    rdfs:label "B.Eng. Bachelor of Engineering";
    vivo:abbreviation "B.Eng.",
-     "BEng" .
+     "BEng";
+   skos:prefLabel "B.Eng. Bachelor of Engineering" .
 
 <http://vivo.stanford.edu/degree/BF> a vivo:AcademicDegree;
    rdfs:label "B.F. Bachelor of Forestry";
    vivo:abbreviation "B.F.",
-     "BF" .
+     "BF";
+   skos:prefLabel "B.F. Bachelor of Forestry" .
 
 <http://vivo.stanford.edu/degree/BFA> a vivo:AcademicDegree;
    rdfs:label "B.F.A. Bachelor of Fine Arts";
    vivo:abbreviation "B.F.A.",
-     "BFA" .
+     "BFA";
+   skos:prefLabel "B.F.A. Bachelor of Fine Arts" .
 
 <http://vivo.stanford.edu/degree/BJ> a vivo:AcademicDegree;
    rdfs:label "B.J. Bachelor of Journalism";
    vivo:abbreviation "B.J.",
-     "BJ" .
+     "BJ";
+   skos:prefLabel "B.J. Bachelor of Journalism" .
 
 <http://vivo.stanford.edu/degree/BLS> a vivo:AcademicDegree;
    rdfs:label "B.L.S. Bachelor of Liberal Studies",
      "B.L.S. Bachelor of Library Science";
    vivo:abbreviation "B.L.S.",
-     "BLS" .
+     "BLS";
+   skos:prefLabel "B.L.S. Bachelor of Liberal Studies",
+     "B.L.S. Bachelor of Library Science" .
 
 <http://vivo.stanford.edu/degree/BLit> a vivo:AcademicDegree;
    rdfs:label "B.Lit. Bachelor of Literature";
    vivo:abbreviation "B.Lit.",
-     "BLit" .
+     "BLit";
+   skos:prefLabel "B.Lit. Bachelor of Literature" .
 
 <http://vivo.stanford.edu/degree/BM> a vivo:AcademicDegree;
    rdfs:label "B.M. Bachelor of Medicine";
    vivo:abbreviation "B.M.",
-     "BM" .
+     "BM";
+   skos:prefLabel "B.M. Bachelor of Medicine" .
 
 <http://vivo.stanford.edu/degree/BMS> a vivo:AcademicDegree;
    rdfs:label "B.M.S. Bachelor of Marine Science";
    vivo:abbreviation "B.M.S.",
-     "BMS" .
+     "BMS";
+   skos:prefLabel "B.M.S. Bachelor of Marine Science" .
 
 <http://vivo.stanford.edu/degree/BMus> a vivo:AcademicDegree;
    rdfs:label "B.Mus. Bachelor of Music";
    vivo:abbreviation "B.Mus.",
-     "BMus" .
+     "BMus";
+   skos:prefLabel "B.Mus. Bachelor of Music" .
 
 <http://vivo.stanford.edu/degree/BN> a vivo:AcademicDegree;
    rdfs:label "B.N. Bachelor of Nursing";
    vivo:abbreviation "B.N.",
-     "BN" .
+     "BN";
+   skos:prefLabel "B.N. Bachelor of Nursing" .
 
 <http://vivo.stanford.edu/degree/BNS> a vivo:AcademicDegree;
    rdfs:label "B.N.S. Bachelor of Science in Nursing";
    vivo:abbreviation "B.N.S.",
-     "BNS" .
+     "BNS";
+   skos:prefLabel "B.N.S. Bachelor of Science in Nursing" .
 
 <http://vivo.stanford.edu/degree/BO> a vivo:AcademicDegree;
    rdfs:label "B.O. Non Degree Bachelors";
    vivo:abbreviation "B.O.",
-     "BO" .
+     "BO";
+   skos:prefLabel "B.O. Non Degree Bachelors" .
 
 <http://vivo.stanford.edu/degree/BOC> a vivo:AcademicDegree;
    rdfs:label "B.O.C. Bachelor of Commerce";
    vivo:abbreviation "B.O.C.",
-     "BOC" .
+     "BOC";
+   skos:prefLabel "B.O.C. Bachelor of Commerce" .
 
 <http://vivo.stanford.edu/degree/BOE> a vivo:AcademicDegree;
    rdfs:label "B.O.E. Bachelor of Engineering";
    vivo:abbreviation "B.O.E.",
-     "BOE" .
+     "BOE";
+   skos:prefLabel "B.O.E. Bachelor of Engineering" .
 
 <http://vivo.stanford.edu/degree/BPharm> a vivo:AcademicDegree;
    rdfs:label "B.Pharm. Bachelor of Pharmacy";
    vivo:abbreviation "B.Pharm.",
-     "BPharm" .
+     "BPharm";
+   skos:prefLabel "B.Pharm. Bachelor of Pharmacy" .
 
 <http://vivo.stanford.edu/degree/BREd> a vivo:AcademicDegree;
    rdfs:label "B.R.Ed. Bachelor of Religious Education";
    vivo:abbreviation "B.R.Ed.",
-     "BREd" .
+     "BREd";
+   skos:prefLabel "B.R.Ed. Bachelor of Religious Education" .
 
 <http://vivo.stanford.edu/degree/BS> a vivo:AcademicDegree;
    rdfs:label "B.S. Bachelor of Science";
    vivo:abbreviation "B.S.",
-     "BS" .
+     "BS";
+   skos:prefLabel "B.S. Bachelor of Science" .
 
 <http://vivo.stanford.edu/degree/BSE> a vivo:AcademicDegree;
    rdfs:label "B.S.E. Bachelor of Engineering",
      "B.S.E. Bachelor of Science in Engineering";
    vivo:abbreviation "B.S.E.",
-     "BSE" .
+     "BSE";
+   skos:prefLabel "B.S.E. Bachelor of Engineering",
+     "B.S.E. Bachelor of Science in Engineering" .
 
 <http://vivo.stanford.edu/degree/BSEd> a vivo:AcademicDegree;
    rdfs:label "B.S.Ed. Bachelor of Science in Education";
    vivo:abbreviation "B.S.Ed.",
-     "BSEd" .
+     "BSEd";
+   skos:prefLabel "B.S.Ed. Bachelor of Science in Education" .
 
 <http://vivo.stanford.edu/degree/BSFS> a vivo:AcademicDegree;
    rdfs:label "B.S.F.S. Bachelor of Science in Forensic Science";
    vivo:abbreviation "B.S.F.S.",
-     "BSFS" .
+     "BSFS";
+   skos:prefLabel "B.S.F.S. Bachelor of Science in Forensic Science" .
 
 <http://vivo.stanford.edu/degree/BSN> a vivo:AcademicDegree;
    rdfs:label "B.S.N. Bachelor of Science in Nursing";
    vivo:abbreviation "B.S.N.",
-     "BSN" .
+     "BSN";
+   skos:prefLabel "B.S.N. Bachelor of Science in Nursing" .
 
 <http://vivo.stanford.edu/degree/BSc> a vivo:AcademicDegree;
    rdfs:label "B.Sc. Bachelor of Science";
    vivo:abbreviation "B.Sc.",
-     "BSc" .
+     "BSc";
+   skos:prefLabel "B.Sc. Bachelor of Science" .
 
 <http://vivo.stanford.edu/degree/BTE> a vivo:AcademicDegree;
    rdfs:label "B.T.E. Bachelor of Technology";
    vivo:abbreviation "B.T.E.",
-     "BTE" .
+     "BTE";
+   skos:prefLabel "B.T.E. Bachelor of Technology" .
 
 <http://vivo.stanford.edu/degree/BTS> a vivo:AcademicDegree;
    rdfs:label "B.T.S. Bachelor of Theological Studies";
    vivo:abbreviation "B.T.S.",
-     "BTS" .
+     "BTS";
+   skos:prefLabel "B.T.S. Bachelor of Theological Studies" .
 
 <http://vivo.stanford.edu/degree/BVS> a vivo:AcademicDegree;
    rdfs:label "B.V.S. Bachelor of Veterinary Science";
    vivo:abbreviation "B.V.S.",
-     "BVS" .
+     "BVS";
+   skos:prefLabel "B.V.S. Bachelor of Veterinary Science" .
 
 <http://vivo.stanford.edu/degree/CE> a vivo:AcademicDegree;
    rdfs:label "C.E. Civil Engineer";
    vivo:abbreviation "C.E.",
-     "CE" .
+     "CE";
+   skos:prefLabel "C.E. Civil Engineer" .
 
 <http://vivo.stanford.edu/degree/CHE> a vivo:AcademicDegree;
    rdfs:label "C.H.E. Chemical Engineer";
    vivo:abbreviation "C.H.E.",
-     "CHE" .
+     "CHE";
+   skos:prefLabel "C.H.E. Chemical Engineer" .
 
 <http://vivo.stanford.edu/degree/CPH> a vivo:AcademicDegree;
    rdfs:label "C.P.H. Certificate of Public Health";
    vivo:abbreviation "C.P.H.",
-     "CPH" .
+     "CPH";
+   skos:prefLabel "C.P.H. Certificate of Public Health" .
 
 <http://vivo.stanford.edu/degree/CSE> a vivo:AcademicDegree;
    rdfs:label "C.S.E. Engineering in Computer Science";
    vivo:abbreviation "C.S.E.",
-     "CSE" .
+     "CSE";
+   skos:prefLabel "C.S.E. Engineering in Computer Science" .
 
 <http://vivo.stanford.edu/degree/CTF> a vivo:AcademicDegree;
    rdfs:label "C.T.F. Certificate";
    vivo:abbreviation "C.T.F.",
-     "CTF" .
+     "CTF";
+   skos:prefLabel "C.T.F. Certificate" .
 
 <http://vivo.stanford.edu/degree/ChE> a vivo:AcademicDegree;
    rdfs:label "Ch.E. Chemical Engineer";
    vivo:abbreviation "Ch.E.",
-     "ChE" .
+     "ChE";
+   skos:prefLabel "Ch.E. Chemical Engineer" .
 
 <http://vivo.stanford.edu/degree/DA> a vivo:AcademicDegree;
    rdfs:label "D.A. Doctor of Arts";
    vivo:abbreviation "D.A.",
-     "DA" .
+     "DA";
+   skos:prefLabel "D.A. Doctor of Arts" .
 
 <http://vivo.stanford.edu/degree/DAS> a vivo:AcademicDegree;
    rdfs:label "D.A.S. Doctor of Applied Science";
    vivo:abbreviation "D.A.S.",
-     "DAS" .
+     "DAS";
+   skos:prefLabel "D.A.S. Doctor of Applied Science" .
 
 <http://vivo.stanford.edu/degree/DBA> a vivo:AcademicDegree;
    rdfs:label "D.B.A. Doctor of Business Adminstration",
      "D.B.A. Doctor of Business Administration";
    vivo:abbreviation "D.B.A.",
-     "DBA" .
+     "DBA";
+   skos:prefLabel "D.B.A. Doctor of Business Adminstration",
+     "D.B.A. Doctor of Business Administration" .
 
 <http://vivo.stanford.edu/degree/DC> a vivo:AcademicDegree;
    rdfs:label "D.C. Doctor of Chiropractic";
    vivo:abbreviation "D.C.",
-     "DC" .
+     "DC";
+   skos:prefLabel "D.C. Doctor of Chiropractic" .
 
 <http://vivo.stanford.edu/degree/DD> a vivo:AcademicDegree;
    rdfs:label "D.D. Doctor of Divinity";
    vivo:abbreviation "D.D.",
-     "DD" .
+     "DD";
+   skos:altLabel "D.D. divinitatis doctor";
+   skos:prefLabel "D.D. Doctor of Divinity" .
 
 <http://vivo.stanford.edu/degree/DDS> a vivo:AcademicDegree;
    rdfs:label "D.D.S. Doctor of Dental Science",
      "D.D.S. Doctor of Dental Surgery";
    vivo:abbreviation "D.D.S.",
-     "DDS" .
+     "DDS";
+   skos:prefLabel "D.D.S. Doctor of Dental Science",
+     "D.D.S. Doctor of Dental Surgery" .
 
 <http://vivo.stanford.edu/degree/DEd> a vivo:AcademicDegree;
    rdfs:label "D.Ed. Doctor of Education";
    vivo:abbreviation "D.Ed.",
-     "DEd" .
+     "DEd";
+   skos:prefLabel "D.Ed. Doctor of Education" .
 
 <http://vivo.stanford.edu/degree/DHEd> a vivo:AcademicDegree;
    rdfs:label "D.H.Ed. Doctor of Health Education";
    vivo:abbreviation "D.H.Ed.",
-     "DHEd" .
+     "DHEd";
+   skos:prefLabel "D.H.Ed. Doctor of Health Education" .
 
 <http://vivo.stanford.edu/degree/DIE> a vivo:AcademicDegree;
    rdfs:label "D.I.E. Diploma of Engineering";
    vivo:abbreviation "D.I.E.",
-     "DIE" .
+     "DIE";
+   skos:prefLabel "D.I.E. Diploma of Engineering" .
 
 <http://vivo.stanford.edu/degree/DIP> a vivo:AcademicDegree;
    rdfs:label "D.I.P. Diploma";
    vivo:abbreviation "D.I.P.",
-     "DIP" .
+     "DIP";
+   skos:prefLabel "D.I.P. Diploma" .
 
 <http://vivo.stanford.edu/degree/DLS> a vivo:AcademicDegree;
    rdfs:label "D.L.S. Doctor of Library Science";
    vivo:abbreviation "D.L.S.",
-     "DLS" .
+     "DLS";
+   skos:prefLabel "D.L.S. Doctor of Library Science" .
 
 <http://vivo.stanford.edu/degree/DMD> a vivo:AcademicDegree;
    rdfs:label "D.M.D. Doctor of Medical Dentistry",
      "D.M.D. Doctor of Dental Medicine";
    vivo:abbreviation "D.M.D.",
-     "DMD" .
+     "DMD";
+   skos:prefLabel "D.M.D. Doctor of Medical Dentistry",
+     "D.M.D. Doctor of Dental Medicine" .
 
 <http://vivo.stanford.edu/degree/DMS> a vivo:AcademicDegree;
    rdfs:label "D.M.S. Doctor of Medical Science";
    vivo:abbreviation "D.M.S.",
-     "DMS" .
+     "DMS";
+   skos:prefLabel "D.M.S. Doctor of Medical Science" .
 
 <http://vivo.stanford.edu/degree/DMSc> a vivo:AcademicDegree;
    rdfs:label "D.M.Sc. Doctor of Medical Science";
    vivo:abbreviation "D.M.Sc.",
-     "DMSc" .
+     "DMSc";
+   skos:prefLabel "D.M.Sc. Doctor of Medical Science" .
 
 <http://vivo.stanford.edu/degree/DO> a vivo:AcademicDegree;
    rdfs:label "D.O. Non Degree Doctorals",
      "D.O. Doctor of Osteopathic Medicine";
    vivo:abbreviation "D.O.",
-     "DO" .
+     "DO";
+   skos:prefLabel "D.O. Non Degree Doctorals",
+     "D.O. Doctor of Osteopathic Medicine" .
 
 <http://vivo.stanford.edu/degree/DPA> a vivo:AcademicDegree;
    rdfs:label "D.P.A. Doctor of Public Administration";
    vivo:abbreviation "D.P.A.",
-     "DPA" .
+     "DPA";
+   skos:prefLabel "D.P.A. Doctor of Public Administration" .
 
 <http://vivo.stanford.edu/degree/DPH> a vivo:AcademicDegree;
    rdfs:label "D.P.H. Doctor of Public Health";
    vivo:abbreviation "D.P.H.",
-     "DPH" .
+     "DPH";
+   skos:prefLabel "D.P.H. Doctor of Public Health" .
 
 <http://vivo.stanford.edu/degree/DPM> a vivo:AcademicDegree;
    rdfs:label "D.P.M. Doctor of Podiatric Medicine";
    vivo:abbreviation "D.P.M.",
-     "DPM" .
+     "DPM";
+   skos:prefLabel "D.P.M. Doctor of Podiatric Medicine" .
 
 <http://vivo.stanford.edu/degree/DPhil> a vivo:AcademicDegree;
    rdfs:label "D.Phil. Doctor of Philosophy";
    vivo:abbreviation "D.Phil.",
-     "DPhil" .
+     "DPhil";
+   skos:prefLabel "D.Phil. Doctor of Philosophy" .
 
 <http://vivo.stanford.edu/degree/DREd> a vivo:AcademicDegree;
    rdfs:label "D.R.Ed. Doctor of Religious Education";
    vivo:abbreviation "D.R.Ed.",
-     "DREd" .
+     "DREd";
+   skos:prefLabel "D.R.Ed. Doctor of Religious Education" .
 
 <http://vivo.stanford.edu/degree/DSC> a vivo:AcademicDegree;
    rdfs:label "D.S.C. Doctor of Science";
    vivo:abbreviation "D.S.C.",
-     "DSC" .
+     "DSC";
+   skos:prefLabel "D.S.C. Doctor of Science" .
 
 <http://vivo.stanford.edu/degree/DSW> a vivo:AcademicDegree;
    rdfs:label "D.S.W. Doctor of Social Welfare",
      "D.S.W. Doctor of Social Work";
    vivo:abbreviation "D.S.W.",
-     "DSW" .
+     "DSW";
+   skos:prefLabel "D.S.W. Doctor of Social Welfare",
+     "D.S.W. Doctor of Social Work" .
 
 <http://vivo.stanford.edu/degree/DSc> a vivo:AcademicDegree;
    rdfs:label "D.Sc. Doctor of Science";
    vivo:abbreviation "D.Sc.",
-     "DSc" .
+     "DSc";
+   skos:prefLabel "D.Sc. Doctor of Science" .
 
 <http://vivo.stanford.edu/degree/DVM> a vivo:AcademicDegree;
    rdfs:label "D.V.M. Doctor of Veterinary Medicine";
    vivo:abbreviation "D.V.M.",
-     "DVM" .
+     "DVM";
+   skos:prefLabel "D.V.M. Doctor of Veterinary Medicine" .
 
 <http://vivo.stanford.edu/degree/DipEd> a vivo:AcademicDegree;
    rdfs:label "Dip.Ed. Diploma of Education";
    vivo:abbreviation "Dip.Ed.",
-     "DipEd" .
+     "DipEd";
+   skos:prefLabel "Dip.Ed. Diploma of Education" .
 
 <http://vivo.stanford.edu/degree/DrPH> a vivo:AcademicDegree;
    rdfs:label "Dr.P.H. Doctor of Public Health";
    vivo:abbreviation "Dr.P.H.",
-     "DrPH" .
+     "DrPH";
+   skos:prefLabel "Dr.P.H. Doctor of Public Health" .
 
 <http://vivo.stanford.edu/degree/EAA> a vivo:AcademicDegree;
    rdfs:label "E.A.A. Aeronautical & Astronautical Engineer";
    vivo:abbreviation "E.A.A.",
-     "EAA" .
+     "EAA";
+   skos:prefLabel "E.A.A. Aeronautical & Astronautical Engineer" .
 
 <http://vivo.stanford.edu/degree/EDU> a vivo:AcademicDegree;
    rdfs:label "E.D.U. Doctor of Education";
    vivo:abbreviation "E.D.U.",
-     "EDU" .
+     "EDU";
+   skos:prefLabel "E.D.U. Doctor of Education" .
 
 <http://vivo.stanford.edu/degree/EE> a vivo:AcademicDegree;
    rdfs:label "E.E. Electrical Engineer";
    vivo:abbreviation "E.E.",
-     "EE" .
+     "EE";
+   skos:prefLabel "E.E. Electrical Engineer" .
 
 <http://vivo.stanford.edu/degree/EGD> a vivo:AcademicDegree;
    rdfs:label "E.G.D. Doctor of Engineering";
    vivo:abbreviation "E.G.D.",
-     "EGD" .
+     "EGD";
+   skos:prefLabel "E.G.D. Doctor of Engineering" .
 
 <http://vivo.stanford.edu/degree/EM> a vivo:AcademicDegree;
    rdfs:label "E.M. Engineer of Mines";
    vivo:abbreviation "E.M.",
-     "EM" .
+     "EM";
+   skos:prefLabel "E.M. Engineer of Mines" .
 
 <http://vivo.stanford.edu/degree/EMet> a vivo:AcademicDegree;
    rdfs:label "E.Met. Engineer of Metallurgy";
    vivo:abbreviation "E.Met.",
-     "EMet" .
+     "EMet";
+   skos:prefLabel "E.Met. Engineer of Metallurgy" .
 
 <http://vivo.stanford.edu/degree/ENE> a vivo:AcademicDegree;
    rdfs:label "E.N.E. Environmental Engineer";
    vivo:abbreviation "E.N.E.",
-     "ENE" .
+     "ENE";
+   skos:prefLabel "E.N.E. Environmental Engineer" .
 
 <http://vivo.stanford.edu/degree/ENG> a vivo:AcademicDegree;
    rdfs:label "E.N.G. Engineer";
    vivo:abbreviation "E.N.G.",
-     "ENG" .
+     "ENG";
+   skos:prefLabel "E.N.G. Engineer" .
 
 <http://vivo.stanford.edu/degree/EdD> a vivo:AcademicDegree;
    rdfs:label "Ed.D. Doctor of Education";
    vivo:abbreviation "Ed.D.",
-     "EdD" .
+     "EdD";
+   skos:prefLabel "Ed.D. Doctor of Education" .
 
 <http://vivo.stanford.edu/degree/EdM> a vivo:AcademicDegree;
    rdfs:label "Ed.M. Master of Education";
    vivo:abbreviation "Ed.M.",
-     "EdM" .
+     "EdM";
+   skos:prefLabel "Ed.M. Master of Education" .
 
 <http://vivo.stanford.edu/degree/EdS> a vivo:AcademicDegree;
    rdfs:label "Ed.S. Education Specialist";
    vivo:abbreviation "Ed.S.",
-     "EdS" .
+     "EdS";
+   skos:prefLabel "Ed.S. Education Specialist" .
 
 <http://vivo.stanford.edu/degree/FRCS> a vivo:AcademicDegree;
    rdfs:label "F.R.C.S. Fellowship of the Royal College of Surgeons";
    vivo:abbreviation "F.R.C.S.",
-     "FRCS" .
+     "FRCS";
+   skos:prefLabel "F.R.C.S. Fellowship of the Royal College of Surgeons" .
 
 <http://vivo.stanford.edu/degree/HM> a vivo:AcademicDegree;
    rdfs:label "H.M. Honorary Degree";
    vivo:abbreviation "H.M.",
-     "HM" .
+     "HM";
+   skos:prefLabel "H.M. Honorary Degree" .
 
 <http://vivo.stanford.edu/degree/HSC> a vivo:AcademicDegree;
    rdfs:label "H.S.C. Higher School Certificate";
    vivo:abbreviation "H.S.C.",
-     "HSC" .
+     "HSC";
+   skos:prefLabel "H.S.C. Higher School Certificate" .
 
 <http://vivo.stanford.edu/degree/IE> a vivo:AcademicDegree;
    rdfs:label "I.E. Industrial Engineer",
      "I.E. Industrial Engineering";
    vivo:abbreviation "I.E.",
-     "IE" .
+     "IE";
+   skos:prefLabel "I.E. Industrial Engineer",
+     "I.E. Industrial Engineering" .
 
 <http://vivo.stanford.edu/degree/ING> a vivo:AcademicDegree;
    rdfs:label "I.N.G. Engineering";
    vivo:abbreviation "I.N.G.",
-     "ING" .
+     "ING";
+   skos:prefLabel "I.N.G. Engineering" .
 
 <http://vivo.stanford.edu/degree/JD> a vivo:AcademicDegree;
    rdfs:label "J.D. Juris Doctor",
      "J.D. Doctor of Laws";
    vivo:abbreviation "J.D.",
-     "JD" .
+     "JD";
+   skos:prefLabel "J.D. Juris Doctor",
+     "J.D. Doctor of Laws" .
 
 <http://vivo.stanford.edu/degree/JSD> a vivo:AcademicDegree;
    rdfs:label "J.S.D. Doctor of Juristic Science";
    vivo:abbreviation "J.S.D.",
-     "JSD" .
+     "JSD";
+   skos:prefLabel "J.S.D. Doctor of Juristic Science" .
 
 <http://vivo.stanford.edu/degree/LHD> a vivo:AcademicDegree;
    rdfs:label "L.H.D. Doctor of Humane Letters";
    vivo:abbreviation "L.H.D.",
-     "LHD" .
+     "LHD";
+   skos:altLabel "L.H.D. litterarum humanorum doctor";
+   skos:prefLabel "L.H.D. Doctor of Humane Letters" .
 
 <http://vivo.stanford.edu/degree/LLB> a vivo:AcademicDegree;
    rdfs:label "L.L.B. Bachelor of Laws",
      "LL.B. Bachelor of Laws";
    vivo:abbreviation "L.L.B.",
      "LLB",
-     "LL.B." .
+     "LL.B.";
+   skos:prefLabel "L.L.B. Bachelor of Laws",
+     "LL.B. Bachelor of Laws" .
 
 <http://vivo.stanford.edu/degree/LLD> a vivo:AcademicDegree;
    rdfs:label "L.L.D. Doctor of Laws",
      "LL.D. Doctor of Laws";
    vivo:abbreviation "L.L.D.",
      "LLD",
-     "LL.D." .
+     "LL.D.";
+   skos:altLabel "LL.D. legum doctor";
+   skos:prefLabel "L.L.D. Doctor of Laws",
+     "LL.D. Doctor of Laws" .
 
 <http://vivo.stanford.edu/degree/LLM> a vivo:AcademicDegree;
    rdfs:label "L.L.M. Master of Laws",
      "LL.M. Master of Laws";
    vivo:abbreviation "L.L.M.",
      "LLM",
-     "LL.M." .
+     "LL.M.";
+   skos:prefLabel "L.L.M. Master of Laws",
+     "LL.M. Master of Laws" .
+
+<http://vivo.stanford.edu/degree/LTD> a vivo:AcademicDegree;
+   rdfs:label "L.T.D. Doctor of Letters";
+   vivo:abbreviation "L.T.D.",
+     "LTD";
+   skos:altLabel "L.T.D. litterarum doctor";
+   skos:prefLabel "L.T.D. Doctor of Letters" .
 
 <http://vivo.stanford.edu/degree/LittB> a vivo:AcademicDegree;
    rdfs:label "Litt.B. Bachelor of Letters";
    vivo:abbreviation "Litt.B.",
-     "LittB" .
+     "LittB";
+   skos:prefLabel "Litt.B. Bachelor of Letters" .
+
+<http://vivo.stanford.edu/degree/LittD> a vivo:AcademicDegree;
+   rdfs:label "Litt.D. Doctor of Letters";
+   vivo:abbreviation "Litt.D.",
+     "LittD";
+   skos:altLabel "Litt.D. litterarum doctor";
+   skos:prefLabel "Litt.D. Doctor of Letters" .
 
 <http://vivo.stanford.edu/degree/LittM> a vivo:AcademicDegree;
    rdfs:label "Litt.M. Master of Letters";
    vivo:abbreviation "Litt.M.",
-     "LittM" .
+     "LittM";
+   skos:prefLabel "Litt.M. Master of Letters" .
 
 <http://vivo.stanford.edu/degree/MA> a vivo:AcademicDegree;
    rdfs:label "M.A. Master of Arts";
    vivo:abbreviation "M.A.",
-     "MA" .
+     "MA";
+   skos:prefLabel "M.A. Master of Arts" .
 
 <http://vivo.stanford.edu/degree/MAA> a vivo:AcademicDegree;
    rdfs:label "M.A.A. Master in Architecture Advanced Studies";
    vivo:abbreviation "M.A.A.",
-     "MAA" .
+     "MAA";
+   skos:prefLabel "M.A.A. Master in Architecture Advanced Studies" .
 
 <http://vivo.stanford.edu/degree/MAE> a vivo:AcademicDegree;
    rdfs:label "M.A.E. Materials Engineer";
    vivo:abbreviation "M.A.E.",
-     "MAE" .
+     "MAE";
+   skos:prefLabel "M.A.E. Materials Engineer" .
 
 <http://vivo.stanford.edu/degree/MAR> a vivo:AcademicDegree;
    rdfs:label "M.A.R. Master of Architecture";
    vivo:abbreviation "M.A.R.",
-     "MAR" .
+     "MAR";
+   skos:prefLabel "M.A.R. Master of Architecture" .
 
 <http://vivo.stanford.edu/degree/MAT> a vivo:AcademicDegree;
    rdfs:label "M.A.T. Master of Arts Teaching";
    vivo:abbreviation "M.A.T.",
-     "MAT" .
+     "MAT";
+   skos:prefLabel "M.A.T. Master of Arts Teaching" .
 
 <http://vivo.stanford.edu/degree/MAeroE> a vivo:AcademicDegree;
    rdfs:label "M.Aero.E. Master of Aeronautical Engineering";
    vivo:abbreviation "M.Aero.E.",
-     "MAeroE" .
+     "MAeroE";
+   skos:prefLabel "M.Aero.E. Master of Aeronautical Engineering" .
 
 <http://vivo.stanford.edu/degree/MBA> a vivo:AcademicDegree;
    rdfs:label "M.B.A. Masters in Business Administration",
      "M.B.A. Master of Business Administration";
    vivo:abbreviation "M.B.A.",
-     "MBA" .
+     "MBA";
+   skos:prefLabel "M.B.A. Masters in Business Administration",
+     "M.B.A. Master of Business Administration" .
 
 <http://vivo.stanford.edu/degree/MBE> a vivo:AcademicDegree;
    rdfs:label "M.B.E. Master of Business Engineering";
    vivo:abbreviation "M.B.E.",
-     "MBE" .
+     "MBE";
+   skos:prefLabel "M.B.E. Master of Business Engineering" .
 
 <http://vivo.stanford.edu/degree/MCE> a vivo:AcademicDegree;
    rdfs:label "M.C.E. Master of Civil Engineering";
    vivo:abbreviation "M.C.E.",
-     "MCE" .
+     "MCE";
+   skos:prefLabel "M.C.E. Master of Civil Engineering" .
 
 <http://vivo.stanford.edu/degree/MCEd> a vivo:AcademicDegree;
    rdfs:label "M.C.Ed. Master of Christian Education ";
    vivo:abbreviation "M.C.Ed.",
-     "MCEd" .
+     "MCEd";
+   skos:prefLabel "M.C.Ed. Master of Christian Education " .
 
 <http://vivo.stanford.edu/degree/MCP> a vivo:AcademicDegree;
    rdfs:label "M.C.P. Master in City Planning";
    vivo:abbreviation "M.C.P.",
-     "MCP" .
+     "MCP";
+   skos:prefLabel "M.C.P. Master in City Planning" .
 
 <http://vivo.stanford.edu/degree/MCS> a vivo:AcademicDegree;
    rdfs:label "M.C.S. Master of Computer Science";
    vivo:abbreviation "M.C.S.",
-     "MCS" .
+     "MCS";
+   skos:prefLabel "M.C.S. Master of Computer Science" .
 
 <http://vivo.stanford.edu/degree/MChE> a vivo:AcademicDegree;
    rdfs:label "M.Ch.E. Master of Chemical Engineering";
    vivo:abbreviation "M.Ch.E.",
-     "MChE" .
+     "MChE";
+   skos:prefLabel "M.Ch.E. Master of Chemical Engineering" .
 
 <http://vivo.stanford.edu/degree/MD> a vivo:AcademicDegree;
    rdfs:label "M.D. Doctor of Medicine";
    vivo:abbreviation "M.D.",
-     "MD" .
+     "MD";
+   skos:prefLabel "M.D. Doctor of Medicine" .
 
 <http://vivo.stanford.edu/degree/MDV> a vivo:AcademicDegree;
    rdfs:label "M.D.V. Master of Divinity";
    vivo:abbreviation "M.D.V.",
-     "MDV" .
+     "MDV";
+   skos:prefLabel "M.D.V. Master of Divinity" .
 
 <http://vivo.stanford.edu/degree/MDiv> a vivo:AcademicDegree;
    rdfs:label "M.Div. Master of Divinity";
    vivo:abbreviation "M.Div.",
-     "MDiv" .
+     "MDiv";
+   skos:prefLabel "M.Div. Master of Divinity" .
 
 <http://vivo.stanford.edu/degree/ME> a vivo:AcademicDegree;
    rdfs:label "M.E. Mechanical Engineer",
      "M.E. Master of Engineering";
    vivo:abbreviation "M.E.",
-     "ME" .
+     "ME";
+   skos:prefLabel "M.E. Mechanical Engineer",
+     "M.E. Master of Engineering" .
 
 <http://vivo.stanford.edu/degree/MEC> a vivo:AcademicDegree;
    rdfs:label "M.E.C. Master of Economics";
    vivo:abbreviation "M.E.C.",
-     "MEC" .
+     "MEC";
+   skos:prefLabel "M.E.C. Master of Economics" .
 
 <http://vivo.stanford.edu/degree/MED> a vivo:AcademicDegree;
    rdfs:label "M.E.D. Masters in Education";
    vivo:abbreviation "M.E.D.",
-     "MED" .
+     "MED";
+   skos:prefLabel "M.E.D. Masters in Education" .
 
 <http://vivo.stanford.edu/degree/MEE> a vivo:AcademicDegree;
    rdfs:label "M.E.E. Master of Mechnaical Engineering";
    vivo:abbreviation "M.E.E.",
-     "MEE" .
+     "MEE";
+   skos:prefLabel "M.E.E. Master of Mechnaical Engineering" .
 
 <http://vivo.stanford.edu/degree/MEN> a vivo:AcademicDegree;
    rdfs:label "M.E.N. Master of Electrical Engineering";
    vivo:abbreviation "M.E.N.",
-     "MEN" .
+     "MEN";
+   skos:prefLabel "M.E.N. Master of Electrical Engineering" .
 
 <http://vivo.stanford.edu/degree/MET> a vivo:AcademicDegree;
    rdfs:label "M.E.T. Meteorologist";
    vivo:abbreviation "M.E.T.",
-     "MET" .
+     "MET";
+   skos:prefLabel "M.E.T. Meteorologist" .
 
 <http://vivo.stanford.edu/degree/MEd> a vivo:AcademicDegree;
    rdfs:label "M.Ed. Master of Education";
    vivo:abbreviation "M.Ed.",
-     "MEd" .
+     "MEd";
+   skos:prefLabel "M.Ed. Master of Education" .
 
 <http://vivo.stanford.edu/degree/MEng> a vivo:AcademicDegree;
    rdfs:label "M.Eng. Master of Engineering";
    vivo:abbreviation "M.Eng.",
-     "MEng" .
+     "MEng";
+   skos:prefLabel "M.Eng. Master of Engineering" .
 
 <http://vivo.stanford.edu/degree/MFA> a vivo:AcademicDegree;
    rdfs:label "M.F.A. Master of Fine Arts";
    vivo:abbreviation "M.F.A.",
-     "MFA" .
+     "MFA";
+   skos:prefLabel "M.F.A. Master of Fine Arts" .
 
 <http://vivo.stanford.edu/degree/MHA> a vivo:AcademicDegree;
    rdfs:label "M.H.A. Master of Hospital Administration";
    vivo:abbreviation "M.H.A.",
-     "MHA" .
+     "MHA";
+   skos:prefLabel "M.H.A. Master of Hospital Administration" .
 
 <http://vivo.stanford.edu/degree/MHS> a vivo:AcademicDegree;
    rdfs:label "M.H.S. Master of Health Science";
    vivo:abbreviation "M.H.S.",
-     "MHS" .
+     "MHS";
+   skos:prefLabel "M.H.S. Master of Health Science" .
 
 <http://vivo.stanford.edu/degree/MIA> a vivo:AcademicDegree;
    rdfs:label "M.I.A. Master of International Affairs";
    vivo:abbreviation "M.I.A.",
-     "MIA" .
+     "MIA";
+   skos:prefLabel "M.I.A. Master of International Affairs" .
 
 <http://vivo.stanford.edu/degree/MIE> a vivo:AcademicDegree;
    rdfs:label "M.I.E. Mineral Engineer";
    vivo:abbreviation "M.I.E.",
-     "MIE" .
+     "MIE";
+   skos:prefLabel "M.I.E. Mineral Engineer" .
 
 <http://vivo.stanford.edu/degree/MLIS> a vivo:AcademicDegree;
    rdfs:label "M.L.I.S. Master of Library and Information Science";
    vivo:abbreviation "M.L.I.S.",
-     "MLIS" .
+     "MLIS";
+   skos:prefLabel "M.L.I.S. Master of Library and Information Science" .
 
 <http://vivo.stanford.edu/degree/MLS> a vivo:AcademicDegree;
    rdfs:label "M.L.S. Master of Library Science";
    vivo:abbreviation "M.L.S.",
-     "MLS" .
+     "MLS";
+   skos:prefLabel "M.L.S. Master of Library Science" .
 
 <http://vivo.stanford.edu/degree/MME> a vivo:AcademicDegree;
    rdfs:label "M.M.E. Marine Mechanical Engineer",
      "M.M.E. Master of Mechanical Engineering";
    vivo:abbreviation "M.M.E.",
-     "MME" .
+     "MME";
+   skos:prefLabel "M.M.E. Marine Mechanical Engineer",
+     "M.M.E. Master of Mechanical Engineering" .
 
 <http://vivo.stanford.edu/degree/MMG> a vivo:AcademicDegree;
    rdfs:label "M.M.G. Master in Management";
    vivo:abbreviation "M.M.G.",
-     "MMG" .
+     "MMG";
+   skos:prefLabel "M.M.G. Master in Management" .
 
 <http://vivo.stanford.edu/degree/MMS> a vivo:AcademicDegree;
    rdfs:label "M.M.S. Master of Management Studies";
    vivo:abbreviation "M.M.S.",
-     "MMS" .
+     "MMS";
+   skos:prefLabel "M.M.S. Master of Management Studies" .
 
 <http://vivo.stanford.edu/degree/MMSc> a vivo:AcademicDegree;
    rdfs:label "M.M.Sc. Master of Medical Science";
    vivo:abbreviation "M.M.Sc.",
-     "MMSc" .
+     "MMSc";
+   skos:prefLabel "M.M.Sc. Master of Medical Science" .
 
 <http://vivo.stanford.edu/degree/MMed> a vivo:AcademicDegree;
    rdfs:label "M.Med. Master of Medicine";
    vivo:abbreviation "M.Med.",
-     "MMed" .
+     "MMed";
+   skos:prefLabel "M.Med. Master of Medicine" .
 
 <http://vivo.stanford.edu/degree/MMus> a vivo:AcademicDegree;
    rdfs:label "M.Mus. Master of Music";
    vivo:abbreviation "M.Mus.",
-     "MMus" .
+     "MMus";
+   skos:prefLabel "M.Mus. Master of Music" .
 
 <http://vivo.stanford.edu/degree/MMusEd> a vivo:AcademicDegree;
    rdfs:label "M.Mus.Ed. Master of Music Education";
    vivo:abbreviation "M.Mus.Ed.",
-     "MMusEd" .
+     "MMusEd";
+   skos:prefLabel "M.Mus.Ed. Master of Music Education" .
 
 <http://vivo.stanford.edu/degree/MN> a vivo:AcademicDegree;
    rdfs:label "M.N. Master of Nursing";
    vivo:abbreviation "M.N.",
-     "MN" .
+     "MN";
+   skos:prefLabel "M.N. Master of Nursing" .
 
 <http://vivo.stanford.edu/degree/MNG> a vivo:AcademicDegree;
    rdfs:label "M.N.G. Master of Engineering";
    vivo:abbreviation "M.N.G.",
-     "MNG" .
+     "MNG";
+   skos:prefLabel "M.N.G. Master of Engineering" .
 
 <http://vivo.stanford.edu/degree/MO> a vivo:AcademicDegree;
    rdfs:label "M.O. Non Degree Master";
    vivo:abbreviation "M.O.",
-     "MO" .
+     "MO";
+   skos:prefLabel "M.O. Non Degree Master" .
 
 <http://vivo.stanford.edu/degree/MPA> a vivo:AcademicDegree;
    rdfs:label "M.P.A. Master in Public Health Administration";
    vivo:abbreviation "M.P.A.",
-     "MPA" .
+     "MPA";
+   skos:prefLabel "M.P.A. Master in Public Health Administration" .
 
 <http://vivo.stanford.edu/degree/MPAS> a vivo:AcademicDegree;
    rdfs:label "M.P.A.S. Master in Physician Assistant Studies";
    vivo:abbreviation "M.P.A.S.",
-     "MPAS" .
+     "MPAS";
+   skos:prefLabel "M.P.A.S. Master in Physician Assistant Studies" .
 
 <http://vivo.stanford.edu/degree/MPH> a vivo:AcademicDegree;
    rdfs:label "M.P.H. Master in Public Health",
      "M.P.H. Master of Public Health";
    vivo:abbreviation "M.P.H.",
-     "MPH" .
+     "MPH";
+   skos:prefLabel "M.P.H. Master in Public Health",
+     "M.P.H. Master of Public Health" .
 
 <http://vivo.stanford.edu/degree/MPL> a vivo:AcademicDegree;
    rdfs:label "M.P.L. Master in Patent Law";
    vivo:abbreviation "M.P.L.",
-     "MPL" .
+     "MPL";
+   skos:prefLabel "M.P.L. Master in Patent Law" .
 
 <http://vivo.stanford.edu/degree/MPP> a vivo:AcademicDegree;
    rdfs:label "M.P.P. Master of Public Policy";
    vivo:abbreviation "M.P.P.",
-     "MPP" .
+     "MPP";
+   skos:prefLabel "M.P.P. Master of Public Policy" .
 
 <http://vivo.stanford.edu/degree/MPhil> a vivo:AcademicDegree;
    rdfs:label "M.Phil. Master of Philosophy ";
    vivo:abbreviation "M.Phil.",
-     "MPhil" .
+     "MPhil";
+   skos:prefLabel "M.Phil. Master of Philosophy " .
 
 <http://vivo.stanford.edu/degree/MRE> a vivo:AcademicDegree;
    rdfs:label "M.R.E. Master of Research Development";
    vivo:abbreviation "M.R.E.",
-     "MRE" .
+     "MRE";
+   skos:prefLabel "M.R.E. Master of Research Development" .
 
 <http://vivo.stanford.edu/degree/MREd> a vivo:AcademicDegree;
    rdfs:label "M.R.Ed. Master of Religious Education";
    vivo:abbreviation "M.R.Ed.",
-     "MREd" .
+     "MREd";
+   skos:prefLabel "M.R.Ed. Master of Religious Education" .
 
 <http://vivo.stanford.edu/degree/MS> a vivo:AcademicDegree;
    rdfs:label "M.S. Master of Science";
    vivo:abbreviation "M.S.",
-     "MS" .
+     "MS";
+   skos:prefLabel "M.S. Master of Science" .
 
 <http://vivo.stanford.edu/degree/MSE> a vivo:AcademicDegree;
    rdfs:label "M.S.E. Master of Science in Engineering";
    vivo:abbreviation "M.S.E.",
-     "MSE" .
+     "MSE";
+   skos:prefLabel "M.S.E. Master of Science in Engineering" .
 
 <http://vivo.stanford.edu/degree/MSPH> a vivo:AcademicDegree;
    rdfs:label "M.S.P.H. Master of Science in Public Health";
    vivo:abbreviation "M.S.P.H.",
-     "MSPH" .
+     "MSPH";
+   skos:prefLabel "M.S.P.H. Master of Science in Public Health" .
 
 <http://vivo.stanford.edu/degree/MSW> a vivo:AcademicDegree;
    rdfs:label "M.S.W. Master of Social Work";
    vivo:abbreviation "M.S.W.",
-     "MSW" .
+     "MSW";
+   skos:prefLabel "M.S.W. Master of Social Work" .
 
 <http://vivo.stanford.edu/degree/MSc> a vivo:AcademicDegree;
    rdfs:label "M.Sc. Master of Science";
    vivo:abbreviation "M.Sc.",
-     "MSc" .
+     "MSc";
+   skos:prefLabel "M.Sc. Master of Science" .
 
 <http://vivo.stanford.edu/degree/MTE> a vivo:AcademicDegree;
    rdfs:label "M.T.E. Metallurgical Engineer";
    vivo:abbreviation "M.T.E.",
-     "MTE" .
+     "MTE";
+   skos:prefLabel "M.T.E. Metallurgical Engineer" .
 
 <http://vivo.stanford.edu/degree/MTh> a vivo:AcademicDegree;
    rdfs:label "M.Th. Master of Theology";
    vivo:abbreviation "M.Th.",
-     "MTh" .
+     "MTh";
+   skos:prefLabel "M.Th. Master of Theology" .
 
 <http://vivo.stanford.edu/degree/MUD> a vivo:AcademicDegree;
    rdfs:label "M.U.D. Master of Urban Design";
    vivo:abbreviation "M.U.D.",
-     "MUD" .
+     "MUD";
+   skos:prefLabel "M.U.D. Master of Urban Design" .
 
 <http://vivo.stanford.edu/degree/MUP> a vivo:AcademicDegree;
    rdfs:label "M.U.P. Master of Urban Planning";
    vivo:abbreviation "M.U.P.",
-     "MUP" .
+     "MUP";
+   skos:prefLabel "M.U.P. Master of Urban Planning" .
 
 <http://vivo.stanford.edu/degree/MVSc> a vivo:AcademicDegree;
    rdfs:label "M.V.Sc. Master of Veterinary Science";
    vivo:abbreviation "M.V.Sc.",
-     "MVSc" .
+     "MVSc";
+   skos:prefLabel "M.V.Sc. Master of Veterinary Science" .
+
+<http://vivo.stanford.edu/degree/MusD> a vivo:AcademicDegree;
+   rdfs:label "Mus.D. Doctor of Music";
+   vivo:abbreviation "Mus.D.",
+     "MusD";
+   skos:altLabel "Mus.D. musicae doctor";
+   skos:prefLabel "Mus.D. Doctor of Music" .
 
 <http://vivo.stanford.edu/degree/NA> a vivo:AcademicDegree;
    rdfs:label "N.A. Naval Architect";
    vivo:abbreviation "N.A.",
-     "NA" .
+     "NA";
+   skos:prefLabel "N.A. Naval Architect" .
 
 <http://vivo.stanford.edu/degree/NE> a vivo:AcademicDegree;
    rdfs:label "N.E. Naval Engineer";
    vivo:abbreviation "N.E.",
-     "NE" .
+     "NE";
+   skos:prefLabel "N.E. Naval Engineer" .
 
 <http://vivo.stanford.edu/degree/NON> a vivo:AcademicDegree;
    rdfs:label "N.O.N. non degree";
    vivo:abbreviation "N.O.N.",
-     "NON" .
+     "NON";
+   skos:prefLabel "N.O.N. non degree" .
 
 <http://vivo.stanford.edu/degree/NUE> a vivo:AcademicDegree;
    rdfs:label "N.U.E. Nuclear Engineer";
    vivo:abbreviation "N.U.E.",
-     "NUE" .
+     "NUE";
+   skos:prefLabel "N.U.E. Nuclear Engineer" .
 
 <http://vivo.stanford.edu/degree/NucE> a vivo:AcademicDegree;
    rdfs:label "Nuc.E. Nuclear Engineer";
    vivo:abbreviation "Nuc.E.",
-     "NucE" .
+     "NucE";
+   skos:prefLabel "Nuc.E. Nuclear Engineer" .
 
 <http://vivo.stanford.edu/degree/OCE> a vivo:AcademicDegree;
    rdfs:label "O.C.E. Ocean Engineer";
    vivo:abbreviation "O.C.E.",
-     "OCE" .
+     "OCE";
+   skos:prefLabel "O.C.E. Ocean Engineer" .
 
 <http://vivo.stanford.edu/degree/OD> a vivo:AcademicDegree;
    rdfs:label "O.D. Doctor of Optometry";
    vivo:abbreviation "O.D.",
-     "OD" .
+     "OD";
+   skos:prefLabel "O.D. Doctor of Optometry" .
 
 <http://vivo.stanford.edu/degree/PHB> a vivo:AcademicDegree;
    rdfs:label "P.H.B. Bachelor of Philosophy";
    vivo:abbreviation "P.H.B.",
-     "PHB" .
+     "PHB";
+   skos:prefLabel "P.H.B. Bachelor of Philosophy" .
 
 <http://vivo.stanford.edu/degree/PHC> a vivo:AcademicDegree;
    rdfs:label "P.H.C. Pharmaceutical Chemist";
    vivo:abbreviation "P.H.C.",
-     "PHC" .
+     "PHC";
+   skos:prefLabel "P.H.C. Pharmaceutical Chemist" .
 
 <http://vivo.stanford.edu/degree/PHM> a vivo:AcademicDegree;
    rdfs:label "P.H.M. Master of Philosophy";
    vivo:abbreviation "P.H.M.",
-     "PHM" .
+     "PHM";
+   skos:prefLabel "P.H.M. Master of Philosophy" .
 
 <http://vivo.stanford.edu/degree/PHS> a vivo:AcademicDegree;
    rdfs:label "P.H.S. Public Health Service";
    vivo:abbreviation "P.H.S.",
-     "PHS" .
+     "PHS";
+   skos:prefLabel "P.H.S. Public Health Service" .
 
 <http://vivo.stanford.edu/degree/PhB> a vivo:AcademicDegree;
    rdfs:label "Ph.B. Bachelor of Philosophy";
    vivo:abbreviation "Ph.B.",
-     "PhB" .
+     "PhB";
+   skos:prefLabel "Ph.B. Bachelor of Philosophy" .
 
 <http://vivo.stanford.edu/degree/PhD> a vivo:AcademicDegree;
    rdfs:label "P.h.D. Doctor of Philosophy",
      "Ph.D. Doctor of Philosophy";
    vivo:abbreviation "P.h.D.",
      "PhD",
-     "Ph.D." .
+     "Ph.D.";
+   skos:prefLabel "P.h.D. Doctor of Philosophy",
+     "Ph.D. Doctor of Philosophy" .
 
 <http://vivo.stanford.edu/degree/PharmB> a vivo:AcademicDegree;
    rdfs:label "Pharm.B. Bachelor of Pharmacy";
    vivo:abbreviation "Pharm.B.",
-     "PharmB" .
+     "PharmB";
+   skos:prefLabel "Pharm.B. Bachelor of Pharmacy" .
 
 <http://vivo.stanford.edu/degree/PharmD> a vivo:AcademicDegree;
    rdfs:label "Pharm.D. Doctor of Pharmacy";
    vivo:abbreviation "Pharm.D.",
-     "PharmD" .
+     "PharmD";
+   skos:prefLabel "Pharm.D. Doctor of Pharmacy" .
 
 <http://vivo.stanford.edu/degree/PharmM> a vivo:AcademicDegree;
    rdfs:label "Pharm.M. Master of Pharmacy";
    vivo:abbreviation "Pharm.M.",
-     "PharmM" .
+     "PharmM";
+   skos:prefLabel "Pharm.M. Master of Pharmacy" .
 
 <http://vivo.stanford.edu/degree/PsyD> a vivo:AcademicDegree;
    rdfs:label "Psy.D. Doctor of Psychology";
    vivo:abbreviation "Psy.D.",
-     "PsyD" .
+     "PsyD";
+   skos:prefLabel "Psy.D. Doctor of Psychology" .
 
 <http://vivo.stanford.edu/degree/SB> a vivo:AcademicDegree;
    rdfs:label "S.B. Bachelor of Science";
    vivo:abbreviation "S.B.",
-     "SB" .
+     "SB";
+   skos:prefLabel "S.B. Bachelor of Science" .
+
+<http://vivo.stanford.edu/degree/SD> a vivo:AcademicDegree;
+   rdfs:label "S.D. Doctor of Science";
+   vivo:abbreviation "S.D.",
+     "SD";
+   skos:altLabel "S.D. scientiae doctor";
+   skos:prefLabel "S.D. Doctor of Science" .
 
 <http://vivo.stanford.edu/degree/SE> a vivo:AcademicDegree;
    rdfs:label "S.E. Sanitary Engineer";
    vivo:abbreviation "S.E.",
-     "SE" .
+     "SE";
+   skos:prefLabel "S.E. Sanitary Engineer" .
 
 <http://vivo.stanford.edu/degree/SJD> a vivo:AcademicDegree;
    rdfs:label "S.J.D. Doctor of Juridical Science",
      "S.J.D. Doctor of the Science of Law";
    vivo:abbreviation "S.J.D.",
-     "SJD" .
+     "SJD";
+   skos:prefLabel "S.J.D. Doctor of Juridical Science",
+     "S.J.D. Doctor of the Science of Law" .
 
 <http://vivo.stanford.edu/degree/SM> a vivo:AcademicDegree;
    rdfs:label "S.M. Master of Science";
    vivo:abbreviation "S.M.",
-     "SM" .
+     "SM";
+   skos:prefLabel "S.M. Master of Science" .
 
 <http://vivo.stanford.edu/degree/SScD> a vivo:AcademicDegree;
    rdfs:label "S.Sc.D. Doctor of Social Science";
    vivo:abbreviation "S.Sc.D.",
-     "SScD" .
+     "SScD";
+   skos:prefLabel "S.Sc.D. Doctor of Social Science" .
 
 <http://vivo.stanford.edu/degree/STB> a vivo:AcademicDegree;
    rdfs:label "S.T.B. Bachelor of Sacred Theology";
    vivo:abbreviation "S.T.B.",
-     "STB" .
+     "STB";
+   skos:prefLabel "S.T.B. Bachelor of Sacred Theology" .
 
 <http://vivo.stanford.edu/degree/STD> a vivo:AcademicDegree;
    rdfs:label "S.T.D. Doctor of Sacred Theology";
    vivo:abbreviation "S.T.D.",
-     "STD" .
+     "STD";
+   skos:prefLabel "S.T.D. Doctor of Sacred Theology" .
 
 <http://vivo.stanford.edu/degree/STM> a vivo:AcademicDegree;
    rdfs:label "S.T.M. Master of Sacred Theology";
    vivo:abbreviation "S.T.M.",
-     "STM" .
+     "STM";
+   skos:prefLabel "S.T.M. Master of Sacred Theology" .
 
 <http://vivo.stanford.edu/degree/ScB> a vivo:AcademicDegree;
    rdfs:label "Sc.B. Bachelor of Science";
    vivo:abbreviation "Sc.B.",
-     "ScB" .
+     "ScB";
+   skos:prefLabel "Sc.B. Bachelor of Science" .
 
 <http://vivo.stanford.edu/degree/ScD> a vivo:AcademicDegree;
    rdfs:label "S.c.D. Doctor of Science",
      "Sc.D. Doctor of Science";
    vivo:abbreviation "S.c.D.",
      "ScD",
-     "Sc.D." .
+     "Sc.D.";
+   skos:prefLabel "S.c.D. Doctor of Science",
+     "Sc.D. Doctor of Science" .
 
 <http://vivo.stanford.edu/degree/ScM> a vivo:AcademicDegree;
    rdfs:label "Sc.M. Master of Science";
    vivo:abbreviation "Sc.M.",
-     "ScM" .
+     "ScM";
+   skos:prefLabel "Sc.M. Master of Science" .
 
 <http://vivo.stanford.edu/degree/ThB> a vivo:AcademicDegree;
    rdfs:label "Th.B. Bachelor of Theology";
    vivo:abbreviation "Th.B.",
-     "ThB" .
+     "ThB";
+   skos:prefLabel "Th.B. Bachelor of Theology" .
 
 <http://vivo.stanford.edu/degree/ThD> a vivo:AcademicDegree;
    rdfs:label "Th.D. Doctor of Theology";
    vivo:abbreviation "Th.D.",
-     "ThD" .
+     "ThD";
+   skos:prefLabel "Th.D. Doctor of Theology" .
 
 <http://vivo.stanford.edu/degree/ThM> a vivo:AcademicDegree;
    rdfs:label "Th.M. Master of Theology";
    vivo:abbreviation "Th.M.",
-     "ThM" .
+     "ThM";
+   skos:prefLabel "Th.M. Master of Theology" .
 
 <http://vivo.stanford.edu/degree/VMD> a vivo:AcademicDegree;
    rdfs:label "V.M.D. Veterinariae Medicinae Doctoris";
    vivo:abbreviation "V.M.D.",
-     "VMD" .
+     "VMD";
+   skos:prefLabel "V.M.D. Veterinariae Medicinae Doctoris" .

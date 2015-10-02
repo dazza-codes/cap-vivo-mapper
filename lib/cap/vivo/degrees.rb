@@ -154,6 +154,7 @@ module Cap
             label = "#{abbrev} #{description}"
             g << [uri, RDF.type, RDF::VIVO.AcademicDegree]
             g << [uri, RDF::RDFS.label, label]
+            g << [uri, RDF::SKOS.prefLabel, label]
             g << [uri, RDF::VIVO.abbreviation, abbrev]
             g << [uri, RDF::VIVO.abbreviation, acronym]
           end
@@ -163,6 +164,21 @@ module Cap
             uri = degree_prefix + acronym
             g << [uri, RDF.type, RDF::VIVO.AcademicDegree]
             g << [uri, RDF::RDFS.label, label]
+            g << [uri, RDF::SKOS.prefLabel, label]
+            g << [uri, RDF::VIVO.abbreviation, abbrev]
+            g << [uri, RDF::VIVO.abbreviation, acronym]
+          end
+          harvard_degrees.each do |degree|
+            abbrev = degree.first
+            acronym = abbrev.gsub(/\W/,'')
+            description_latin = degree[1]
+            description_english = degree[2]
+            label = "#{abbrev} #{description_english}"
+            uri = degree_prefix + acronym
+            g << [uri, RDF.type, RDF::VIVO.AcademicDegree]
+            g << [uri, RDF::RDFS.label, label]
+            g << [uri, RDF::SKOS.prefLabel, label]
+            g << [uri, RDF::SKOS.altLabel, "#{abbrev} #{description_latin}"]
             g << [uri, RDF::VIVO.abbreviation, abbrev]
             g << [uri, RDF::VIVO.abbreviation, acronym]
           end
@@ -263,6 +279,48 @@ module Cap
         @mit_degrees ||= begin
           degrees = "AA - Associate in Arts\nAB - Bachelor in Arts\nAE - Aeronautical Engineer\nAM - Master of Arts\nAS - Associate in Science\nAN - Associate in Nursing\nBAC - Bachelor of Accountancy\nBAR - Bachelor in Architecture\nBBA - Bachelor in Business Administration\nBCH - Bachelor of Chemistry\nBCP - Bachelor in City Planning\nBE - Building Engineer\nBEC - Bachelor of Economics\nBED - Bachelor of Education\nBFA - Bachelor of Fine Arts\nBO - Non Degree Bachelors\nBOC - Bachelor of Commerce\nBOE - Bachelor of Engineering\nBS - Bachelor of Science\nBSE - Bachelor of Engineering\nBTE - Bachelor of Technology\nBTS - Bachelor of Theological Studies\nCE - Civil Engineer\nCHE - Chemical Engineer\nCPH - Certificate of Public Health\nCSE - Engineering in Computer Science\nCTF - Certificate\nDBA - Doctor of Business Adminstration\nDDS - Doctor of Dental Science\nDIE - Diploma of Engineering\nDIP - Diploma\nDMD - Doctor of Medical Dentistry\nDO - Non Degree Doctorals\nDPH - Doctor of Public Health\nDSC - Doctor of Science\nDVM - Doctor of Veterinary Medicine\nEAA - Aeronautical & Astronautical Engineer\nEDU - Doctor of Education\nEE - Electrical Engineer\nEGD - Doctor of Engineering\nENE - Environmental Engineer\nENG - Engineer\nHM - Honorary Degree\nING - Engineering\nJD - Juris Doctor\nLLB - Bachelor of Laws\nLLD - Doctor of Laws\nLLM - Master of Laws\nMA - Master of Arts\nMAA - Master in Architecture Advanced Studies\nMAE - Materials Engineer\nMAR - Master of Architecture\nMAT - Master of Arts Teaching\nMBA - Masters in Business Administration\nMCP - Master in City Planning\nMD - Doctor of Medicine\nMDV - Master of Divinity\nME - Mechanical Engineer\nMEC - Master of Economics\nMED - Masters in Education\nMEE - Master of Mechnaical Engineering\nMEN - Master of Electrical Engineering\nMET - Meteorologist\nMFA - Master of Fine Arts\nMIE - Mineral Engineer\nMME - Marine Mechanical Engineer\nMMG - Master in Management\nMNG - Master of Engineering\nMO - Non Degree Master\nMPA - Master in Public Health Administration\nMPH - Master in Public Health\nMPL - Master in Patent Law\nMPP - Master of Public Policy\nMRE - Master of Research Development\nMS - Master of Science\nMSW - Master of Social Work\nMTE - Metallurgical Engineer\nMUD - Master of Urban Design\nMUP - Master of Urban Planning\nNA - Naval Architect\nNE - Naval Engineer\nNON - non degree\nNUE - Nuclear Engineer\nOCE - Ocean Engineer\nOD - Doctor of Optometry\nPHB - Bachelor of Philosophy\nPHC - Pharmaceutical Chemist\nPhD - Doctor of Philosophy\nPHM - Master of Philosophy\nPHS - Public Health Service\nSB - Bachelor of Science\nScD - Doctor of Science\nSE - Sanitary Engineer\nSM - Master of Science\n"
           degrees.split("\n").map{|d| d.split('-').map {|i| i.strip}}.to_h
+        end
+      end
+
+
+      # There is an explanation of some acronyms and why they are used at
+      # Harvard on this page:
+      #
+      #   http://www.harvard.edu/on-campus/commencement/degree-abbreviations
+      #
+      # Quoting their page:
+      #
+      # Some Harvard degree abbreviations appear to be backwards because they
+      # follow the tradition of Latin degree names. The traditional
+      # undergraduate degrees awarded by Harvard University are the A.B. and
+      # S.B. The A.B. is an abbreviation of the Latin name for the Bachelor of
+      # Arts (B.A.) degree “artium baccalaureus.” The S.B., Latin for “scientiae
+      # baccalaureus,” is the Bachelor of Science (B.S.). Likewise A.M.,
+      # equivalent to the Master of Arts (M.A.), is Latin for “artium magister”;
+      # and S.M., equivalent to the Master of Science (M.S.), is Latin for
+      # “scientiae magister.” The more recent A.L.M. (Master of Liberal Arts in
+      # Extension Studies) degree translates to “magistri in artibus liberalibus
+      # studiorum prolatorum.”
+      #
+      # Harvard does not write all degrees backwards, however. Ph.D. is an
+      # abbreviation for the Latin “philosophiae doctor,” translated as “Doctor
+      # of Philosophy.” M.D., Doctor of Medicine, stands for the Latin
+      # “medicinae doctor.” J.D., Latin for “juris doctor,” is the Doctor of Law
+      # degree.
+      def harvard_degrees
+        @harvard_degrees ||= begin
+          degrees = <<-DEGREES
+            A.M.       -         artium magister              -  Master of Arts
+            Art.D.     -         artium doctor                -  Doctor of Arts
+            D.D.       -         divinitatis doctor           -  Doctor of Divinity
+            L.H.D.     -         litterarum humanorum doctor  -  Doctor of Humane Letters
+            Litt.D.    -         litterarum doctor            -  Doctor of Letters
+            L.T.D.     -         litterarum doctor            -  Doctor of Letters
+            LL.D.      -         legum doctor                 -  Doctor of Laws
+            Mus.D.     -         musicae doctor               -  Doctor of Music
+            S.D.       -         scientiae doctor             -  Doctor of Science
+            DEGREES
+          degrees.split("\n").map {|d| d.strip.split(/\s+-\s+/)}
         end
       end
 
