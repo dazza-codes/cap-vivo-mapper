@@ -29,6 +29,9 @@ module Cap
           'firstName'  => 'vcard:givenName',
           'lastName'   => 'vcard:familyName',
           'middleName' => 'vivo:middleName',
+          'vivo:relates' => {
+              '@type' => '@id',
+          },
           'contact' => {
               '@id' => 'obo:ARG_2000028',
               '@type' => '@id',
@@ -38,6 +41,18 @@ module Cap
               '@id' => 'obo:ARG_2000029',
               '@type' => '@id',
               'label' => 'contact info for'
+          },
+          # Connecting a person to a role
+          'bearerOf' => {
+              '@id' => 'obo:RO_0000053',
+              '@type' => '@id',
+              'label' => 'bearer of'
+          },
+          # Connecting a role to a person
+          'inheresIn' => {
+              '@id' => 'obo:RO_0000052',
+              '@type' => '@id',
+              'label' => 'inheres in'
           },
           # 'vcard:hasName' => {
           #     '@id' => 'vcard:hasName',
@@ -69,6 +84,13 @@ module Cap
           # },
         }
       }
+
+      # Create a person URI
+      # @param id [Fixnum] a CAP profile ID number
+      # @return uri [String]
+      def vivo_person_uri(id)
+        DATA_NAMESPACE + "/person/#{id}"
+      end
 
       # Extract vcard address from data
       # @param data [Hash] data containing address fields
@@ -129,7 +151,7 @@ module Cap
         #
         phones = [data['phoneNumbers']].flatten.compact
         phones = phones.map {|p| p.gsub(/\W+/,'') }.to_set
-        phones.collect do |p|
+        phones.map do |p|
           {
             '@id' => uri + "/phone/#{p}",
             'a' => ['vcard:Telephone','vcard:Voice'],
@@ -145,13 +167,52 @@ module Cap
       def vcard_faxes(data, uri)
         faxes = [data['fax']].flatten.compact
         faxes = faxes.map {|fax| fax.gsub(/\W+/,'') }.to_set
-        faxes.collect do |fax|
+        faxes.map do |fax|
           {
             '@id' => uri + "/fax/#{fax}",
             'a' => ['vcard:Telephone','vcard:Fax'],
             'vcard:telephone' => fax
           }
         end
+      end
+
+      # Create vivo:AdvisorRole
+      # The URI appends '/advisor' to the person_uri
+      # @param person_uri [String] from vivo_person_uri
+      # @return advisor_role [Hash]
+      def vivo_advisor_role(person_uri)
+        {
+          '@id' => person_uri + '/advisor',
+          'a' => 'vivo:AdvisorRole',
+          'vivo:relatedBy' => []
+        }
+      end
+
+      # Create vivo:AdviseeRole
+      # @param person_uri [String] from vivo_person_uri
+      # @return advisee_role [Hash]
+      def vivo_advisee_role(person_uri)
+        {
+          '@id' => person_uri + '/advisee',
+          'a' => 'vivo:AdviseeRole',
+          'vivo:relatedBy' => []
+        }
+      end
+
+      # Create a vivo:AdvisingRelationship
+      # The relationship URI appends '/advising/{advisee_id}' to the advisor URI.
+      # The target of the relationship is the advisee URI.
+      # @param advisor_id [Fixnum] a CAP profile ID number
+      # @param advisee_id [Fixnum] a CAP profile ID number
+      # @return advising_relationship [Hash]
+      def vivo_advising_relationship(advisor_id, advisee_id)
+        advisor_uri = vivo_person_uri(advisor_id)
+        advisee_uri = vivo_person_uri(advisee_id)
+        {
+          '@id' => advisor_uri + "/advising/#{advisee_id}",
+          'a' => ['vivo:AdvisingRelationship'],
+          'vivo:relates' => [advisor_uri, advisee_uri]
+        }
       end
 
     end
