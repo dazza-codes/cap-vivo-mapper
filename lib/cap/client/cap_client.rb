@@ -313,8 +313,14 @@ module Cap
       # @return profile [Hash|nil]
       def profile(id)
         profile = @profiles.find({_id: id}).first
-        profile['profileId'] = profile.delete('_id')
-        profile
+        if profile
+          profile['profileId'] = profile.delete('_id')
+          profile
+        else
+          msg = "Profile #{id} doesn't exist"
+          @config.logger.warn msg
+          {}
+        end
       end
 
       # Remove privileged fields from profile data

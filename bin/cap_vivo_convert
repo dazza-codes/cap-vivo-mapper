@@ -18,12 +18,17 @@ if config.cap_replace
   client.repo_clean
   client.get_profiles
 end
+profile_ids = client.profile_ids
 
 if config.cap_testing
   # Load profiles used to test CAP to VIVO conversions.
   # #test_profiles method returns an array of profileId values.
   require_relative 'cap_sample_profiles'
-  test_ids = test_profiles || client.profile_ids.sample(20)
+  if test_profiles.nil? || test_profiles.empty?
+    test_ids = profile_ids.sample(20)
+  else
+    test_ids = test_profiles.select {|id| profile_ids.include? id}
+  end
 else
   test_ids = nil
 end
@@ -56,7 +61,7 @@ end
 
 # Convert all the CAP API profiles into VIVO linked data and
 # store it in the CAP_REPO_4STORE triple store.
-ids = test_ids || client.profile_ids
+ids = test_ids || profile_ids
 
 
 if config.rdf_replace
@@ -98,10 +103,3 @@ ids.each do |id|
   end
 end
 puts
-
-at_exit {
-  config.cap_repo.close if config.cap_repo.is_a? Daybreak::DB
-  client = nil
-  config = nil
-  sleep 2 # give it a chance to close
-}

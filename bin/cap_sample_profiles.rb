@@ -17,7 +17,7 @@ PHYSICIANS = [5949,48613]
 # Students with advisors:
 # most postdocs have:
 # profile["stanfordAdvisors"][x]["position"] : "Postdoctoral Faculty Sponsor"
-# 47441,62351,37521,63779,53591,62229,38061 # (same advisor)
+# 47441,62351,37521,63779,53591,38061 # (same advisor)
 # 40494,39312,37987 # (different advisors) have both:
 # profile["stanfordAdvisors"][x]["position"] : "Postdoctoral Faculty Sponsor"
 # profile["stanfordAdvisors"][x]["position"] : "Postdoctoral Research Mentor"
@@ -33,7 +33,7 @@ PHYSICIANS = [5949,48613]
 STUDENTS = [
   51528, 49024, 65880, 37136,
   17761,34085,68722,
-  47441,62351,37521,63779,53591,62229,38061,
+  47441,62351,37521,63779,53591,38061,
   40494,39312,37987,
   21125,
   46806,61829,44963,45434,60202,

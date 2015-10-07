@@ -4,7 +4,6 @@ Dotenv.load
 require 'time'
 require 'linkeddata'
 require 'rdf/4store'
-require 'daybreak'
 require 'mongo'
 require_relative 'cap/configuration'
 require_relative 'rdf/vocab/vivo.rb'
