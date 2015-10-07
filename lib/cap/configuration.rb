@@ -81,24 +81,7 @@ module Cap
     # Create a repository for storing CAP API json data
     # Uses mongodb if ENV['CAP_REPO_MONGO'], otherwise Daybreak::DB
     def cap_repo
-      @cap_repo ||= begin
-        if ENV['CAP_REPO_MONGO']
-          cap_repo_mongo
-        else
-          cap_repo_daybreak
-        end
-      end
-    end
-
-    # Create an repository for storing CAP API json data
-    # Uses Daybreak::DB in log/cap_profiles.db
-    def cap_repo_daybreak
-      @cap_repo_daybreak ||= begin
-        dir = File.dirname(@log_file)
-        db = Daybreak::DB.new File.join(dir,'cap_profiles.db')
-        db.load if db.size > 0
-        db
-      end
+      @cap_repo ||= cap_repo_mongo
     end
 
     # Create a repository for storing CAP API json data
