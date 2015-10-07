@@ -8,6 +8,7 @@ module Cap
 
     attr_reader :cap_repo
     attr_reader :cap_replace
+    attr_reader :cap_testing
 
     attr_reader :rdf_path
     attr_reader :rdf_repo
@@ -17,6 +18,7 @@ module Cap
     def initialize
       self.debug = env_boolean('DEBUG')
       logger_init
+      @cap_testing = env_boolean('CAP_TESTING')
       cap_repo
       @cap_replace = env_boolean('CAP_API_REPLACE')
       rdf_repo

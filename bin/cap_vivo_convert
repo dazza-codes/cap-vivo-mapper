@@ -19,15 +19,51 @@ if config.cap_replace
   client.get_profiles
 end
 
+if config.cap_testing
+  # Load profiles used to test CAP to VIVO conversions.
+  # #test_profiles method returns an array of profileId values.
+  require_relative 'cap_sample_profiles'
+  test_ids = test_profiles || client.profile_ids.sample(20)
+else
+  test_ids = nil
+end
+
+# # ORGS
+# # Convert all the CAP API education organizations into VIVO linked data.
+# include Cap::Vivo::Orgs
+# orgs_graph = RDF::Graph.new
+# orgs = client.education_org_names.sample(100)
+# orgs.each {|o| orgs_graph << org_strings2things(o) }
+# File.open('orgs.ttl','w').write(orgs_graph.to_ttl)
+
+# # Degrees
+# # Convert all the CAP API education degrees into VIVO linked data.
+# include Cap::Vivo::Degrees
+# degrees_graph = RDF::Graph.new
+# degrees = client.education_degrees
+# degrees.map {|d| degrees_graph << degree_strings2things(d) }
+# File.open('degrees.ttl','w').write(degrees_graph.to_ttl)
+
+# # Exploring mapping CAP degree labels to VIVO abbreviations
+# include Cap::Vivo::Degrees
+# degrees = client.education_degrees
+# # degrees.map {|d| [degree_acronyms(d), d]}
+
+# binding.pry
+# exit!
+
+
+
 # Convert all the CAP API profiles into VIVO linked data and
 # store it in the CAP_REPO_4STORE triple store.
-# ids = client.profile_ids.sample(100)
-ids = client.profile_ids
+ids = test_ids || client.profile_ids
+
+
 if config.rdf_replace
   puts 'Replacing all VIVO linked data'
   config.rdf_repo.clear
 else
-  puts 'Updating VIVO linked data'
+  puts 'Adding VIVO linked data'
   q = 'SELECT ?person WHERE { ?person a <http://xmlns.com/foaf/0.1/Person> }'
   r = config.rdf_repo.client.query(q)
   vivo_uris = r.map {|s| s[:person]}
@@ -41,8 +77,9 @@ ids.each do |id|
   count += 1
   profile = client.profile(id)
   begin
-    mapper = Cap::Vivo::Mapper.new profile
-    mapper.create_vivo
+    # mapper = Cap::Vivo::Mapper.new profile
+    mapper = Cap::Vivo::Profile.new profile
+    mapper.vivo
     mapper.save
     if count % 50 == 0
       delay = (Time.now.to_i - start) / 60.0
