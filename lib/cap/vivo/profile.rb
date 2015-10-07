@@ -30,6 +30,7 @@ module Cap
         @profile = profile
         @id = profile['profileId']
         @uri = vivo_person_uri(@id)
+        vivo_processing
       end
 
       def bio
@@ -39,25 +40,53 @@ module Cap
       # Creates a VIVO profile (in jsonld)
       # @return vivo [Hash] a VIVO jsonld hash
       def vivo
-        @vivo ||= begin
-          vivo_advising  # process advisor/advisee data
-          vivo = {
-            '@id' => @uri,
-            'a' => 'foaf:Person',
-            'label' => "#{last_name}, #{first_name}",
-            'vivo:overview' => bio,
-            'vivo:relatedBy' => [vivo_positions],
-            'bearerOf' => @vivo_advising_roles,
-            'contact' => vcard,
-          }
-          vivo.merge(VIVO_CONTEXT)
+        @vivo ||= vivo_init
+      end
+
+      # Initialize the VIVO data with:
+      # '@id' => @uri,
+      # 'a' => ['foaf:Person'],
+      # 'label' => "#{last_name}, #{first_name}",
+      # @return vivo [Hash]
+      def vivo_init
+        {
+          '@id' => @uri,
+          'a' => ['foaf:Person'],
+          'label' => "#{last_name}, #{first_name}",
+        }
+      end
+
+      # Extract identification data compatible with VIVO, including:
+      # ORCID, eRA Commons, ISI Researcher, Scopus, health care provider
+      def vivo_identity
+
+
+      end
+
+      # Enhance the VIVO data with:
+      # - contacts
+      # - biographical overview
+      # - positions
+      # - advising relationships
+      def vivo_processing
+        begin
+          vivo['contact'] = vcard
+          vivo_advising  # process advisor/advisee relationships
+          vivo['vivo:relatedBy'] = vivo_positions  # array of positions
+          vivo['vivo:overview'] = bio unless bio.empty?
+        rescue => e
+          msg = sprintf "FAILED VIVO processing for profileId %d\n", @id
+          msg += e.message
+          msg += e.backtrace.join("\n")
+          puts msg
+          @config.logger.error(msg)
         end
       end
 
       # Convert @vivo jsonld hash into an RDF::Graph
       # @return vivo_graph [RDF::Graph]
       def vivo_graph
-        @vivo_graph ||= from_jsonld(vivo)
+        @vivo_graph ||= from_jsonld(vivo, VIVO_CONTEXT)
       end
 
       # Create an RDF::Graph for any data that belongs outside the
@@ -67,11 +96,11 @@ module Cap
       def vivo_outside_graph
         @vivo_outside_graph ||= begin
           g = RDF::Graph.new
-          unless @vivo_outside_advisees.empty?
-            g << from_jsonld(@vivo_outside_advisees)
+          @vivo_outside_advisees.each do |advisee|
+            g << from_jsonld(advisee, VIVO_CONTEXT)
           end
-          unless @vivo_outside_advisors.empty?
-            g << from_jsonld(@vivo_outside_advisors)
+          @vivo_outside_advisors.each do |advisor|
+            g << from_jsonld(advisor, VIVO_CONTEXT)
           end
           g
         end
@@ -83,7 +112,8 @@ module Cap
         @vcard ||= begin
           vcard = {
             '@id' => vcard_uri,
-            'a' => 'vcard:Individual',
+            'a' => ['vcard:Individual','vcard:Work'],
+            'label' => "primary contact for #{full_name}",
             'contactFor' => @uri,
             'vcard:hasName' => vcard_name,
             'vcard:hasTitle' => vcard_title,
@@ -103,7 +133,7 @@ module Cap
           unless vcard_addresses.empty?
             vcard['vcard:hasAddress'] = vcard_addresses
           end
-          vcard.merge(VIVO_CONTEXT)
+          vcard
         end
       end
 
@@ -124,17 +154,18 @@ module Cap
       def last_name
         @last_name   ||= legal_name['lastName'] || ''
       end
+      def full_name
+        @full_name   ||= [first_name, middle_name, last_name].join(' ')
+      end
 
       def vcard_name
-        @vcard_name ||= begin
-          {
-            '@id' => vcard_uri + "/name",
-            'a' => 'vcard:Name',
-            'firstName' => first_name,
-            'middleName' => middle_name,
-            'lastName' => last_name
-          }
-        end
+        @vcard_name ||= {
+          '@id' => vcard_uri + '/name',
+          'a' => ['vcard:Name','vcard:Work'],
+          'firstName' => first_name,
+          'middleName' => middle_name,
+          'lastName' => last_name
+        }
       end
 
       # Position title
@@ -143,16 +174,23 @@ module Cap
         @profile_title ||= profile['shortTitle']['title'].gsub(/["'\n]/,'')
       end
 
+
+      # Profile contact
+      # primary or alternate contact
+      def profile_contact
+        @profile_contact ||= begin
+          profile['primaryContact'] || profile['alternateContact'] || {}
+        end
+      end
+
       # VCard position title
       # @return vcard_title [Hash] a vcard:Title in jsonld
       def vcard_title
-        @vcard_title ||= begin
-          {
-            '@id' => vcard_uri + "/title",
-            'a' => ['vcard:Title','vcard:Work'],
-            'vcard:title' => profile_title
-          }
-        end
+        @vcard_title ||= {
+          '@id' => vcard_uri + '/title',
+          'a' => ['vcard:Title','vcard:Work'],
+          'vcard:title' => profile_title
+        }
       end
 
       # Stanford Profile Link
@@ -183,24 +221,21 @@ module Cap
       # Email
       def vcard_email
         @vcard_email ||= begin
-          contact = profile['primaryContact'] || profile['alternateContact']
-          vcard_emails(contact, vcard_uri).first || {}
+          vcard_emails(profile_contact, vcard_uri).first || {}
         end
       end
 
       # Telephone
       def vcard_telephone
         @vcard_telephone ||= begin
-          contact = profile['primaryContact'] || profile['alternateContact']
-          vcard_telephones(contact, vcard_uri).first || {}
+          vcard_telephones(profile_contact, vcard_uri).first || {}
         end
       end
 
       # Fax
       def vcard_fax
         @vcard_fax ||= begin
-          contact = profile['primaryContact'] || profile['alternateContact']
-          vcard_faxes(contact, vcard_uri).first || {}
+          vcard_faxes(profile_contact, vcard_uri).first || {}
         end
       end
 
@@ -254,64 +289,107 @@ module Cap
         affiliations 'capPostdoc'
       end
 
+      # def profile_position(type, org)
+      #   position = @uri + '/position'
+      #   @rdf << [@uri, RDF::VIVO.relatedBy, position]
+      #   @rdf << [position, RDF.type, type]
+      #   @rdf << [position, RDF::RDFS.label, profile_title]
+      #   @rdf << [position, RDF::VIVO.relates, org]
+      # end
+
       def vivo_positions
         # TODO: determine positions within orgs
         # TODO: determine teacher/student relationships
         # RDF::VIVO.Librarian
         # RDF::VIVO.LibrarianPosition
         @vivo_positions ||= begin
-          positions = {
-            '@id' => @uri + '/positions',
-            'a' => []
-          }
+          positions = []
           if faculty?
-            # RDF::VIVO.FacultyPosition
             # RDF::VIVO.FacultyAdministrativePosition
-            # RDF::VIVO.PostdocOrFellowAdvisingRelationship
-            positions['a'].push 'vivo:FacultyMember'
+            vivo['a'].push 'vivo:FacultyMember'
+            position = vivo_position(@uri, 'vivo:FacultyPosition')
             # org = RDF::Node.new  # TODO: figure out the real org?
-            # profile_position(RDF::VIVO.FacultyPosition, org)
-          end
-          # RDF::VIVO.Student in CAP?
-          if md_student? || ms_student? || phd_student?
-            # RDF::VIVO.StudentOrganization
-            # RDF::VIVO.GraduateAdvisingRelationship
-            positions['a'].push 'vivo:GraduateStudent'
+            # position['vivo:relates'] = org
+            positions.push position
           end
           if postdoc?
-            positions['a'].push 'vivo:Postdoc'
-            # RDF::VIVO.PostdocPosition
-            # RDF::VIVO.PostdoctoralTraining
+            # vivo:Postdoc subClassOf vivo:NonFacultyAcademic
+            # vivo:PostdocPosition subClassOf vivo:NonFacultyAcademicPosition
+            # vivo:PostdoctoralTraining subClassOf vivo:EducationalProcess
+            vivo['a'].push 'vivo:Postdoc' # subClassOf vivo:NonFacultyAcademic
+            vivo['participatesIn'] = {
+              '@id' => @uri + '/PostdoctoralTraining',
+              'a' => ['vivo:PostdoctoralTraining'],
+              'hasParticipant' => @uri,
+            }
+            position = vivo_position(@uri, 'vivo:PostdocPosition')
+            # A postdoc CAP profile may not have enough information to identify
+            # the org hosting the postdoc position (institute, school,
+            # department). It may be necessary to have the advisor(s) profileIds
+            # and, thereby, identify the org for the advisor who is sponsoring
+            # the postdoc.  However, the postdoc CAP profile does not identify
+            # the advisor by profileId.
             # org = RDF::Node.new  # TODO: figure out the real org?
-            # profile_position(RDF::VIVO.PostdocPosition, org)
+            # position['vivo:relates'] = org
+            positions.push position
+          end
+          if md_student? || ms_student? || phd_student?
+            # vivo:GraduateStudent subClassOf vivo:Student
+            vivo['a'].push 'vivo:GraduateStudent'
+            vivo['participatesIn'] = {
+              '@id' => @uri + '/GraduateTraining',
+              'a' => ['vivo:EducationalProcess'],
+              'hasParticipant' => @uri,
+            }
+            position = vivo_position(@uri, 'vivo:NonFacultyAcademicPosition')
+            # org = RDF::Node.new  # TODO: figure out the real org?
+            # position['vivo:relates'] = org
+            positions.push position
           end
           if staff?
-            positions['a'].push 'vivo:NonAcademic'
+            vivo['a'].push 'vivo:NonAcademic'
+            position = vivo_position(@uri, 'vivo:NonAcademicPosition')
+            # org = RDF::Node.new  # TODO: figure out the real org?
+            # position['vivo:relates'] = org
+            positions.push position
             # RDF::VIVO.NonFacultyAcademic for research staff?
             # RDF::VIVO.NonFacultyAcademicPosition
-            # RDF::VIVO.NonAcademicPosition
             # org = RDF::Node.new  # TODO: figure out the real org?
             # profile_position(RDF::VIVO.NonAcademicPosition, org)
           end
-          # RDF::VIVO.MedicalResidency in CAP?
-          # if physician?  # VIVO equivalent?
+          # Any CAP data for vivo:UndergraduateStudent ?
+          # Any CAP data for vivo:MedicalResidency or vivo:Internship ?
+
+          if physician?  # VIVO equivalent?
+            # profile["clinicalContacts"] # array of contact objects
+            # profile["clinicalFocus"] # array of strings
+            # profile["clinicalPractices"] # array of objects
+            # profile["department"] # e.g. "Medicine"
+            # profile["section"] # e.g. "Gen. Medical Disciplines"
+          end
+
+          # if faculty? && physician? => determine 'vivo:PrimaryPosition' for org.
           positions
         end
       end
 
-      # Create vivo:AdvisorRole
-      def vivo_postdoc_advisor(person_uri)
-        role = vivo_advisor_role(person_uri)
-        role['label'] = 'Postdoctoral Advisor'
-        role
-      end
+      # # Create vivo:AdvisorRole
+      # # @param person_uri [String] a VIVO URI for the postdoc advisor
+      # # @param label [String] a label for the role: 'Postdoctoral Advisor'
+      # def vivo_postdoc_advisor(person_uri, label='Postdoctoral Advisor')
+      #   role = vivo_advisor_role(person_uri)
+      #   role['label'] = label
+      #   role
+      # end
 
-      # Create vivo:AdviseeRole
-      def vivo_postdoc_advisee(person_uri)
-        role = vivo_advisee_role(person_uri)
-        role['label'] = 'Postdoctoral Student'
-        role
-      end
+      # # Create vivo:AdviseeRole
+      # # @param person_uri [String] a VIVO URI for the postdoc student
+      # # @param label [String] a label for the role: 'Postdoctoral Student'
+      # def vivo_postdoc_advisee(person_uri, label='Postdoctoral Student')
+      #   role = vivo_advisee_role(person_uri)
+      #   role['label'] = label
+      #   role
+      # end
 
       # Create vivo:AdvisorRole and vivo:AdviseeRole, along with associated
       # vivo:AdvisingRelationship.  The method populates instance variables:
@@ -323,26 +401,31 @@ module Cap
         @vivo_outside_advisors ||= [] # person entities outside this profile
         @vivo_advising_roles   ||= [] # roles for this profile
         begin
+          # Note on grammar practices for 'adviser' and 'advisor'
+          # http://grammarist.com/spelling/adviser-advisor/
           if faculty?
+            #
+            # TODO: identify any data for these:
+            # vivo:FacultyMentoringRelationship
+            # vivo:GraduateAdvisingRelationship
+            # vivo:UndergraduateAdvisingRelationship
+            #
             advisees = profile['postdoctoralAdvisees'] || []
-            students = advisees.map {|s| s['profileId']}
-            #
-            # TODO: remove this binding if this is not a problem.  For now, it's
-            # very important to know whether the CAP API provides any student
-            # postdoc advisee data that does not have a profileId.
-            # TODO: run a mongo query to evaluate this possibility.
-            binding.pry if students.include? nil
-            #
-            if students.length > 0
-              advisor_role = vivo_postdoc_advisor(@uri)
-              students.each do |student_id|
+            if advisees.length > 0
+              advisor_name = "#{first_name} #{last_name}"
+              advisees.each do |advisee|
+                advisee_id = advisee['profileId']
+                advisee_uri = vivo_person_uri(advisee_id)
+                advisee_name = "#{advisee['firstName']} #{advisee['lastName']}"
                 # The student_id and student_uri must be the same patterns used
                 # in the initialize method when creating the student profile.
                 # The creation of these student ids must not be a complete
                 # profile creation, or else it might trigger an inf. loop.
-                advising_relationship = vivo_advising_relationship(@id, student_id)
-                advising_relationship['a'].push 'vivo:PostdocOrFellowAdvisingRelationship'
-                advisor_role['vivo:relatedBy'].push advising_relationship
+                label = "#{advisor_name} adviser to #{advisee_name}"
+                advising_rel = vivo_advising_relationship(@id, advisee_id, label)
+                advising_rel['a'].push 'vivo:PostdocOrFellowAdvisingRelationship'
+                advisor_role = vivo_advisor_role(@id, advisee_id, advising_rel, label)
+                @vivo_advising_roles.push advisor_role
                 # Note, the student is 'bearerOf' a vivo:AdviseeRole, which is
                 # also vivo:relatedBy this advising_relationship. This should be
                 # adequately defined when the student is processed, if the
@@ -354,14 +437,14 @@ module Cap
                 # completed when the student profile is processed.  The graph
                 # will simply accumulate all the predicate:object data
                 # for the student URI.
-                advisee_uri = vivo_person_uri(student_id)
-                advisee_role = vivo_postdoc_advisee(advisee_uri)
-                advisee_role['vivo:relatedBy'].push advising_relationship
+                label = "#{advisee_name} advised by #{advisor_name}"
+                advisee_role = vivo_advisee_role(@id, advisee_id, advising_rel, label)
                 vivo_advisee = {
-                  '@id' => vivo_person_uri(student_id),
+                  '@id' => advisee_uri,
                   'a' => 'foaf:Person',
+                  'label' => "#{advisee['lastName']}, #{advisee['firstName']}",
                   'bearerOf' => [advisee_role],
-                }.merge(VIVO_CONTEXT)
+                }
                 @vivo_outside_advisees.push vivo_advisee
                 #
                 # TODO: the student profile may have to be pulled from mongo to
@@ -384,71 +467,57 @@ module Cap
                 #     ].
                 # ].
               end
-              @vivo_advising_roles.push advisor_role
             end
-
-            # TODO: any graduate students with vivo:GraduateAdvisingRelationship
-
           end
-          if postdoc?
-            advisee_role = vivo_postdoc_advisee(@uri)
-            # TODO: Add advising relationship? Currently not possible (Oct, 2015).
-            # A postdoc profile does not identify advisors by profileId, so it
-            # is not possible to create the advising relationship without more
-            # complex queries on the data to identify the advisor.
-            # advising_relationship = vivo_advising_relationship(advisor_id, @id)
-            # advising_relationship['a'].push 'vivo:PostdocOrFellowAdvisingRelationship'
-            # advisee_role['vivo:relatedBy'].push advising_relationship
-            @vivo_advising_roles.push advisee_role
-            #
-            # "stanfordAdvisors"=>
-            #   [{"fullName"=>"Michel Dumontier",
-            #     "label"=>
-            #      {"html"=>
-            #        "<a href=\"https://profiles.stanford.edu/michel-dumontier\">Michel Dumontier</a>, <span>Postdoctoral Faculty Sponsor</span>",
-            #       "text"=>"Michel Dumontier, Postdoctoral Faculty Sponsor"},
-            #     "position"=>"Postdoctoral Faculty Sponsor",
-            #     "profileUrl"=>"https://profiles.stanford.edu/michel-dumontier"}],
+          if postdoc? || phd_student? || md_student? || ms_student?
+            advisee_name = "#{first_name} #{last_name}"
+            advisors = profile["stanfordAdvisors"] || []
+            advisors.each do |advisor|
+              # As of Oct, 2015:  A postdoc profile does not identify advisors
+              # by profileId, so it is not possible to create the advising
+              # relationship without more complex queries on the data to
+              # identify the advisor.
+              if advisor['profileId']
+                advisor_id = advisor['profileId']
+                advisor_name = advisor['fullName']
+                label = "#{advisee_name} advised by #{advisor_name}"
+                advising_rel = vivo_advising_relationship(advisor_id, @id, label)
+                if postdoc?
+                  advising_rel['a'].push 'vivo:PostdocOrFellowAdvisingRelationship'
+                else
+                  advising_rel['a'].push 'vivo:GraduateAdvisingRelationship'
+                end
+                advisee_role = vivo_advisee_role(advisor_id, @id, advising_rel, label)
+                advisee_role = vivo_postdoc_advisee(@uri)
+                @vivo_advising_roles.push advisee_role
+              end
+            end
+            # Advisor types in CAP data:
+            # most postdocs have:
+            # profile["stanfordAdvisors"][x]["position"] : "Postdoctoral Faculty Sponsor"
+            # 47441/62351/37521/63779/53591/62229/38061 (same advisor), 40494/39312/37987 (different advisors) have both:
+            # profile["stanfordAdvisors"][x]["position"] : "Postdoctoral Faculty Sponsor"
+            # profile["stanfordAdvisors"][x]["position"] : "Postdoctoral Research Mentor"
+            # 21125 only has:
+            # profile["stanfordAdvisors"][x]["position"] : "Postdoctoral Research Mentor"
+            # 46806/61829/44963/45434/60202 have:
+            # profile["stanfordAdvisors"][x]["position"] : "Doctoral (Program)"
+            # 40059 has:
+            # profile["stanfordAdvisors"][x]["position"] : "Doctoral Dissertation Advisor (AC)"
           end
-          if md_student? || ms_student? || phd_student?
-            # RDF::VIVO.GraduateAdvisingRelationship
-            # Note: student profile does not identify their advisors.
-            # "titles"=>
-            #  [{"academicInstituteDisplay"=>false,
-            #    "affiliation"=>"capMdStudent",
-            #    "bannerDisplay"=>true,
-            #    "label"=>{"html"=>"MD Student, expected graduation Spring 2016", "text"=>"MD Student, expected graduation Spring 2016"},
-            #    "organization"=>{"orgCode"=>"VAAA", "orgUrl"=>"http://med.stanford.edu"},
-            #    "title"=>"MD Student",
-            #    "type"=>"MD"},
-            #   {"academicInstituteDisplay"=>false,
-            #    "affiliation"=>"capPhdStudent",
-            #    "bannerDisplay"=>true,
-            #    "label"=>
-            #     {"html"=>"Ph.D. Student in Neurosciences, admitted Summer 2009",
-            #      "text"=>"Ph.D. Student in Neurosciences, admitted Summer 2009"},
-            #    "organization"=>{"orgCode"=>"VLFH", "orgUrl"=>"http://neuroscience.stanford.edu/education/phd_program/"},
-            #    "title"=>"Ph.D. Student",
-            #    "type"=>"PHD"},
-            #   {"academicInstituteDisplay"=>false,
-            #    "affiliation"=>"capMdStudent",
-            #    "bannerDisplay"=>true,
-            #    "label"=>{"html"=>"MSTP Student", "text"=>"MSTP Student"},
-            #    "organization"=>{"orgCode"=>"VAAA", "orgUrl"=>"http://med.stanford.edu"},
-            #    "title"=>"MSTP Student",
-            #    "type"=>"MSTP"}]}
+          # RDF::VIVO.MedicalResidency in CAP?
+          if physician?  # VIVO equivalent?
           end
-          # if staff?
+          if staff?
           #   advising['a'].push 'vivo:NonAcademic'
           #   # RDF::VIVO.NonFacultyAcademic for research staff?
           #   # RDF::VIVO.NonFacultyAcademicPosition
           #   # RDF::VIVO.NonAcademicPosition
           #   # org = RDF::Node.new  # TODO: figure out the real org?
           #   # profile_position(RDF::VIVO.NonAcademicPosition, org)
-          # end
-          # RDF::VIVO.MedicalResidency in CAP?
-          # if physician?  # VIVO equivalent?
+          end
         end
+        vivo['bearerOf'] = @vivo_advising_roles unless @vivo_advising_roles.empty?
       end
 
 

@@ -6,7 +6,7 @@ module Cap
       # @param data [Hash] a hash with a jsonld context
       # @return graph [RDF::Graph]
       def from_jsonld(data, context=nil)
-        data.merge(context) if context
+        data.merge!(context) if context
         RDF::Graph.new << JSON::LD::API.toRdf(data)
       end
 

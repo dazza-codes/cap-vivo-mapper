@@ -29,9 +29,13 @@ module Cap
           'firstName'  => 'vcard:givenName',
           'lastName'   => 'vcard:familyName',
           'middleName' => 'vivo:middleName',
+          # Not sure why this 'vivo:relates' is required here
+          # but without it the jsonld parser creates strings
+          # instead of URIs for the values of 'vivo:relates'.
           'vivo:relates' => {
               '@type' => '@id',
           },
+          # Some OBO identifiers that are readable.
           'contact' => {
               '@id' => 'obo:ARG_2000028',
               '@type' => '@id',
@@ -42,17 +46,53 @@ module Cap
               '@type' => '@id',
               'label' => 'contact info for'
           },
+          # Connecting a role to a process, such as education training
+          'realizes' => {
+              '@id' => 'obo:BFO_0000055',
+              '@type' => '@id',
+              'label' => 'realizes'
+          },
+          # Connecting a process to a role; complement to 'realizes'
+          'realizedIn' => {
+              '@id' => 'obo:BFO_0000054',
+              '@type' => '@id',
+              'label' => 'realized in'
+          },
           # Connecting a person to a role
           'bearerOf' => {
               '@id' => 'obo:RO_0000053',
               '@type' => '@id',
               'label' => 'bearer of'
           },
-          # Connecting a role to a person
+          # Connecting a role to a person; complement to 'bearerOf'
           'inheresIn' => {
               '@id' => 'obo:RO_0000052',
               '@type' => '@id',
               'label' => 'inheres in'
+          },
+          # Connecting a person to a process
+          'participatesIn' => {
+              '@id' => 'obo:RO_0000056',
+              '@type' => '@id',
+              'label' => 'participates in'
+          },
+          # Connecting a process to a person; complement to 'participatesIn'
+          'hasParticipant' => {
+              '@id' => 'obo:RO_0000057',
+              '@type' => '@id',
+              'label' => 'has participant'
+          },
+          # process > outcome
+          'hasOutput' => {
+              '@id' => 'obo:RO_0002234',
+              '@type' => '@id',
+              'label' => 'has output'
+          },
+          # outcome > process
+          'outputOf' => {
+              '@id' => 'obo:RO_0002353',
+              '@type' => '@id',
+              'label' => 'output of'
           },
           # 'vcard:hasName' => {
           #     '@id' => 'vcard:hasName',
@@ -99,7 +139,7 @@ module Cap
         address = data['address']
         address += ", #{data['address2']}" if data['address2']
         {
-          'a' => 'vcard:Address',
+          'a' => ['vcard:Address','vcard:Work'],
           'vcard:country' => data['country'] || 'United States',
           'vcard:region' => data['state'],
           'vcard:locality' => data['city'],
@@ -125,7 +165,7 @@ module Cap
           email = email.gsub(/,\z/,'').gsub(/>.*/,'').gsub(/\A</,'')
           emails << {
             '@id' => uri + "/email/#{i}",
-            'a' => 'vcard:Email',
+            'a' => ['vcard:Email','vcard:Work'],
             'vcard:email' => email
           }
         end
@@ -154,7 +194,7 @@ module Cap
         phones.map do |p|
           {
             '@id' => uri + "/phone/#{p}",
-            'a' => ['vcard:Telephone','vcard:Voice'],
+            'a' => ['vcard:Telephone','vcard:Voice','vcard:Work'],
             'vcard:telephone' => p
           }
         end
@@ -170,33 +210,86 @@ module Cap
         faxes.map do |fax|
           {
             '@id' => uri + "/fax/#{fax}",
-            'a' => ['vcard:Telephone','vcard:Fax'],
+            'a' => ['vcard:Telephone','vcard:Fax','vcard:Work'],
             'vcard:telephone' => fax
           }
         end
       end
 
-      # Create vivo:AdvisorRole
-      # The URI appends '/advisor' to the person_uri
+
+      # Create any kind of vivo:Position
       # @param person_uri [String] from vivo_person_uri
-      # @return advisor_role [Hash]
-      def vivo_advisor_role(person_uri)
+      # @param kind [String] a 'vivo:{TypeOfPosition}'
+      # @return position [Hash]
+      def vivo_position(person_uri, kind, label=nil)
+        type = kind.sub('vivo:','')
+        label = label || type.gsub(/([A-Z])/, ' \1').strip
         {
-          '@id' => person_uri + '/advisor',
-          'a' => 'vivo:AdvisorRole',
-          'vivo:relatedBy' => []
+          '@id' => person_uri + '/' + type,
+          'a' => [kind],
+          'label' => label
         }
       end
 
-      # Create vivo:AdviseeRole
-      # @param person_uri [String] from vivo_person_uri
-      # @return advisee_role [Hash]
-      def vivo_advisee_role(person_uri)
-        {
-          '@id' => person_uri + '/advisee',
-          'a' => 'vivo:AdviseeRole',
-          'vivo:relatedBy' => []
+      # # Create vivo:FacultyPosition
+      # # The URI appends '/FacultyPosition' to the person_uri
+      # # @param person_uri [String] from vivo_person_uri
+      # # @return faculty_position [Hash]
+      # def vivo_faculty_position(person_uri, label='Faculty Position')
+      #   # {
+      #   #   '@id' => person_uri + '/FacultyPosition',
+      #   #   'a' => ['vivo:FacultyPosition'],
+      #   #   'label' => label
+      #   # }
+      #   vivo_position(person_uri, 'vivo:FacultyPosition')
+      # end
+
+      # # Create vivo:NonFacultyAcademicPosition
+      # # The URI appends '/NonFacultyAcademicPosition' to the person_uri
+      # # @param person_uri [String] from vivo_person_uri
+      # # @return faculty_position [Hash]
+      # def vivo_nonfacultyacademic_position(person_uri, label='Non-Faculty Academic Position')
+      #   {
+      #     '@id' => person_uri + '/NonFacultyAcademicPosition',
+      #     'a' => ['vivo:NonFacultyAcademicPosition'],
+      #     'label' => label
+      #   }
+      # end
+
+      # Create vivo:AdvisorRole
+      # The URI appends '/AdvisorRole/{advisee_id}' to the advisor_uri
+      # @param advisor_id [Fixnum] a CAP profile ID number
+      # @param advisor_id [Fixnum] a CAP profile ID number
+      # @param rel [Hash] a vivo_advising_relationship
+      # @param label [String] a label for the relationship
+      # @return advisor_role [Hash]
+      def vivo_advisor_role(advisor_id, advisee_id, rel, label=nil)
+        advisor_uri = vivo_person_uri(advisor_id)
+        role = {
+          '@id' => advisor_uri + "/AdvisorRole/#{advisee_id}",
+          'a' => ['vivo:AdvisorRole'],
+          'vivo:relatedBy' => [rel]
         }
+        role['label'] = label if label
+        role
+      end
+
+      # Create vivo:AdviseeRole
+      # The URI appends '/AdviseeRole/{advisor_id}' to the advisee_uri
+      # @param advisor_id [Fixnum] a CAP profile ID number
+      # @param advisee_id [Fixnum] a CAP profile ID number
+      # @param rel [Hash] a vivo_advising_relationship
+      # @param label [String] a label for the relationship
+      # @return advisee_role [Hash]
+      def vivo_advisee_role(advisor_id, advisee_id, rel, label=nil)
+        advisee_uri = vivo_person_uri(advisee_id)
+        role = {
+          '@id' => advisee_uri + "/AdviseeRole/#{advisor_id}",
+          'a' => ['vivo:AdviseeRole'],
+          'vivo:relatedBy' => [rel]
+        }
+        role['label'] = label if label
+        role
       end
 
       # Create a vivo:AdvisingRelationship
@@ -204,15 +297,18 @@ module Cap
       # The target of the relationship is the advisee URI.
       # @param advisor_id [Fixnum] a CAP profile ID number
       # @param advisee_id [Fixnum] a CAP profile ID number
+      # @param label [String] a label for the relationship
       # @return advising_relationship [Hash]
-      def vivo_advising_relationship(advisor_id, advisee_id)
+      def vivo_advising_relationship(advisor_id, advisee_id, label=nil)
         advisor_uri = vivo_person_uri(advisor_id)
         advisee_uri = vivo_person_uri(advisee_id)
-        {
+        rel = {
           '@id' => advisor_uri + "/advising/#{advisee_id}",
           'a' => ['vivo:AdvisingRelationship'],
           'vivo:relates' => [advisor_uri, advisee_uri]
         }
+        rel['label'] = label if label
+        rel
       end
 
     end

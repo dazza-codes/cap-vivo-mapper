@@ -31,6 +31,45 @@ module Cap
         end
       end
 
+
+      # def vivo_org_types
+      #   # name="roleActivityType"
+      #   # "http://vivoweb.org/ontology/core#AcademicDepartment"
+      #   # "http://vivoweb.org/ontology/core#Association"
+      #   # "http://vivoweb.org/ontology/core#Center"
+      #   # "http://vivoweb.org/ontology/core#ClinicalOrganization"
+      #   # "http://vivoweb.org/ontology/core#College"
+      #   # "http://vivoweb.org/ontology/core#Committee"
+      #   # "http://vivoweb.org/ontology/core#Company"
+      #   # "http://vivoweb.org/ontology/core#Consortium"
+      #   # "http://vivoweb.org/ontology/core#CoreLaboratory"
+      #   # "http://vivoweb.org/ontology/core#Department"
+      #   # "http://vivoweb.org/ontology/core#Division"
+      #   # "http://vivoweb.org/ontology/core#ExtensionUnit"
+      #   # "http://vivoweb.org/ontology/core#Foundation"
+      #   # "http://vivoweb.org/ontology/core#FundingOrganization"
+      #   # "http://vivoweb.org/ontology/core#GovernmentAgency"
+      #   # "http://xmlns.com/foaf/0.1/Group">Group</option>
+      #   # "http://vivoweb.org/ontology/core#Hospital"
+      #   # "http://vivoweb.org/ontology/core#Institute"
+      #   # "http://vivoweb.org/ontology/core#Laboratory"
+      #   # "http://vivoweb.org/ontology/core#Library"
+      #   # "http://purl.obolibrary.org/obo/OBI_0000835">Manufacturer</option>
+      #   # "http://vivoweb.org/ontology/core#Museum"
+      #   # "http://xmlns.com/foaf/0.1/Organization"
+      #   # "http://vivoweb.org/ontology/core#PrivateCompany"
+      #   # "http://vivoweb.org/ontology/core#Program"
+      #   # "http://vivoweb.org/ontology/core#Publisher"
+      #   # "http://vivoweb.org/ontology/core#ResearchOrganization"
+      #   # "http://vivoweb.org/ontology/core#School"
+      #   # "http://vivoweb.org/ontology/core#ServiceProvidingLaboratory"
+      #   # "http://vivoweb.org/ontology/core#StudentOrganization"
+      #   # "http://vivoweb.org/ontology/core#Team"
+      #   # "http://purl.obolibrary.org/obo/ERO_0000565">Technology Transfer Office</option>
+      #   # "http://vivoweb.org/ontology/core#University"
+      # end
+
+
       # Create a VIVO organization graph, identified by
       # foaf:Organization and vcard:Organization data.
       # @param org_uri [RDF::URI]
