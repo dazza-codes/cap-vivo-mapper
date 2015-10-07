@@ -186,6 +186,50 @@ module Cap
         end
       end
 
+
+      # REST API documentation at
+      # http://www.abbreviations.com/abbr_api.php
+      # example:
+      # curl 'http://www.stands4.com/services/v2/abbr.php?uid=4388&tokenid=jYWGz5iCqdjTmnLm&term=BA&categoryid=DEGREES'
+      # <?xml version="1.0" encoding="UTF-8"?>
+      # <results><result><term>BA</term><definition>Bachelor of Arts</definition><category>Academic Degrees</category></result></results>
+      # @param abbrev [String]
+      # @return definitions [Array<String>] definitions for abbrev
+      def abbreviations_dot_com_degrees(abbrev)
+        require 'xmlsimple'
+        @abbrev_auth ||= begin
+          uid = ENV['ABBREVIATIONS_DOT_COM_UID']
+          token = ENV['ABBREVIATIONS_DOT_COM_TOKEN']
+          "uid=#{uid}&tokenid=#{token}"
+        end
+        @abbrev_client ||= begin
+          abbrev_uri = 'http://www.stands4.com/services/v2/abbr.php'
+          client = Faraday.new(url: abbrev_uri) do |f|
+            # f.use FaradayMiddleware::FollowRedirects, limit: 3
+            # f.use Faraday::Response::RaiseError # raise exceptions on 40x, 50x
+            # f.request :logger, @config.logger
+            # f.request :json
+            # f.response :json, :content_type => JSON_CONTENT
+            f.adapter Faraday.default_adapter
+          end
+          client.options.timeout = 90
+          client.options.open_timeout = 10
+          client
+        end
+        abbrev_search = "?#{@abbrev_auth}&term=#{abbrev}&categoryid=DEGREES"
+        response = @abbrev_client.get abbrev_search
+        if response.status == 200
+          xml = response.body
+          hash = XmlSimple.xml_in(xml)
+          result = hash['result'] # Array<Hash>
+          result.each {|r| r.delete('category') }
+          # term = result.first['term'].first  # should == abbrev
+          result.map {|r| r['definition'].first }
+        else
+          []
+        end
+      end
+
       def vivo_degrees
         @vivo_degrees ||= begin
           # Try to load the data locally

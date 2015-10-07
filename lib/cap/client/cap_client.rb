@@ -380,15 +380,15 @@ module Cap
 
       # Save publications data in local repo (mongodb)
       # @param id [Integer] CAP profileId
-      # @param publications [Hash] CAP profile publications data
+      # @param publications [Array<Hash>] CAP profile publications data
       def publications_save(id, publications)
         @pubs_fields ||= ['doiId', 'doiUrl', 'webOfScienceId', 'webOfScienceUrl']
-        publications.each do |p|
-          p.keys {|k| p.delete(k) unless @pubs_fields.include? k }
+        pubs = publications.map do |pub|
+          pub.select{|k,v| @pubs_fields.include?(k) }
         end
-        pub = {'_id' => id, 'publications' => publications}
+        pubs = {'_id' => id, 'publications' => pubs}
         begin
-          @publications.insert_one(pub)
+          @publications.insert_one(pubs)
         rescue => e
           msg = "Profile #{id} publications failed to save: #{e.message}"
           @config.logger.error msg

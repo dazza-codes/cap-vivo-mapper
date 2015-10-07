@@ -16,11 +16,11 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'dotenv'
 
-  spec.add_dependency 'daybreak' # memory mapped file db
   spec.add_dependency 'mongo'
 
   spec.add_dependency 'linkeddata'
   spec.add_dependency 'rdf-4store'
+  spec.add_dependency 'xml-simple'
 
   spec.add_dependency 'faraday'
   spec.add_dependency 'faraday_middleware'
