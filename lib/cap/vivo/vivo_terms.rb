@@ -165,7 +165,7 @@ module Cap
           email = email.gsub(/,\z/,'').gsub(/>.*/,'').gsub(/\A</,'')
           emails << {
             '@id' => uri + "/email/#{i}",
-            'a' => ['vcard:Email','vcard:Work'],
+            'a' => ['vcard:Email'],  # must be array to allow addition of types
             'vcard:email' => email
           }
         end
@@ -194,7 +194,7 @@ module Cap
         phones.map do |p|
           {
             '@id' => uri + "/phone/#{p}",
-            'a' => ['vcard:Telephone','vcard:Voice','vcard:Work'],
+            'a' => ['vcard:Telephone','vcard:Voice'],
             'vcard:telephone' => p
           }
         end
@@ -210,7 +210,7 @@ module Cap
         faxes.map do |fax|
           {
             '@id' => uri + "/fax/#{fax}",
-            'a' => ['vcard:Telephone','vcard:Fax','vcard:Work'],
+            'a' => ['vcard:Telephone','vcard:Fax'],
             'vcard:telephone' => fax
           }
         end
