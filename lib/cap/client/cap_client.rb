@@ -16,11 +16,13 @@ module Cap
 
       attr_reader :config
       attr_reader :cap_api
+      attr_reader :orgs
       attr_reader :profiles
 
       # Initialize a new client
       def initialize
         @config = Cap::Client.configuration
+        @orgs = Cap.configuration.cap_repo[:orgs]
         @profiles = Cap.configuration.cap_repo[:profiles]
         @presentations = Cap.configuration.cap_repo[:presentations]
         @publications = Cap.configuration.cap_repo[:publications]
@@ -101,7 +103,10 @@ module Cap
                     puts "Retrieved #{page} of #{pages} pages."
                   end
                   profiles = data['values']
-                  profiles.each {|profile| profile_save(profile) }
+                  profiles.each do |profile|
+                    profile_save(profile)
+                    orgs_collect(profile)
+                  end
                   page += 1
                   break if data['lastPage']
                 else
@@ -111,6 +116,7 @@ module Cap
                   break
                 end
               end
+              orgs_process
             rescue => e
               msg = e.message
               binding.pry if @config.debug
@@ -254,7 +260,7 @@ module Cap
             edu = doc['education'] || []
             edu.map {|e| e['organization']}.flatten.compact
           end
-          orgs.flatten.to_set.to_a.sort
+          orgs.flatten.uniq.sort
         end
       end
 
@@ -306,6 +312,77 @@ module Cap
       # @return profiles [Array<Hash>] mongo profiles with 'profileId'
       def mongo_map_profile_ids(profiles)
         profiles.map {|p| p['profileId'] = p.delete('_id'); p }
+      end
+
+      # Collect all the organization codes from profiles.
+      # Saves organization codes into @org_codes
+      # @param profile [Hash] CAP profile data
+      def orgs_collect(profile)
+        @org_codes ||= Set.new
+        titles = profile['titles']
+        if titles
+          orgs = titles.map {|t| t['organization']['orgCode'] rescue nil }
+          @org_codes = @org_codes.union orgs.compact
+        end
+      end
+
+      # Process all the organization data
+      def orgs_process
+        @orgs_data = orgs_retrieve(@org_codes)
+        @orgs_data.each {|o| org_save(o)}
+      end
+
+      def org_codes(org)
+        codes = org['orgCodes'] || []
+        if org['children']
+          codes.push org['children'].map {|o| org_codes(o)}
+        end
+        codes.flatten.uniq
+      end
+
+      # Retrieve all the organization data in local repo
+      # @param org_codes [Set<String>]
+      def orgs_retrieve(org_codes)
+        # try to load orgs data already saved
+        path = File.dirname(File.absolute_path(__FILE__))
+        file = File.join(path, 'orgs.json')
+        orgs_data = JSON.load(File.open(file).read)  # array
+        orgs_saved = orgs_data.map {|o| org_codes(o) }.flatten.to_set
+        orgs2get = org_codes - orgs_saved
+        begin
+          params = '?orgCodes=' + orgs2get.to_a.join(',')
+          response = @cap_api.get "#{@cap_orgs}#{params}"
+          if response.status == 200
+            orgs = response.body
+            orgs_data.push orgs
+            orgs_data.flatten!
+            File.open(file,'w').write(JSON.dump(orgs_data))
+          else
+            msg = "Failed to request org data: #{response.body}"
+            @config.logger.error msg
+          end
+        rescue => e
+          msg = "Failed to request org data: #{e.message}"
+          @config.logger.error msg
+        end
+        orgs_data
+      end
+
+      # Save the organization data in local repo
+      def org_save(org)
+        begin
+          org.delete('browsable')
+          org['orgCodes'].flatten!
+          org['_id'] = org['alias']
+          if org['children']
+            org['children'].each {|o| org_save(o)}
+            org.delete('children')
+          end
+          @orgs.insert_one(org)
+        rescue => e
+          msg = "Org #{org['alias']} failed to save: #{e.message}"
+          @config.logger.error msg
+        end
       end
 
       # return profile data from local repo
@@ -388,7 +465,13 @@ module Cap
       # @param id [Integer] CAP profileId
       # @param publications [Array<Hash>] CAP profile publications data
       def publications_save(id, publications)
-        @pubs_fields ||= ['doiId', 'doiUrl', 'webOfScienceId', 'webOfScienceUrl']
+        @pubs_fields ||= [
+          'doiId', 'doiUrl',
+          'pubMedId', 'pubMedUrl',
+          'publicationId',
+          'type',
+          'webOfScienceId', 'webOfScienceUrl'
+        ]
         pubs = publications.map do |pub|
           pub.select{|k,v| @pubs_fields.include?(k) }
         end
@@ -426,6 +509,8 @@ module Cap
       end
 
       def repo_clean
+        @orgs.drop
+        @orgs.create
         @profiles.drop
         @profiles.create
         @presentations.drop
@@ -441,6 +526,7 @@ module Cap
 
       def repo_commit(total)
         index_names
+        index_orgs
         index_affiliations
         puts "Stored #{@profiles.find.count} of #{total} profiles."
         puts "Stored profiles to #{@profiles.class} at: #{@profiles.namespace}."
@@ -455,6 +541,10 @@ module Cap
       def index_names
         @profiles.indexes.create_one({'names.legal.firstName' => 1})
         @profiles.indexes.create_one({'names.legal.lastName'  => 1})
+      end
+
+      def index_orgs
+        @orgs.indexes.create_one({'orgCodes' => 1})
       end
 
       def json_payloads
