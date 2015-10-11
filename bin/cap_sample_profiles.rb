@@ -4,11 +4,13 @@
 # 25845 - Michael Halaas (SoM Staff)
 STAFF = [25845]
 
+#  4164 - Mark Musen (has postdoctoralAdvisees)
 #  4706 - Russ Altman  (has postdoctoralAdvisees)
 #  6367 - Craig Levin (has GraduateAndFellowshipPrograms and postdoctoralAdvisees)
 #       - has postdocs: 51528, 49024, 65880, 37136
 # 49224 - Michel Dumontier (has GraduateAndFellowshipPrograms and postdoctoralAdvisees)
-FACULTY = [4706, 6367, 48613, 49224]
+#       - has postdocs: 68722
+FACULTY = [4164, 4706, 6367, 48613, 49224]
 
 # 48613 - both faculty and physician
 # 5949 - Steven R. Alexander (is a SHC Faculty Physician)
