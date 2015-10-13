@@ -108,6 +108,14 @@ module Cap
                   end
                   profiles = data['values']
                   profiles.each do |profile|
+                    profile_clean(profile)
+                    # split out the publication data to accommodate size limit on mongo
+                    id = profile['profileId']
+                    profile['_id'] = id  # use 'profileId' as the mongo _id
+                    presentations = profile.delete('presentations') || []
+                    presentations_save(id, presentations)
+                    publications = profile.delete('publications') || []
+                    publications_save(id, publications)
                     profile_save(profile)
                     orgs_collect(profile)
                   end
@@ -448,18 +456,31 @@ module Cap
       # Save profile data in local repo
       # @param profile [Hash] CAP profile data
       def profile_save(profile)
-        profile_clean(profile)
-        # split out the publication data to accommodate size limit on mongo
-        id = profile['profileId']
-        profile['_id'] = id  # use 'profileId' as the mongo _id
-        presentations = profile.delete('presentations') || []
-        presentations_save(id, presentations)
-        publications = profile.delete('publications') || []
-        publications_save(id, publications)
         begin
+          id = profile['profileId']
+          profile['_id'] = id  # use 'profileId' as the mongo _id
           @profiles.insert_one(profile)
         rescue => e
           msg = "Profile #{id} failed to save: #{e.message}"
+          @config.logger.error msg
+        end
+        begin
+          process_init(profile)
+        rescue => e
+          msg = "Profile #{id}: failed to update process data: #{e.message}"
+          @config.logger.error msg
+        end
+      end
+
+      # Update profile data in local repo
+      # @param profile [Hash] CAP profile data
+      def profile_update(profile)
+        begin
+          id = profile['profileId']
+          profile['_id'] = id
+          @profiles.update_one({'_id' => profile['profileId']}, profile)
+        rescue => e
+          msg = "Profile #{id} failed to update: #{e.message}"
           @config.logger.error msg
         end
         begin
@@ -523,25 +544,32 @@ module Cap
       # A profile's processing data.
       # @param id [Integer] A profileId number
       # @return data [Hash] Processing information
-      def process_data(id)
+      def process_doc(id)
         @processed.find({_id: id}).first || {}
+      end
+
+      # Update a profile record with lastModified time and processing data.
+      # @param profile [Hash] CAP profile
+      def process_init(profile)
+        id = profile['profileId']
+        cap_modified = profile['lastModified'] || 0
+        cap_modified = Time.parse(cap_modified).to_i
+        doc = {
+          _id: id,
+          lastModified: Time.now.to_i,
+          cap_modified: cap_modified,
+          cap_retrieved: Time.now.to_i
+        }
+        @processed.insert_one(doc)
       end
 
       # Update a profile record with lastModified time and processing data.
       # @param profile [Hash] CAP profile
       def process_update(profile)
         id = profile['profileId']
-        data = process_data(id)
-        cap_modified = profile['lastModified'] || 0
-        cap_modified = Time.parse(cap_modified).to_i
-        data['cap_modified'] = cap_modified
-        data['cap_retrieved'] = Time.now.to_i
-        process_doc = {
-          _id: id,
-          lastModified: Time.now.to_i,
-          data: data
-        }
-        @processed.insert_one(process_doc)
+        doc = process_doc(id)
+        doc['lastModified'] = Time.now.to_i,
+        @processed.update_one({'_id' => id}, doc)
       end
 
       def repo_clean
