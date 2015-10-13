@@ -32,23 +32,25 @@ module Cap
         @cap_profiles = '/profiles/v1'
         @cap_orgs     = '/cap/v1/orgs'
         @cap_search   = '/cap/v1/search'
-        @cap_api = Faraday.new(url: @cap_uri) do |f|
-          # f.use FaradayMiddleware::FollowRedirects, limit: 3
-          # f.use Faraday::Response::RaiseError # raise exceptions on 40x, 50x
-          # f.request :logger, @config.logger
-          f.request :json
-          f.response :json, :content_type => JSON_CONTENT
-          f.adapter Faraday.default_adapter
+        @cap_api = Faraday.new(url: @cap_uri) do |conn|
+          # conn.use FaradayMiddleware::FollowRedirects, limit: 3
+          # conn.use Faraday::Response::RaiseError # raise exceptions on 40x, 50x
+          # conn.request :logger, @config.logger
+          conn.request :retry, max: 2, interval: 0.5,
+                         interval_randomness: 0.5, backoff_factor: 2
+          conn.request :json
+          conn.response :json, :content_type => JSON_CONTENT
+          conn.adapter :httpclient
         end
         @cap_api.options.timeout = 90
         @cap_api.options.open_timeout = 10
         @cap_api.headers.merge!(json_payloads)
         # Authentication
         auth_uri = 'https://authz.stanford.edu/oauth/token'
-        @auth = Faraday.new(url: auth_uri) do |f|
-          f.request  :url_encoded
-          f.response :json, :content_type => JSON_CONTENT
-          f.adapter  Faraday.default_adapter
+        @auth = Faraday.new(url: auth_uri) do |conn|
+          conn.request  :url_encoded
+          conn.response :json, :content_type => JSON_CONTENT
+          conn.adapter :httpclient
         end
         @auth.options.timeout = 30
         @auth.options.open_timeout = 10

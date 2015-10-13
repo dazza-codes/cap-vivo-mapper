@@ -15,13 +15,15 @@ module Orcid
     def orcid_search_init
       @orcid_public_uri ||= 'http://pub.orcid.org/v1.2'
       @orcid_search_uri ||= @orcid_public_uri + '/search/orcid-bio/'
-      @orcid_search_api ||= Faraday.new(url: @orcid_search_uri) do |f|
-        # f.use FaradayMiddleware::FollowRedirects, limit: 3
-        # f.use Faraday::Response::RaiseError # raise exceptions on 40x, 50x
-        # f.request :logger, @config.logger
-        f.request :json
-        f.response :json, :content_type => JSON_CONTENT
-        f.adapter Faraday.default_adapter
+      @orcid_search_api ||= Faraday.new(url: @orcid_search_uri) do |conn|
+        # conn.use FaradayMiddleware::FollowRedirects, limit: 3
+        # conn.use Faraday::Response::RaiseError # raise exceptions on 40x, 50x
+        # conn.request :logger, @config.logger
+        conn.request :retry, max: 2, interval: 0.5,
+                       interval_randomness: 0.5, backoff_factor: 2
+        conn.request :json
+        conn.response :json, :content_type => JSON_CONTENT
+        conn.adapter :httpclient
       end
       @orcid_search_api.options.timeout = 90
       @orcid_search_api.options.open_timeout = 10
