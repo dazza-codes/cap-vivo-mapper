@@ -6,6 +6,7 @@ require 'linkeddata'
 require 'rdf/4store'
 require 'mongo'
 require_relative 'cap/configuration'
+require_relative 'orcid/orcid_client'
 require_relative 'rdf/vocab/vivo.rb'
 require_relative 'rdf/vocab/vivo_vcard.rb'
 
