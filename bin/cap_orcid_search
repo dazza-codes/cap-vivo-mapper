@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
+
+require 'pry'
+require 'cap'
+require 'cap/client'
+# require 'cap/vivo'
+
+# init configs
+config = Cap.configuration
+
+# client will load profile data from a local repo;
+# the data is available in `client.profiles`.
+client = Cap::Client::Client.new
+profile_ids = client.profile_ids
+
+# Search ORCID for identifiers
+ids = profile_ids
+
+puts "Processing #{ids.length} CAP profiles:"
+count = 0
+start = Time.now.to_i
+ids.each do |id|
+  count += 1
+  begin
+    profile = client.profile(id)
+    profile['orcidData'] = client.orcid_search(profile)
+    client.profile_update(profile)
+    if count % 50 == 0
+      delay = (Time.now.to_i - start) / 60.0
+      printf "\ncompleted %4d of %d (%5.1f min)\n", count, ids.length, delay
+    else
+      printf '.'
+    end
+  rescue => e
+    delay = Time.now.to_i - start
+    puts
+    msg = sprintf "FAILED profileId %d (%d of %d)\n", id, count, ids.length
+    msg += e.message
+    puts msg
+    puts
+    config.logger.error(msg)
+  end
+end
+puts
