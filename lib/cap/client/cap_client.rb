@@ -66,84 +66,104 @@ module Cap
       end
 
       def authenticate
-        if @access_expiry.to_i < Time.now.to_i
-          @access_code = nil
-          @auth.headers.delete :Authorization
-          @cap_api.headers.delete :Authorization
-        end
-        @access_code || begin
-          return false if @config.token_user.empty? && @config.token_pass.empty?
-          client = "#{@config.token_user}:#{@config.token_pass}"
-          auth_code = 'Basic ' + Base64.strict_encode64(client)
-          @auth.headers.merge!({ Authorization: auth_code })
-          response = @auth.get "?grant_type=client_credentials"
-          return false unless response.status == 200
-          access = response.body
-          return false if access['access_token'].nil?
-          @access_code = "Bearer #{access['access_token']}"
-          @access_expiry = Time.now.to_i + access['expires_in'].to_i
-          @cap_api.headers[:Authorization] = @access_code
+        begin
+          if @access_expiry.to_i < Time.now.to_i
+            @access_code = nil
+            @auth.headers.delete :Authorization
+            @cap_api.headers.delete :Authorization
+          end
+          @access_code || begin
+            return false if @config.token_user.empty? && @config.token_pass.empty?
+            client = "#{@config.token_user}:#{@config.token_pass}"
+            auth_code = 'Basic ' + Base64.strict_encode64(client)
+            @auth.headers.merge!({ Authorization: auth_code })
+            response = @auth.get "?grant_type=client_credentials"
+            return false unless response.status == 200
+            access = response.body
+            return false if access['access_token'].nil?
+            @access_code = "Bearer #{access['access_token']}"
+            @access_expiry = Time.now.to_i + access['expires_in'].to_i
+            @cap_api.headers[:Authorization] = @access_code
+            true
+          end
+        rescue => e
+          msg = "Failed to authenticate: #{e.message}"
+          binding.pry if @config.debug
+          @config.logger.error(msg)
         end
       end
 
-      # Get profiles from CAP API and store into local repo
-      def get_profiles
+      # Get a Stanford organization tree from CAP API and store into local repo
+      def get_orgs
         begin
           if authenticate
-            page = 1
-            pages = 0
-            total = 0
-            begin
-              while true
-                params = "?p=#{page}&ps=100"
-                response = @cap_api.get "#{@cap_profiles}#{params}"
-                if response.status == 200
-                  data = response.body
-                  if data['firstPage']
-                    pages = data['totalPages']
-                    total = data['totalCount']
-                    puts "Retrieved #{page} of #{pages} pages (#{total} profiles)."
-                  else
-                    puts "Retrieved #{page} of #{pages} pages."
-                  end
-                  profiles = data['values']
-                  profiles.each do |profile|
-                    profile_clean(profile)
-                    # split out the publication data to accommodate size limit on mongo
-                    id = profile['profileId']
-                    profile['_id'] = id  # use 'profileId' as the mongo _id
-                    presentations = profile.delete('presentations') || []
-                    presentations_save(id, presentations)
-                    publications = profile.delete('publications') || []
-                    publications_save(id, publications)
-                    profile_save(profile)
-                    orgs_collect(profile)
-                  end
-                  page += 1
-                  break if data['lastPage']
-                else
-                  msg = "Failed to GET profiles page #{page}: #{response.status}"
-                  @config.logger.error msg
-                  puts msg
-                  break
-                end
-              end
-              orgs_process
-            rescue => e
-              msg = e.message
-              binding.pry if @config.debug
+            response = @cap_api.get '/cap/v1/orgs/stanford'
+            if response.status == 200
+              stanford_orgs = response.body
+              orgs_file_save(stanford_orgs)
+              org_save(stanford_orgs) # recursive
+            else
+              msg = "Failed to GET Stanford orgs: #{response.status}"
               @config.logger.error msg
-            ensure
-              repo_commit(total)
+              puts msg
             end
-          else
-            msg = "Failed to authenticate"
-            @config.logger.error msg
           end
         rescue => e
           msg = e.message
           binding.pry if @config.debug
           @config.logger.error(msg)
+        end
+      end
+
+      # Get profiles from CAP API and store into local repo
+      def get_profiles
+        if authenticate
+          page = 1
+          pages = 0
+          total = 0
+          begin
+            while true
+              params = "?p=#{page}&ps=100"
+              response = @cap_api.get "#{@cap_profiles}#{params}"
+              if response.status == 200
+                data = response.body
+                if data['firstPage']
+                  pages = data['totalPages']
+                  total = data['totalCount']
+                  puts "Retrieved #{page} of #{pages} pages (#{total} profiles)."
+                else
+                  puts "Retrieved #{page} of #{pages} pages."
+                end
+                profiles = data['values']
+                profiles.each do |profile|
+                  profile_clean(profile)
+                  # split out the publication data to accommodate size limit on mongo
+                  id = profile['profileId']
+                  profile['_id'] = id  # use 'profileId' as the mongo _id
+                  presentations = profile.delete('presentations') || []
+                  presentations_save(id, presentations)
+                  publications = profile.delete('publications') || []
+                  publications_save(id, publications)
+                  profile_save(profile)
+                  orgs_collect(profile)
+                end
+                page += 1
+                break if data['lastPage']
+              else
+                msg = "Failed to GET profiles page #{page}: #{response.status}"
+                @config.logger.error msg
+                puts msg
+                break
+              end
+            end
+            orgs_process
+          rescue => e
+            msg = e.message
+            binding.pry if @config.debug
+            @config.logger.error msg
+          ensure
+            repo_commit(total)
+          end
         end
       end
 
@@ -352,13 +372,29 @@ module Cap
         codes.flatten.uniq
       end
 
-      # Retrieve all the organization data in local repo
+      # json data file for CAP orgs
+      def orgs_file
+        @orgs_file ||= begin
+          path = File.dirname(File.absolute_path(__FILE__))
+          File.join(path, 'orgs.json')
+        end
+      end
+
+      # Save json data to orgs_file
+      def orgs_file_save(orgs_data)
+        File.open(orgs_file,'w').write(JSON.dump(orgs_data))
+      end
+
+      # Load json data from orgs_file
+      def orgs_file_load
+        JSON.load(File.open(orgs_file).read)
+      end
+
+      # Retrieve organization data from CAP API, by orgCode
       # @param org_codes [Set<String>]
       def orgs_retrieve(org_codes)
         # try to load orgs data already saved
-        path = File.dirname(File.absolute_path(__FILE__))
-        file = File.join(path, 'orgs.json')
-        orgs_data = JSON.load(File.open(file).read)  # array
+        orgs_data = orgs_file_load
         orgs_saved = orgs_data.map {|o| org_codes(o) }.flatten.to_set
         orgs2get = org_codes - orgs_saved
         begin
@@ -368,7 +404,6 @@ module Cap
             orgs = response.body
             orgs_data.push orgs
             orgs_data.flatten!
-            File.open(file,'w').write(JSON.dump(orgs_data))
           else
             msg = "Failed to request org data: #{response.body}"
             @config.logger.error msg
