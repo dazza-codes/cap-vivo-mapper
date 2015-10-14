@@ -429,6 +429,13 @@ module Cap
         # end
       end
 
+      # Find all the profiles with ORCID data in the local repo
+      # @return profiles [Array<Hash>] array of profiles with ORCID data
+      def orcid_profiles
+        query = {'orcidData' => {'$exists' => true, '$not' => {'$size' => 0}} }
+        @profiles.find(query).to_a
+      end
+
       # return profile data from local repo
       # @param id [Integer] A profileId number
       # @return profile [Hash|nil]
