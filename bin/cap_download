@@ -10,4 +10,5 @@ require 'cap/client'
 # profile data is available in `client.profiles`.
 client = Cap::Client::Client.new
 client.repo_clean
+client.get_orgs
 client.get_profiles
