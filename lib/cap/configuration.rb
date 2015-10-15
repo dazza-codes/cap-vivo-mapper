@@ -19,10 +19,10 @@ module Cap
       logger_init
       @cap_testing = env_boolean('CAP_TESTING')
       @cap_replace = env_boolean('CAP_API_REPLACE')
-      rdf_repo
       @rdf_replace = env_boolean('CAP_RDF_REPLACE')
-      rdf_path
       @rdf_prov = env_boolean('CAP_RDF_PROV')
+      rdf_path
+      rdf_repo
     end
 
     def env_boolean(var)

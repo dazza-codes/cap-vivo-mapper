@@ -15,7 +15,6 @@ module Cap
       def initialize
         self.debug = env_boolean('DEBUG')
         logger_init
-        @cap_repo = Cap.configuration.cap_repo
         @rdf_repo = Cap.configuration.rdf_repo
         @rdf_path = Cap.configuration.rdf_path
         @rdf_prov = Cap.configuration.rdf_prov

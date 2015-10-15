@@ -12,6 +12,7 @@ module Cap
     # puts vivo_profile.rdf.to_ttl
     class Profile
 
+      include Cap::MongoRepo
       include Cap::Vivo::Orgs
       include Cap::Vivo::Prov
       include Cap::Vivo::VivoTerms
