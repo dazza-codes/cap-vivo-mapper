@@ -2,15 +2,12 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'pry'
 require 'cap'
 require 'cap/client'
 require 'cap/vivo'
 
 # init configs
-config = Cap.configuration
-config.cap_repo
-config.rdf_repo
+Cap.configuration
 
 # client will load profile data from a local repo; if it is empty, it
 # can be populated from the CAP API using `client.get_profiles`.  The
@@ -19,4 +16,4 @@ client = Cap::Client::Client.new
 ids = client.profile_ids
 puts "Currently holding #{ids.length} CAP profiles in local repo"
 
-binding.pry
+require 'pry'; binding.pry
