@@ -16,6 +16,7 @@ config = Cap.configuration
 client = Cap::Client::Client.new
 if config.cap_replace
   client.repo_clean
+  client.get_orgs
   client.get_profiles
 end
 profile_ids = client.profile_ids
@@ -96,7 +97,8 @@ ids.each do |id|
     delay = Time.now.to_i - start
     puts
     msg = sprintf "FAILED profileId %d (%d of %d)\n", id, count, ids.length
-    msg += e.message
+    msg += "#{e.message}\n"
+    msg += e.backtrace.join("\n")
     puts msg
     puts
     config.logger.error(msg)
