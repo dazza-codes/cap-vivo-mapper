@@ -431,66 +431,68 @@ module Cap
 
 
       def vivo_positions
-        @vivo_positions ||= profile['titles'].map do |title|
-          case title['affiliation']
-          when 'capFaculty'
-            type = 'vivo:FacultyPosition'
-          when 'capStaff'
-            type = 'vivo:NonAcademicPosition'
-          when 'capMdStudent', 'capMsStudent', 'capPhdStudent'
-            type = 'vivo:NonFacultyAcademicPosition'
-          when 'capPostdoc'
-            type = 'vivo:PostdocPosition' # subClassOf vivo:NonFacultyAcademic
-          # when 'physician'
-          else
-            # TODO: detect additional title types
-            #       see vivo_affilitations also
-            require 'pry'
-            binding.pry
+        @vivo_positions ||= begin
+          profile['titles'].map do |title|
+            case title['affiliation']
+            when 'capFaculty'
+              type = 'vivo:FacultyPosition'
+            when 'capStaff'
+              type = 'vivo:NonAcademicPosition'
+            when 'capMdStudent', 'capMsStudent', 'capPhdStudent'
+              type = 'vivo:NonFacultyAcademicPosition'
+            when 'capPostdoc'
+              type = 'vivo:PostdocPosition' # subClassOf vivo:NonFacultyAcademic
+            # when 'physician'
+            else
+              # TODO: detect additional title types
+              #       see vivo_affilitations also
+              require 'pry'
+              binding.pry
+            end
+            label = title['label']['text']  # or title['label']['html']
+            uri_suffix = title['label']['text'].gsub(/\W/,'')
+            position = {
+              '@id' => @uri + "/position/#{uri_suffix}",
+              'a' => [type],
+              'label' => label
+            }
+            # properties to add above:
+            # vivo:hrJobTitle
+            # vivo:dateTimeInterval
+            # obo:RO_0000052 'inheresIn'
+            # obo:OBI_0000312 'is specified output of'
+            # obo:RO_0002353 'output of'
+            # obo:RO_0000056 'participates in'
+            # vivo:rank
+            #
+            # TODO: try to use the org_string2thing here
+            # TODO: use title['organization']['orgCode'] for mongo find
+            # TODO: try to create or find a vcard for the org, probably should be
+            #       done in the org_string2thing etc.
+            #
+            # A postdoc CAP profile may not have enough information to identify
+            # the org hosting the postdoc position (institute, school,
+            # department). It may be necessary to have the advisor(s) profileIds
+            # and, thereby, identify the org for the advisor who is sponsoring
+            # the postdoc.  However, the postdoc CAP profile does not identify
+            # the advisor by profileId.
+            @org_uri_prefix ||= 'https://api.stanford.edu/cap/v1/orgs'
+            org_code = title['organization']['orgCode']
+            org_url = title['organization']['orgUrl']
+            # org_url ||= @org_uri_prefix + org_alias # the alias is unique
+            org_url ||= @org_uri_prefix + org_code
+
+            org = {
+              '@id' => org_url,
+              'a' => ['vivo:School'],  # this may not be correct, but guess for now.
+              # Map Stanford ORG type to VIVO, like 'department', 'school', 'institute' etc.
+              'label' => org_code
+            }
+            position['vivo:relates'] = org
+            position
           end
-          label = title['label']['text']  # or title['label']['html']
-          uri_suffix = title['label']['text'].gsub(/\W/,'')
-          position = {
-            '@id' => @uri + "/position/#{uri_suffix}",
-            'a' => [type],
-            'label' => label
-          }
-          # properties to add above:
-          # vivo:hrJobTitle
-          # vivo:dateTimeInterval
-          # obo:RO_0000052 'inheresIn'
-          # obo:OBI_0000312 'is specified output of'
-          # obo:RO_0002353 'output of'
-          # obo:RO_0000056 'participates in'
-          # vivo:rank
-          #
-          #
-          # TODO: try to use the org_string2thing here
-          # TODO: use title['organization']['orgCode'] to lookup details in the
-          #       CAP API (maybe get all that data into mongo?)
-          # TODO: try to create or find a vcard for the org, probably should be
-          #       done in the org_string2thing etc.
-          # A postdoc CAP profile may not have enough information to identify
-          # the org hosting the postdoc position (institute, school,
-          # department). It may be necessary to have the advisor(s) profileIds
-          # and, thereby, identify the org for the advisor who is sponsoring
-          # the postdoc.  However, the postdoc CAP profile does not identify
-          # the advisor by profileId.
-          # org = RDF::Node.new  # TODO: figure out the real org?
-          # position['vivo:relates'] = org
-          org_code = title['organization']['orgCode']
-          org_url = title['organization']['orgUrl']
-          org_url ||= "http://vivo.stanford.edu/orgs/#{org_code}"
-          org = {
-            '@id' => org_url,
-            'a' => ['vivo:School'],  # this may not be correct, but guess for now.
-            'label' => title['organization']['orgCode']
-          }
-          position['vivo:relates'] = org
-          position
         end
       end
-
 
 
       # Create vivo:AdvisorRole and vivo:AdviseeRole, along with associated

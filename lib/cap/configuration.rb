@@ -6,7 +6,6 @@ module Cap
     attr_accessor :logger
     attr_reader :log_file
 
-    attr_reader :cap_repo
     attr_reader :cap_replace
     attr_reader :cap_testing
 
@@ -19,7 +18,6 @@ module Cap
       self.debug = env_boolean('DEBUG')
       logger_init
       @cap_testing = env_boolean('CAP_TESTING')
-      cap_repo
       @cap_replace = env_boolean('CAP_API_REPLACE')
       rdf_repo
       @rdf_replace = env_boolean('CAP_RDF_REPLACE')
@@ -75,28 +73,6 @@ module Cap
       @rdf_repo ||= begin
         repo = ENV['CAP_REPO_4STORE'].dup || 'http://localhost:9001'
         RDF::FourStore::Repository.new(repo)
-      end
-    end
-
-    # Create a repository for storing CAP API json data
-    # Uses mongodb if ENV['CAP_REPO_MONGO'], otherwise Daybreak::DB
-    def cap_repo
-      @cap_repo ||= cap_repo_mongo
-    end
-
-    # Create a repository for storing CAP API json data
-    # ENV['CAP_REPO_MONGO'] || 'mongodb://127.0.0.1:27017/cap'
-    def cap_repo_mongo
-      @cap_repo_mongo ||= begin
-        dir = File.dirname(@log_file)
-        log_file = File.join(dir,'cap_repo_mongo.log')
-        log_dev = File.new(log_file, 'w+')
-        log_dev.sync = true if @debug # skip IO buffering in debug mode
-        logger = Logger.new(log_dev, 'weekly')
-        logger.level = @debug ? Logger::INFO : Logger::WARN
-        Mongo::Logger.logger = logger
-        repo = ENV['CAP_REPO_MONGO'].dup || 'mongodb://127.0.0.1:27017/cap'
-        Mongo::Client.new(repo)
       end
     end
 
