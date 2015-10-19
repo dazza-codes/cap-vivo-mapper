@@ -97,6 +97,14 @@ module Cap
         }
       }
 
+      # Create an organization URI
+      # @param id [String] An organization identifier
+      # @return uri [String]
+      def vivo_org_uri(id)
+        uri = DATA_NAMESPACE + "/org/#{id}"
+        uri.gsub('//','/')
+      end
+
       # Create a person URI
       # @param id [Fixnum] a CAP profile ID number
       # @return uri [String]
