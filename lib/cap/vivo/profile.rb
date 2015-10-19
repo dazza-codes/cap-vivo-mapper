@@ -144,6 +144,23 @@ module Cap
       # californiaPhysicianLicense
       # npi - https://en.wikipedia.org/wiki/National_Provider_Identifier
       def vivo_identity
+        orcid_data = profile['orcidData'] || []
+        # If the orcid search has identified more than one ID, assume it
+        # has failed to find the correct ID.
+        if orcid_data.length == 1
+          orcid = orcid_data.first
+          orcid_uri = orcid['orcid_uri']
+          orcid_rdf = {
+            '@id' => orcid_uri,
+            'a' => 'owl:Thing'
+          }
+          vivo['vivo:orcidId'] = orcid_rdf
+          vivo['vivo:scopusId'] = orcid['scopus_ids'].first
+        elsif orcid_data.length > 1
+          # Try to figure out which one to use OR
+          # try to filter them while searching for them.
+          # require 'pry'; binding.pry
+        end
       end
 
       # Enhance the VIVO data with:
@@ -154,6 +171,7 @@ module Cap
       def vivo_processing
         begin
           vivo['contact'] = vcards
+          vivo_identity
           vivo_affiliations
           vivo_advising  # process advisor/advisee relationships
           vivo['vivo:relatedBy'] = vivo_positions  # array of positions
