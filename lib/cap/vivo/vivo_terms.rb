@@ -93,35 +93,7 @@ module Cap
               '@id' => 'obo:RO_0002353',
               '@type' => '@id',
               'label' => 'output of'
-          },
-          # 'vcard:hasName' => {
-          #     '@id' => 'vcard:hasName',
-          #     '@type' => '@id'
-          # },
-          # 'vcard:hasTitle' => {
-          #     '@id' => 'vcard:hasTitle',
-          #     '@type' => '@id'
-          # },
-          # 'vcard:hasAddress' => {
-          #     '@id' => 'vcard:hasAddress',
-          #     '@type' => '@id'
-          # },
-          # 'vcard:hasEmail' => {
-          #     '@id' => 'vcard:hasEmail',
-          #     '@type' => '@id'
-          # },
-          # 'vcard:hasPhone' => {
-          #     '@id' => 'vcard:hasTelephone',
-          #     '@type' => '@id'
-          # },
-          # 'vcard:hasFax' => {
-          #     '@id' => 'vcard:hasTelephone',
-          #     '@type' => '@id'
-          # },
-          # 'vcard:hasURL' => {
-          #     '@id' => 'vcard:hasURL',
-          #     '@type' => '@id'
-          # },
+          }
         }
       }
 
