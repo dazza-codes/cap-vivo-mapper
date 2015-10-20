@@ -9,9 +9,6 @@ module Cap
       VCARD_givenName  = VCARD_PREFIX + 'givenName'
       VCARD_familyName = VCARD_PREFIX + 'familyName'
 
-      HAS_CONTACT_INFO = RDF::URI.parse 'http://purl.obolibrary.org/obo/ARG_2000028'
-      CONTACT_INFO_FOR = RDF::URI.parse 'http://purl.obolibrary.org/obo/ARG_2000029'
-
       DATA_NAMESPACE = ENV['DATA_NAMESPACE'] || 'https://vivo.stanford.edu'
 
       VIVO_CONTEXT = {
@@ -36,6 +33,7 @@ module Cap
               '@type' => '@id',
           },
           # Some OBO identifiers that are readable.
+          'physicianLicense' => 'obo:ARG_0000197',
           'contact' => {
               '@id' => 'obo:ARG_2000028',
               '@type' => '@id',

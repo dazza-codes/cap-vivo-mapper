@@ -8,10 +8,14 @@ module Orcid
 
     # ORCID search is documented at
     # http://members.orcid.org/api/tutorial-searching-api-12-and-earlier
-    # Initialize a client for the ORCID search API
+    # http://members.orcid.org/api/tutorial-retrieve-data-public-api-curl-12-and-earlier
+    # http://members.orcid.org/api/code-examples
+    # http://members.orcid.org/finding-orcid-record-holders-your-institution
+    # http://members.orcid.org/api/tutorial-searching-api-12-and-earlier
 
     attr_reader :orcid_search_api
 
+    # Initialize a client for the ORCID search API
     def orcid_search_init
       @orcid_public_uri ||= 'http://pub.orcid.org/v1.2'
       @orcid_search_uri ||= @orcid_public_uri + '/search/orcid-bio/'

@@ -131,18 +131,8 @@ module Cap
         }
       end
 
-      # TODO: Extract identification data compatible with VIVO, including:
+      # Extract identification data compatible with VIVO, including:
       # ORCID, eRA Commons, ISI Researcher, Scopus, health care provider
-      # TODO: try to find an ORCID
-      # Use a publication DOI to identify an author's ORCID
-      # http://members.orcid.org/api/tutorial-retrieve-data-public-api-curl-12-and-earlier
-      # http://members.orcid.org/api/code-examples
-      # http://members.orcid.org/finding-orcid-record-holders-your-institution
-      # http://members.orcid.org/api/tutorial-searching-api-12-and-earlier
-      #
-      # For physicians:
-      # californiaPhysicianLicense
-      # npi - https://en.wikipedia.org/wiki/National_Provider_Identifier
       def vivo_identity
         orcid_data = profile['orcidData'] || []
         # If the orcid search has identified more than one ID, assume it
@@ -155,26 +145,31 @@ module Cap
             'a' => 'owl:Thing'
           }
           vivo['vivo:orcidId'] = orcid_rdf
-          vivo['vivo:scopusId'] = orcid['scopus_ids'].first
+          scopus_id = orcid['scopus_ids'].first
+          vivo['vivo:scopusId'] = scopus_id if scopus_id
         elsif orcid_data.length > 1
           # Try to figure out which one to use OR
           # try to filter them while searching for them.
           # require 'pry'; binding.pry
         end
+        if profile['californiaPhysicianLicense']
+          vivo['physicianLicense'] = profile['californiaPhysicianLicense']
+        end
       end
 
       # Enhance the VIVO data with:
+      # - unique identifiers
       # - contacts
       # - biographical overview
       # - positions
       # - advising relationships
       def vivo_processing
         begin
-          vivo['contact'] = vcards
-          vivo_identity
           vivo_affiliations
-          vivo_advising  # process advisor/advisee relationships
-          vivo['vivo:relatedBy'] = vivo_positions  # array of positions
+          vivo_advising  # advisor/advisee relationships
+          vivo_identity
+          vivo['contact'] = vcards
+          vivo['vivo:relatedBy'] = vivo_positions  # array
           vivo['vivo:overview'] = bio if bio
           vivo['vivo:researchOverview'] = research_interests if research_interests
           # TODO: process clinical trials data
