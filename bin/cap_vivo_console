@@ -6,6 +6,9 @@ require 'cap'
 require 'cap/client'
 require 'cap/vivo'
 
+include Cap::Vivo::GraphUtils
+include Cap::Vivo::Orgs
+
 # init configs
 Cap.configuration
 
@@ -16,4 +19,4 @@ client = Cap::Client::Client.new
 ids = client.profile_ids
 puts "Currently holding #{ids.length} CAP profiles in local repo"
 
-require 'pry'; binding.pry
+require 'pry'; binding.pry;
