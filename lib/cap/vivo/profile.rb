@@ -27,6 +27,8 @@ module Cap
 
       # @param profile [JSON] CAP API profile - json object
       def initialize(profile)
+        # Get a map of all the org codes to org aliases
+        @@org_codes2aliases ||= org_codes2aliases
         @config = Cap::Vivo.configuration
         @profile = profile
         @id = profile['profileId']
@@ -34,16 +36,17 @@ module Cap
         vivo_processing
       end
 
-      # @return legal_name [Hash]
-      def legal_name
-        profile['names']['legal']
-      end
       # @return legal_name [String]
       def full_name
-        @full_name   ||= begin
+        @full_name ||= begin
           names = [first_name, middle_name, last_name].compact
           names.join(' ')
         end
+      end
+
+      # @return legal_name [Hash]
+      def legal_name
+        profile['names']['legal']
       end
       # @return legal_first_name [String|nil]
       def first_name
@@ -460,13 +463,12 @@ module Cap
             else
               # TODO: detect additional title types
               #       see vivo_affilitations also
-              require 'pry'
-              binding.pry
             end
             label = title['label']['text']  # or title['label']['html']
             uri_suffix = title['label']['text'].gsub(/\W/,'')
+            position_uri = @uri + "/position/#{uri_suffix}"
             position = {
-              '@id' => @uri + "/position/#{uri_suffix}",
+              '@id' => position_uri,
               'a' => [type],
               'label' => label
             }
@@ -479,30 +481,13 @@ module Cap
             # obo:RO_0000056 'participates in'
             # vivo:rank
             #
-            # TODO: try to use the org_string2thing here
-            # TODO: use title['organization']['orgCode'] for mongo find
-            # TODO: try to create or find a vcard for the org, probably should be
-            #       done in the org_string2thing etc.
-            #
-            # A postdoc CAP profile may not have enough information to identify
-            # the org hosting the postdoc position (institute, school,
-            # department). It may be necessary to have the advisor(s) profileIds
-            # and, thereby, identify the org for the advisor who is sponsoring
-            # the postdoc.  However, the postdoc CAP profile does not identify
-            # the advisor by profileId.
-            @org_uri_prefix ||= 'https://api.stanford.edu/cap/v1/orgs'
+            # org_website = title['organization']['orgUrl']
             org_code = title['organization']['orgCode']
-            org_url = title['organization']['orgUrl']
-            # org_url ||= @org_uri_prefix + org_alias # the alias is unique
-            org_url ||= @org_uri_prefix + org_code
-
-            org = {
-              '@id' => org_url,
-              'a' => ['vivo:School'],  # this may not be correct, but guess for now.
-              # Map Stanford ORG type to VIVO, like 'department', 'school', 'institute' etc.
-              'label' => org_code
-            }
-            position['vivo:relates'] = org
+            org_alias = @@org_codes2aliases[org_code]
+            if org_alias.nil?
+              require 'pry'; binding.pry
+            end
+            position['vivo:relates'] = vivo_org_uri(org_alias)
             position
           end
         end

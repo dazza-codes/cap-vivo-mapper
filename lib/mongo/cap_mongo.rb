@@ -60,14 +60,79 @@ module Cap
     #######################################
     # Core collection queries
 
+    # return organization data from local repo
+    # @param id [String] An organization alias
+    # @return org [Hash|nil]
+    def org_doc(id)
+      org = orgs.find({_id: id}).first
+      if org
+        org
+      else
+        msg = "Organization #{id} doesn't exist"
+        cap_mongo_logger.warn msg
+        {}
+      end
+    end
+
+    # return all organization data from local repo
+    # @return orgs [Array<Hash>]
+    def org_docs
+      orgs.find.to_a
+    end
+
+    # return all organization codes from local repo
+    # @return orgs [Array<String>]
+    def org_codes
+      orgs.find.map {|o| o['orgCodes']}.flatten.uniq.sort
+    end
+
+    # return all organization codes mapped to aliases
+    # @return codes2aliases [Hash] code: alias
+    def org_codes2aliases
+      p = {'_id'=>0, 'alias'=>1, 'orgCodes'=>1}
+      codes2aliases = {}
+      orgs.find.projection(p).each do |o|
+        o['orgCodes'].each {|c| codes2aliases[c] = o['alias'] }
+      end
+      codes2aliases
+    end
+
+    # return organization data from local repo
+    # @param code [String] An organization code
+    # @return org [Hash|nil] CAP organization data
+    def org_by_code(code)
+      # Investigation revealed that each orgCode maps to a unique organization;
+      # although each organization can have multiple orgCode values.
+      q = {'orgCodes' => {'$eq' => code}}
+      org = orgs.find(q).first
+      if org
+        org
+      else
+        msg = "Organization #{code} doesn't exist"
+        cap_mongo_logger.warn msg
+        {}
+      end
+    end
+
+    # Find organization alias for an orgCode
+    # @param code [String] An organization code
+    # @return org [Hash|nil] CAP organization alias
+    def org_alias4code(code)
+      p = {'_id'=>0, 'alias'=>1}
+      q = {'orgCodes' => {'$eq' => code}}
+      org = orgs.find(q).projection(p).first
+      if org
+        org['alias']
+      else
+        msg = "Organization #{code} doesn't exist"
+        cap_mongo_logger.warn msg
+        {}
+      end
+    end
+
     # @return ids [Array<Integer>] profile ids from local repo
     def profile_id_proj
       @profile_id_proj ||= {_id: false, profileId: true}
-    end
-
-    # @return profile_docs [Array<Hash>] profile json documents from local repo
-    def profile_docs
-      profiles.find.to_a
     end
 
     # @return ids [Array<Integer>] profile ids from local repo
@@ -76,10 +141,15 @@ module Cap
       ids.map {|i| i['profileId']}
     end
 
+    # @return profile_docs [Array<Hash>] profile json documents from local repo
+    def profile_docs
+      profiles.find.to_a
+    end
+
     # return profile data from local repo
     # @param id [Integer] A profileId number
     # @return profile [Hash|nil]
-    def profile(id)
+    def profile_doc(id)
       profile = profiles.find({_id: id}).first
       if profile
         profile

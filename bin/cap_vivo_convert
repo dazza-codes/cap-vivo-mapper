@@ -34,13 +34,15 @@ else
   test_ids = nil
 end
 
-# # ORGS
-# # Convert all the CAP API education organizations into VIVO linked data.
-# include Cap::Vivo::Orgs
-# orgs_graph = RDF::Graph.new
-# orgs = client.education_org_names.sample(100)
-# orgs.each {|o| orgs_graph << org_strings2things(o) }
-# File.open('orgs.ttl','w').write(orgs_graph.to_ttl)
+# ORGS
+# Convert all the CAP API organizations into VIVO linked data.
+include Cap::Vivo::Orgs
+orgs_graph = RDF::Graph.new
+orgs = client.org_docs
+orgs.each {|o| orgs_graph << org_vivo_graph( org_cap_to_vivo(o) ) }
+f = File.open(File.join(config.rdf_path, 'orgs.ttl'), 'w')
+f.write orgs_graph.to_ttl
+f.close
 
 # # Degrees
 # # Convert all the CAP API education degrees into VIVO linked data.
@@ -81,9 +83,8 @@ count = 0
 start = Time.now.to_i
 ids.each do |id|
   count += 1
-  profile = client.profile(id)
+  profile = client.profile_doc(id)
   begin
-    # mapper = Cap::Vivo::Mapper.new profile
     mapper = Cap::Vivo::Profile.new profile
     mapper.vivo
     mapper.save

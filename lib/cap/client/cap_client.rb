@@ -194,13 +194,38 @@ module Cap
       #   @orgs_data.each {|o| org_save(o)}
       # end
 
-      def org_codes(org)
-        codes = org['orgCodes'] || []
-        if org['children']
-          codes.push org['children'].map {|o| org_codes(o)}
-        end
-        codes.flatten.uniq
-      end
+      # def org_codes(org)
+      #   codes = org['orgCodes'] || []
+      #   if org['children']
+      #     codes.push org['children'].map {|o| org_codes(o)}
+      #   end
+      #   codes.flatten.uniq
+      # end
+
+      # # Retrieve organization data from CAP API, by orgCode
+      # # @param org_codes [Set<String>]
+      # def orgs_retrieve(org_codes)
+      #   # try to load orgs data already saved
+      #   orgs_data = orgs_file_load
+      #   orgs_saved = orgs_data.map {|o| org_codes(o) }.flatten.to_set
+      #   orgs2get = org_codes - orgs_saved
+      #   begin
+      #     params = '?orgCodes=' + orgs2get.to_a.join(',')
+      #     response = @cap_api.get "#{@cap_orgs}#{params}"
+      #     if response.status == 200
+      #       orgs = response.body
+      #       orgs_data.push orgs
+      #       orgs_data.flatten!
+      #     else
+      #       msg = "Failed to request org data: #{response.body}"
+      #       @config.logger.error msg
+      #     end
+      #   rescue => e
+      #     msg = "Failed to request org data: #{e.message}"
+      #     @config.logger.error msg
+      #   end
+      #   orgs_data
+      # end
 
       # json data file for CAP orgs
       def orgs_file
@@ -220,42 +245,17 @@ module Cap
         JSON.load(File.open(orgs_file).read)
       end
 
-      # Retrieve organization data from CAP API, by orgCode
-      # @param org_codes [Set<String>]
-      def orgs_retrieve(org_codes)
-        # try to load orgs data already saved
-        orgs_data = orgs_file_load
-        orgs_saved = orgs_data.map {|o| org_codes(o) }.flatten.to_set
-        orgs2get = org_codes - orgs_saved
-        begin
-          params = '?orgCodes=' + orgs2get.to_a.join(',')
-          response = @cap_api.get "#{@cap_orgs}#{params}"
-          if response.status == 200
-            orgs = response.body
-            orgs_data.push orgs
-            orgs_data.flatten!
-          else
-            msg = "Failed to request org data: #{response.body}"
-            @config.logger.error msg
-          end
-        rescue => e
-          msg = "Failed to request org data: #{e.message}"
-          @config.logger.error msg
-        end
-        orgs_data
-      end
-
       # Save the organization data in local repo
       def org_save(org)
         begin
           org.delete('browsable')
+          org.delete('onboarding')
           org['orgCodes'].flatten!
           org['_id'] = org['alias']
           if org['children']
             org['children'].each {|o| org_save(o)}
             org.delete('children')
           end
-          # @orgs.insert_one(org)
           orgs.insert_one(org)
         rescue => e
           msg = "Org #{org['alias']} failed to save: #{e.message}"
