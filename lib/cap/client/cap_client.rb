@@ -263,38 +263,6 @@ module Cap
         end
       end
 
-      # Search ORCID for an identifier matching profile
-      # @param id [Integer] A profileId number
-      # @return orcid_data [Array<Hash>]
-      def orcid_search(profile)
-        fn = profile['names']['legal']['firstName']
-        ln = profile['names']['legal']['lastName']
-        orcids = orcid_search_by_name(ln, fn)
-        if orcids.empty?
-          fn = profile['names']['preferred']['firstName']
-          ln = profile['names']['preferred']['lastName']
-          orcids = orcid_search_by_name(ln, fn)
-        end
-        orcids
-        #   # Search ORCID by publication data?
-        #   cap_pubs = profile['publications']
-        #   cap_dois = cap_pubs.map {|p| p['doiId'] }.compact
-        #   cap_dois.each do |doi|
-        #     orcids = orcid_search_by_doi(doi)
-        #     orcids.select do |orcid|
-        #       # TODO: check whether any of these match this profile?
-        #       # Try to match on last name, first name, email
-        #       if orcid[:last_name] == ln
-        #         if orcid[:given_name].include? fn
-        #           # This is likely a match
-        #           break
-        #         end
-        #       end
-        #     end
-        #   end
-        # end
-      end
-
       # Remove privileged fields from profile data
       # @param profile [Hash] CAP profile data
       def profile_clean(profile)

@@ -54,7 +54,7 @@ module Orcid
     # @return orcid_data [Array<Hash>]
     def orcid_search_by_doi(doi)
       orcid_search_init
-      query = '?q=digital-object-ids:' + doi
+      query = '?defType=edismax&q=digital-object-ids:%22' + doi + ':%22'
       response = @orcid_search_api.get query
       orcid_search_parse(response)
     end
@@ -74,35 +74,67 @@ module Orcid
     # @return orcid_data [Hash] keys include:
     #         orcid_uri, given_name, last_name, email, scopus_ids
     def orcid_search_parse(response)
+      orcid_data = []
       if response.status == 200
         search_results = JSON.parse(response.body)
         items = search_results['orcid-search-results']['orcid-search-result']
         orcid_profiles = items.map {|i| i['orcid-profile']}
-        orcid_profiles.map do |p|
-          uri = p['orcid-identifier']['uri']
-          bio = p['orcid-bio']
-          fn = bio['personal-details']['given-names']['value']
-          ln = bio['personal-details']['family-name']['value']
-          email = bio['contact-details']['email'] rescue []
-          orcid_data = {
-            orcid_uri: uri,
-            given_name: fn,
-            last_name: ln,
-            email: email,
+        orcid_data = orcid_profiles.map do |p|
+          orcid = {
+            orcid_id:  p['orcid-identifier']['path'],
+            orcid_uri: p['orcid-identifier']['uri']
           }
-          # Scopus Author ID
-          external_ids =  bio['external-identifiers']
-          external_ids =  external_ids['external-identifier'] rescue []
-          scopus_ids = external_ids.select do |i|
-            i['external-id-common-name']['value'].include? 'Scopus'
-          end
-          scopus_ids = scopus_ids.map {|i| i['external-id-reference']['value']}
-          orcid_data[:scopus_ids] = scopus_ids
-          orcid_data
+          bio = p['orcid-bio']
+          orcid.merge!(orcid_names(bio))
+          orcid.merge!(orcid_contacts(bio))
+          orcid.merge!(orcid_scopus_ids(bio))
+          orcid
         end
-      else
-        []
       end
+      orcid_data
+    end
+
+    # Extract contact details from an ORCID profile
+    # @param bio [Hash] from orcid_profile['orcid-bio']
+    # @return contacts [Hash]
+    def orcid_contacts(bio)
+      contacts = {}
+      email = bio['contact-details']['email'] rescue nil
+      contacts[:email] = email if email
+      contacts
+    end
+
+    # Extract names from an ORCID profile
+    # @param bio [Hash] from orcid_profile['orcid-bio']
+    # @return names [Hash]
+    def orcid_names(bio)
+      names = {
+        given_name:  bio['personal-details']['given-names']['value'],
+        family_name: bio['personal-details']['family-name']['value']
+      }
+      # "other-names"=>{"other-name"=>[{"value"=>"Fred J. Blog"}, {"value"=>"Fred John Blog"}]
+      on = bio['personal-details']['other-names']['other-name'] rescue nil
+      if on
+        names[:other_names] = on.map {|n| n['value']}
+      end
+      names
+    end
+
+    # Extract Scopus Author ID from an ORCID profile
+    # @param bio [Hash] from orcid_profile['orcid-bio']
+    # @return scopus_ids [Hash]
+    def orcid_scopus_ids(bio)
+      scopus = {}
+      scopus_ids = nil
+      external_ids = bio['external-identifiers']['external-identifier'] rescue nil
+      if external_ids
+        ids = external_ids.select do |i|
+          i['external-id-common-name']['value'].include? 'Scopus'
+        end
+        scopus_ids = ids.map {|i| i['external-id-reference']['value']}
+      end
+      scopus[:scopus_ids] = scopus_ids if scopus_ids
+      scopus
     end
 
   end

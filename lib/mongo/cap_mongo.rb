@@ -141,36 +141,43 @@ module Cap
       ids.map {|i| i['profileId']}
     end
 
-    # @return profile_docs [Array<Hash>] profile json documents from local repo
-    def profile_docs
-      profiles.find.to_a
-    end
-
     # return profile data from local repo
     # @param id [Integer] A profileId number
     # @return profile [Hash|nil]
     def profile_doc(id)
-      profile = profiles.find({_id: id}).first
-      if profile
-        profile
-      else
-        msg = "Profile #{id} doesn't exist"
-        cap_mongo_logger.warn msg
-        {}
-      end
+      profiles.find({_id: id}).first
     end
 
-    # return presentation data from local repo
+    # return all profile data from local repo
+    # @return profiles [Array<Hash>]
+    def profile_docs
+      profiles.find.to_a
+    end
+
+    # return presentation data for one profile from local repo
     # @param id [Integer] A profileId number
-    # @return presentations [Array<Hash>|nil]
-    def presentation(id)
+    # @return presentations [Hash|nil]
+    def presentation_doc(id)
       presentations.find({_id: id}).first
     end
 
-    # return publication data from local repo
+    # return all presentation data from local repo
+    # @return presentations [Array<Hash>]
+    def presentation_docs
+      presentations.find.to_a
+    end
+
+    # return publication data for one profile from local repo
     # @param id [Integer] A profileId number
-    def publication(id)
+    # @return publications [Hash|nil]
+    def publication_doc(id)
       publications.find({_id: id}).first
+    end
+
+    # return all publication data from local repo
+    # @return publications [Array<Hash>]
+    def publication_docs
+      publications.find.to_a
     end
 
     # A profile's processing data.

@@ -7,16 +7,151 @@ require 'cap'
 require 'cap/client'
 # require 'cap/vivo'
 
+include Orcid::Client
+# include Crossref::Client
+# crossref_init
+
 # init configs
 config = Cap.configuration
 
-# client will load profile data from a local repo;
-# the data is available in `client.profiles`.
+# An approximate string match that will err on the side of false positives; the
+# input strings are stripped of non-word characters and converted to lower case.
+# Any nil or empty inputs return a false result.
+# @param nameA [String]
+# @param nameB [String]
+# @return match [Boolean] false when the names clearly do not match
+def name_match?(nameA, nameB)
+  return false if nameA.nil? || nameB.nil?
+  nameA = nameA.gsub(/\W/,'').downcase
+  nameB = nameB.gsub(/\W/,'').downcase
+  return false if nameA.empty? || nameB.empty?
+  # Check the first character
+  return false if nameA[0] != nameB[0]
+  # Different lengths suggest a mis-match, but an additional
+  # inclusion check can confirm it.  If one name includes the other,
+  # err on the side of accepting the match.
+  if nameA.length == nameB.length
+    nameA == nameB
+  elsif nameA.length > nameB.length
+    nameA.include?(nameB)
+  elsif nameA.length < nameB.length
+    nameB.include?(nameA)
+  end
+end
+
+def profile_middle_name(profile)
+  legal_mn = profile['names']['legal']['middleName']
+  pref_mn = profile['names']['preferred']['middleName']
+  profile_mn = nil
+  if legal_mn && pref_mn
+    if legal_mn == pref_mn || legal_mn.length > pref_mn.length
+      profile_mn = legal_mn
+    else
+      profile_mn = pref_mn
+    end
+  elsif legal_mn
+    profile_mn = legal_mn
+  elsif pref_mn
+    profile_mn = pref_mn
+  end
+  profile_mn
+end
+
+
+def orcid_filter(profile, orcids)
+  return [] if orcids.nil? || orcids.empty?
+  pref_fn = profile['names']['preferred']['firstName'].downcase
+  legal_fn = profile['names']['legal']['firstName'].downcase
+  legal_ln = profile['names']['legal']['lastName'].downcase
+  try_pref_fn = legal_fn != pref_fn
+  orcid_matches = orcids.select do |orcid|
+    # The legal last name must be an exact match (although case insensitive).
+    # The first name matching is not exact, to avoid false negatives (at the
+    # cost of more false positives).
+    match = false
+    orcid_ln = orcid[:family_name].downcase
+    orcid_fn = orcid[:given_name].downcase
+    if orcid_ln == legal_ln
+      if name_match?(orcid_fn, legal_fn)
+        match = true
+      end
+      # If that doesn't match, try the preferred first name.
+      if !match && try_pref_fn && name_match?(orcid_fn, pref_fn)
+        match = true
+      end
+    end
+    match
+  end
+  if orcid_matches.length > 1
+    # Try to further filter the results based on middle name, if possible. This
+    # code is designed to exclude matches where the middle names are available
+    # and clearly do not match.
+    profile_mn = profile_middle_name(profile)
+    if profile_mn
+      matches = orcid_matches.select do |orcid|
+        orcid_names = orcid[:given_name].split
+        if orcid_names.length > 1
+          # Use everything after the first name.
+          orcid_mn = orcid_names.slice(1..-1).join(' ')
+          name_match?(orcid_mn, profile_mn)
+        else
+          true # can't exclude based on middle name
+        end
+      end
+      # If the filtering has some results, replace the larger set; otherwise
+      # keep the larger set although it might contain false positive results.
+      orcid_matches = matches unless matches.empty?
+    end
+  end
+  orcid_matches
+end
+
+# Search ORCID for an identifier matching profile
+# @param profile [Hash] A CAP profile document
+# @param pubs [Hash] Publications for a CAP profile
+# @return orcid_data [Array<Hash>]
+def orcid_search(profile, pubs=nil)
+  # ORCID API search is case insensitive
+  legal_ln = profile['names']['legal']['lastName'].downcase
+  orcids4name = orcid_search_by_name(legal_ln)
+  # TODO: If CAP provides an alternate last name (like a maiden name), issue
+  #       an additional ORCID API query for it.  As of Nov 2015, there is no
+  #       CAP data for alternative last name (e.g. maiden name).
+  #
+  # Use one search query to get as many ORCIDS matching last name as possible,
+  # then filter them by first name; avoid multiple ORCID API requests on
+  # variations in first names (with or without middle names or abbreviations).
+  orcid_matches = orcid_filter(profile, orcids4name)
+  if orcid_matches.empty? && pubs
+    # Try to find an ORCID using publication data
+    unless pubs['publications'].empty?
+      articles = pubs['publications'].select {|p| p['type'] == 'article' }
+      pubIds = articles.map {|a| {pmid: a['pubMedId'], doi: a['doiId']} }
+      pubIds.each do |pub|
+        if pub[:pmid]
+          orcids4pmid = orcid_search_by_pmid(pub[:pmid])
+          orcid_matches = orcid_filter(profile, orcids4pmid)
+          break unless orcid_matches.empty?
+        end
+        if pub[:doi]
+          orcids4doi = orcid_search_by_doi(pub[:doi])
+          orcid_matches = orcid_filter(profile, orcids4doi)
+          break unless orcid_matches.empty?
+        end
+      end
+    end
+  end
+  orcid_matches
+end
+
+# client will load profile data from a local repo
 client = Cap::Client::Client.new
 profile_ids = client.profile_ids
 
 # Search ORCID for identifiers
 ids = profile_ids
+# ids = profile_ids.sample(50)
+# ids = [24298, 70991, 70968, 6176, 6787]
 
 puts "Processing #{ids.length} CAP profiles:"
 count = 0
@@ -24,9 +159,14 @@ start = Time.now.to_i
 ids.each do |id|
   count += 1
   begin
-    profile = client.profile(id)
-    profile['orcidData'] = client.orcid_search(profile)
-    client.profile_update(profile)
+    profile = client.profile_doc(id)
+    pubs = client.publication_doc(id)
+    orcid_data = orcid_search(profile, pubs)
+    unless orcid_data.empty?
+      puts orcid_data
+      profile['orcidData'] = orcid_data
+      client.profile_update(profile)
+    end
     if count % 50 == 0
       delay = (Time.now.to_i - start) / 60.0
       printf "\ncompleted %4d of %d (%5.1f min)\n", count, ids.length, delay
@@ -37,7 +177,7 @@ ids.each do |id|
     delay = Time.now.to_i - start
     puts
     msg = sprintf "FAILED profileId %d (%d of %d)\n", id, count, ids.length
-    msg += e.message
+    msg += "#{e.message}\n" + e.backtrace.join("\n")
     puts msg
     puts
     config.logger.error(msg)
