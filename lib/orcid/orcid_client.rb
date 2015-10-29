@@ -17,12 +17,13 @@ module Orcid
 
     # Initialize a client for the ORCID search API
     def orcid_search_init
+      orcid_search_logger
       @orcid_public_uri ||= 'http://pub.orcid.org/v1.2'
       @orcid_search_uri ||= @orcid_public_uri + '/search/orcid-bio/'
       @orcid_search_api ||= Faraday.new(url: @orcid_search_uri) do |conn|
         # conn.use FaradayMiddleware::FollowRedirects, limit: 3
         # conn.use Faraday::Response::RaiseError # raise exceptions on 40x, 50x
-        # conn.request :logger, @config.logger
+        # conn.request :logger, orcid_search_logger
         conn.request :retry, max: 2, interval: 0.5,
                        interval_randomness: 0.5, backoff_factor: 2
         conn.request :json
@@ -33,6 +34,25 @@ module Orcid
       @orcid_search_api.options.open_timeout = 10
       headers = { accept: 'application/orcid+json', content_type: JSON_CONTENT }
       @orcid_search_api.headers.merge!(headers)
+    end
+
+    def orcid_search_logger
+      @orcid_search_logger ||= begin
+        require 'logger'
+        begin
+          log_file = ENV['ORCID_LOG_FILE'] || 'log/orcid_search.log'
+          @log_file = File.absolute_path log_file
+          FileUtils.mkdir_p File.dirname(@log_file) rescue nil
+          log_dev = File.new(@log_file, 'w+')
+        rescue
+          log_dev = $stderr
+          @log_file = 'STDERR'
+        end
+        log_dev.sync = true if @debug # skip IO buffering in debug mode
+        logger = Logger.new(log_dev, 'weekly')
+        logger.level = @debug ? Logger::DEBUG : Logger::INFO
+        logger
+      end
     end
 
     # Search ORCID by name
@@ -108,14 +128,23 @@ module Orcid
     # @param bio [Hash] from orcid_profile['orcid-bio']
     # @return names [Hash]
     def orcid_names(bio)
-      names = {
-        given_name:  bio['personal-details']['given-names']['value'],
-        family_name: bio['personal-details']['family-name']['value']
-      }
+      details = bio['personal-details']
+      if details['family-name'].nil? || details['given-names'].nil?
+        msg = "ORCID has no 'given-names' or 'family-name'\n"
+        msg += JSON.dump(bio)
+        msg += "\n"
+        orcid_search_logger.warn msg
+      end
+      given_name  = details['given-names']['value'] rescue 'UNKNOWN'
+      family_name = details['family-name']['value'] rescue 'UNKNOWN'
+      names = { given_name:  given_name, family_name: family_name }
       # "other-names"=>{"other-name"=>[{"value"=>"Fred J. Blog"}, {"value"=>"Fred John Blog"}]
-      on = bio['personal-details']['other-names']['other-name'] rescue nil
-      if on
-        names[:other_names] = on.map {|n| n['value']}
+      if details['other-names']
+        if details['other-names']['other-name']
+          # other_names is Array<Hash>
+          other_names = details['other-names']['other-name']
+          names[:other_names] = other_names.map {|n| n['value']}
+        end
       end
       names
     end

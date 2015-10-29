@@ -131,12 +131,24 @@ def orcid_search(profile, pubs=nil)
         if pub[:pmid]
           orcids4pmid = orcid_search_by_pmid(pub[:pmid])
           orcid_matches = orcid_filter(profile, orcids4pmid)
-          break unless orcid_matches.empty?
+          unless orcid_matches.empty?
+            msg = "Found ORCID using publication: #{pub[:pmid]}\n"
+            msg += JSON.dump(orcid_matches)
+            msg += "\n"
+            config.logger.info(msg)
+            break
+          end
         end
         if pub[:doi]
           orcids4doi = orcid_search_by_doi(pub[:doi])
           orcid_matches = orcid_filter(profile, orcids4doi)
-          break unless orcid_matches.empty?
+          unless orcid_matches.empty?
+            msg = "Found ORCID using publication: #{pub[:doi]}\n"
+            msg += JSON.dump(orcid_matches)
+            msg += "\n"
+            config.logger.error(msg)
+            break
+          end
         end
       end
     end
