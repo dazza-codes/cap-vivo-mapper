@@ -12,7 +12,7 @@ include Orcid::Client
 # crossref_init
 
 # init configs
-config = Cap.configuration
+Cap.configuration
 
 # An approximate string match that will err on the side of false positives; the
 # input strings are stripped of non-word characters and converted to lower case.
@@ -132,10 +132,8 @@ def orcid_search(profile, pubs=nil)
           orcids4pmid = orcid_search_by_pmid(pub[:pmid])
           orcid_matches = orcid_filter(profile, orcids4pmid)
           unless orcid_matches.empty?
-            msg = "Found ORCID using publication: #{pub[:pmid]}\n"
-            msg += JSON.dump(orcid_matches)
-            msg += "\n"
-            config.logger.info(msg)
+            msg = "Found ORCID using publication PMID: #{pub[:pmid]}\n"
+            orcid_search_logger.info(msg)
             break
           end
         end
@@ -143,10 +141,8 @@ def orcid_search(profile, pubs=nil)
           orcids4doi = orcid_search_by_doi(pub[:doi])
           orcid_matches = orcid_filter(profile, orcids4doi)
           unless orcid_matches.empty?
-            msg = "Found ORCID using publication: #{pub[:doi]}\n"
-            msg += JSON.dump(orcid_matches)
-            msg += "\n"
-            config.logger.error(msg)
+            msg = "Found ORCID using publication DOI: #{pub[:doi]}\n"
+            orcid_search_logger.info(msg)
             break
           end
         end
@@ -161,9 +157,12 @@ client = Cap::Client::Client.new
 profile_ids = client.profile_ids
 
 # Search ORCID for identifiers
-ids = profile_ids
-# ids = profile_ids.sample(50)
+# ids = profile_ids
+ids = profile_ids.sample(50)
 # ids = [24298, 70991, 70968, 6176, 6787]
+
+# some profiles with orcid data that has no family-name.
+# ids = [8832, 15848, 16922, 4506]
 
 puts "Processing #{ids.length} CAP profiles:"
 count = 0
@@ -175,9 +174,15 @@ ids.each do |id|
     pubs = client.publication_doc(id)
     orcid_data = orcid_search(profile, pubs)
     unless orcid_data.empty?
-      puts orcid_data
       profile['orcidData'] = orcid_data
       client.profile_update(profile)
+      legal_name = JSON.dump(profile['names']['legal']) + "\n"
+      pref_name  = JSON.dump(profile['names']['preferred']) + "\n"
+      msg = "Found ORCID for Profile: #{id}\n"
+      msg += 'legal name:     ' + legal_name
+      msg += 'preferred name: ' + pref_name
+      msg += JSON.dump(orcid_data) + "\n"
+      orcid_search_logger.info(msg)
     end
     if count % 50 == 0
       delay = (Time.now.to_i - start) / 60.0
@@ -192,7 +197,7 @@ ids.each do |id|
     msg += "#{e.message}\n" + e.backtrace.join("\n")
     puts msg
     puts
-    config.logger.error(msg)
+    orcid_search_logger.error(msg)
   end
 end
 puts
