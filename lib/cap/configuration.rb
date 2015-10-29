@@ -71,8 +71,12 @@ module Cap
     # ENV['CAP_REPO_4STORE'] || 'http://localhost:9001'
     def rdf_repo
       @rdf_repo ||= begin
-        repo = ENV['CAP_REPO_4STORE'].dup || 'http://localhost:9001'
-        RDF::FourStore::Repository.new(repo)
+        if ENV['CAP_REPO_4STORE']
+          repo_uri = ENV['CAP_REPO_4STORE'].dup
+        else
+          repo_uri = 'http://localhost:9001'
+        end
+        RDF::FourStore::Repository.new(repo_uri)
       end
     end
 
