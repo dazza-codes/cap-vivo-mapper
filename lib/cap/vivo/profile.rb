@@ -446,24 +446,20 @@ module Cap
         # if faculty? && physician? => determine 'vivo:PrimaryPosition' for org.
       end
 
-
       def vivo_positions
+        @cap_to_vivo_affiliations ||= {
+          'capFaculty' => 'vivo:FacultyPosition',
+          'capStaff' => 'vivo:NonAcademicPosition',
+          'capMdStudent' => 'vivo:NonFacultyAcademicPosition',
+          'capMsStudent' => 'vivo:NonFacultyAcademicPosition',
+          'capPhdStudent' => 'vivo:NonFacultyAcademicPosition',
+          'capPostdoc' => 'vivo:PostdocPosition' # subClassOf vivo:NonFacultyAcademic
+          # 'physician'
+          # TODO: detect additional title types; see vivo_affilitations also
+        }
         @vivo_positions ||= begin
           profile['titles'].map do |title|
-            case title['affiliation']
-            when 'capFaculty'
-              type = 'vivo:FacultyPosition'
-            when 'capStaff'
-              type = 'vivo:NonAcademicPosition'
-            when 'capMdStudent', 'capMsStudent', 'capPhdStudent'
-              type = 'vivo:NonFacultyAcademicPosition'
-            when 'capPostdoc'
-              type = 'vivo:PostdocPosition' # subClassOf vivo:NonFacultyAcademic
-            # when 'physician'
-            else
-              # TODO: detect additional title types
-              #       see vivo_affilitations also
-            end
+            type = @cap_to_vivo_affiliations[ title['affiliation'] ]
             label = title['label']['text']  # or title['label']['html']
             uri_suffix = title['label']['text'].gsub(/\W/,'')
             position_uri = @uri + "/position/#{uri_suffix}"
@@ -492,7 +488,6 @@ module Cap
           end
         end
       end
-
 
       # Create vivo:AdvisorRole and vivo:AdviseeRole, along with associated
       # vivo:AdvisingRelationship.  The method populates instance variables:
