@@ -7,6 +7,7 @@ require 'rdf/4store'
 require_relative 'cap/configuration'
 require_relative 'mongo/cap_mongo'
 require_relative 'orcid/orcid_client'
+require_relative 'crossref/crossref_client'
 require_relative 'rdf/vocab/vivo.rb'
 require_relative 'rdf/vocab/vivo_vcard.rb'
 
