@@ -12,7 +12,29 @@ include Orcid::Client
 # crossref_init
 
 # init configs
-Cap.configuration
+config = Cap.configuration
+
+# client will load profile data from a local repo
+client = Cap::Client::Client.new
+profile_ids = client.profile_ids
+
+if config.cap_testing
+  # Load profiles used to test CAP to VIVO conversions.
+  # #test_profiles method returns an array of profileId values.
+  require_relative 'cap_sample_profiles'
+  if test_profiles.nil? || test_profiles.empty?
+    test_ids = profile_ids.sample(20)
+  else
+    test_ids = test_profiles.select {|id| profile_ids.include? id}
+  end
+else
+  test_ids = nil
+end
+
+ids = test_ids || profile_ids
+# some profiles with orcid data that has no family-name.
+# ids = [8832, 15848, 16922, 4506]
+
 
 # An approximate string match that will err on the side of false positives; the
 # input strings are stripped of non-word characters and converted to lower case.
@@ -152,17 +174,8 @@ def orcid_search(profile, pubs=nil)
   orcid_matches
 end
 
-# client will load profile data from a local repo
-client = Cap::Client::Client.new
-profile_ids = client.profile_ids
-
-# Search ORCID for identifiers
-# ids = profile_ids
-ids = profile_ids.sample(50)
-# ids = [24298, 70991, 70968, 6176, 6787]
-
-# some profiles with orcid data that has no family-name.
-# ids = [8832, 15848, 16922, 4506]
+############################################################################
+# MAIN
 
 puts "Processing #{ids.length} CAP profiles:"
 count = 0
