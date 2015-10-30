@@ -7,7 +7,11 @@ module Cap
     def cap_repo_mongo
       @cap_repo_mongo ||= begin
         cap_mongo_logger
-        repo = ENV['CAP_REPO_MONGO'].dup || 'mongodb://127.0.0.1:27017/cap'
+        if ENV['CAP_REPO_MONGO']
+          repo = ENV['CAP_REPO_MONGO'].dup
+        else
+          repo = 'mongodb://127.0.0.1:27017/cap'
+        end
         Mongo::Client.new(repo)
       end
     end
