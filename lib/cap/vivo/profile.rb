@@ -148,7 +148,7 @@ module Cap
             'a' => 'owl:Thing'
           }
           vivo['vivo:orcidId'] = orcid_rdf
-          scopus_id = orcid['scopus_ids'].first
+          scopus_id = orcid['scopus_ids'].first rescue nil
           vivo['vivo:scopusId'] = scopus_id if scopus_id
         elsif orcid_data.length > 1
           # Try to figure out which one to use OR
@@ -747,6 +747,17 @@ module Cap
       def save
         save_triple_store
         save_turtle_files
+      end
+
+      def save_json
+        begin
+          prefix = "#{@id}_" + full_name.gsub(/\W/,'')
+          f = File.open(File.join(@config.rdf_path, "#{prefix}.json"), 'w')
+          f.write JSON.dump(profile)
+          f.close
+        rescue => e
+          @config.logger.error e.message
+        end
       end
 
       def save_triple_store
