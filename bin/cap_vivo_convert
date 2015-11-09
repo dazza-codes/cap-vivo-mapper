@@ -36,12 +36,16 @@ end
 
 # ORGS
 # Convert all the CAP API organizations into VIVO linked data.
+puts 'Processing Stanford CAP organizations'
 include Cap::Vivo::Orgs
 orgs_graph = RDF::Graph.new
 orgs = client.org_docs
 orgs.each {|o| orgs_graph << org_vivo_graph( org_cap_to_vivo(o) ) }
 f = File.open(File.join(config.rdf_path, 'orgs.ttl'), 'w')
 f.write orgs_graph.to_ttl
+f.close
+f = File.open(File.join(config.rdf_path, 'orgs.json'), 'w')
+f.write JSON.dump(orgs)
 f.close
 
 # # Degrees
@@ -84,10 +88,12 @@ start = Time.now.to_i
 ids.each do |id|
   count += 1
   profile = client.profile_doc(id)
+  profile['publications'] = client.publication_doc(id)['publications']
   begin
     mapper = Cap::Vivo::Profile.new profile
     mapper.vivo
     mapper.save
+    mapper.save_json
     if count % 50 == 0
       delay = (Time.now.to_i - start) / 60.0
       printf "\ncompleted %4d of %d (%5.1f min)\n", count, ids.length, delay
