@@ -19,12 +19,16 @@ client = Cap::Client::Client.new
 ids = client.profile_ids
 puts "Currently holding #{ids.length} CAP profiles in local repo"
 
-# Stanford CAP to VIVO sample data
-require_relative 'cap_sample_profiles'
-test_profile_docs = test_profiles.map do |id|
-  p = client.profile_doc(id)
-  p['publications'] = client.publication_doc(id)['publications']
-  p
+if config.cap_testing
+  # Stanford CAP to VIVO sample data
+  require_relative 'cap_sample_profiles'
+  test_profile_docs = test_profiles.map do |id|
+    p = client.profile_doc(id)
+    p['publications'] = client.publication_doc(id)['publications']
+    p
+  end
+else
+  test_profile_docs = []
 end
 
 require 'pry'; binding.pry;
