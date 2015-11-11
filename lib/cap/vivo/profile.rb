@@ -148,8 +148,9 @@ module Cap
             'a' => 'owl:Thing'
           }
           vivo['vivo:orcidId'] = orcid_rdf
-          scopus_id = orcid['scopus_ids'].first rescue nil
-          vivo['vivo:scopusId'] = scopus_id if scopus_id
+          if orcid['scopus_ids']
+            vivo['vivo:scopusId'] = orcid['scopus_ids'].first
+          end
         elsif orcid_data.length > 1
           # Try to figure out which one to use OR
           # try to filter them while searching for them.
