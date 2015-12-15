@@ -6,6 +6,7 @@ module Cap
 
     # CAP Public Website  https://profiles.stanford.edu
     # Profiles API        https://api.stanford.edu/profiles/v1
+    # Authors API         https://api.stanford.edu/cap/v1/authors
     # Orgs API            https://api.stanford.edu/cap/v1/orgs
     # Search API          https://api.stanford.edu/cap/v1/search
     # Developer's API     https://cap.stanford.edu/cap-api/console
@@ -25,6 +26,7 @@ module Cap
         @config = Cap::Client.configuration
         # CAP API
         @cap_uri = 'https://api.stanford.edu'
+        @cap_authors  = '/cap/v1/authors'
         @cap_profiles = '/profiles/v1'
         @cap_orgs     = '/cap/v1/orgs'
         @cap_search   = '/cap/v1/search'
