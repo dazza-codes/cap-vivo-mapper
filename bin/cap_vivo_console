@@ -10,7 +10,7 @@ include Cap::Vivo::GraphUtils
 include Cap::Vivo::Orgs
 
 # init configs
-Cap.configuration
+config = Cap.configuration
 
 # client will load profile data from a local repo; if it is empty, it
 # can be populated from the CAP API using `client.get_profiles`.  The
