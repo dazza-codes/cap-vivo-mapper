@@ -5,6 +5,7 @@ require 'bundler/setup'
 require 'cap'
 require 'cap/client'
 require 'cap/vivo'
+require 'pry'
 
 include Cap::Vivo::GraphUtils
 include Cap::Vivo::Orgs
@@ -23,12 +24,14 @@ if config.cap_testing
   # Stanford CAP to VIVO sample data
   require_relative 'cap_sample_profiles'
   test_profile_docs = test_profiles.map do |id|
+    puts "profile: #{id}"
     p = client.profile_doc(id)
-    p['publications'] = client.publication_doc(id)['publications']
+    pubs = client.publication_doc(id)
+    p['publications'] = pubs.nil? ? [] : pubs['publications']
     p
   end
 else
   test_profile_docs = []
 end
 
-require 'pry'; binding.pry;
+binding.pry;
