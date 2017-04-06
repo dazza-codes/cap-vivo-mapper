@@ -123,6 +123,9 @@ The result is a turtle file in `./data/vivo_rdf/all.ttl` which can be input dire
   - https://github.com/lawlesst/vivo-vagrant.git
 2. When it's running, login as the administrator and go to the 'Site Admin' page (find a link to this at top right of home page).  There is a section for 'Advanced Data Tools' that has a link to 'Add/Remove RDF data'.  On that page, click the 'browse' button to locate a turtle data file.  Leave the default radio button selection at 'add instance data (supports large data files)'.  Click the format selector and choose 'Turtle'.  Then click 'submit'.  If it loads, it will report a success message and then you can nagivate to the home page.
 
+3. Alternately, run the script `./bin/vivo_import_turtle.sh` which loads each .ttl file in `/tmp/cap_vivo_rdf` using the VIVO sparqlUpdate api (see https://wiki.duraspace.org/display/VIVODOC19x/SPARQL+Update+API#SPARQLUpdateAPI-EnablingtheAPI). Run this script from the cap-vivo-mapper app root, which should be installed under the vivo user's home dir:
+
+`USR=joe@stanford.edu PASSWD=secret ./bin/vivo_import_turtle.sh | tee -ai ./log/vivo_import_turtle.log`
 
 ## Development
 
