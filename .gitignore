@@ -51,3 +51,5 @@ Gemfile.lock
 # Ignore CAP API org data
 lib/cap/client/org*.json
 
+# Ignore mongo dumps
+mongodump*
