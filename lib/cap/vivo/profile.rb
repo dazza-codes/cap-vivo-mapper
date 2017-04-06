@@ -481,9 +481,9 @@ module Cap
             # org_website = title['organization']['orgUrl']
             org_code = title['organization']['orgCode']
             org_alias = @@org_codes2aliases[org_code]
-            # if org_alias.nil?
-            #  require 'pry'; binding.pry
-            # end
+            if org_alias.nil?
+              require 'pry'; binding.pry
+            end
             position['vivo:relates'] = vivo_org_uri(org_alias)
             position
           end
