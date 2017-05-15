@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sul-dlss/cap-vivo-mapper.svg?branch=master)](https://travis-ci.org/sul-dlss/cap-vivo-mapper)
+
 # Cap::Vivo::Mapper
 
 This utility maps Stanford CAP profiles to VIVO.
