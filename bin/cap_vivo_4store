@@ -28,13 +28,15 @@ case "$1" in
     # Ensure the 4store KB exists for 'cap_vivo'.
     # Only setup the backend once (it erases existing data).
     if [ ! -d "/var/lib/4store/$KB" ]; then
-      sudo 4s-backend-setup $KB
+      # sudo 4s-backend-setup $KB
+      4s-backend-setup $KB
     fi
     if ps aux | grep -q -E "[4]s-backend.*$KB"; then
       echo -e "4s-backend\t: already running $KB"
     else
       echo -e "4s-backend\t: starting $KB"
-      if sudo 4s-backend $KB; then
+      # if sudo 4s-backend $KB; then
+      if 4s-backend $KB; then
         echo -e "4s-backend\t: started $KB"
       else
         echo -e "4s-backend\t: failed!"
@@ -47,7 +49,8 @@ case "$1" in
       echo -e "4s-httpd\t: starting $KB on $PORT"
       # Start the 4s-httpd server for SPARQL
       #4s-httpd -h # describes the options
-      if sudo 4s-httpd -p $PORT -U -s -1 $KB; then
+      # if sudo 4s-httpd -p $PORT -U -s -1 $KB; then
+      if 4s-httpd -p $PORT -U -s -1 $KB; then
         echo -e "4s-httpd\t: started $KB on $PORT"
         echo "See http://localhost:9001/status/"
       else
@@ -64,7 +67,8 @@ case "$1" in
       echo "Stopping process numbers:"
       echo "$pids"
       for pid in $pids; do
-        sudo kill $pid
+        # sudo kill $pid
+        kill $pid
       done
     done
     ;;

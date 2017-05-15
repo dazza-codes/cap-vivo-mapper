@@ -9,7 +9,7 @@ module Cap
       VCARD_givenName  = VCARD_PREFIX + 'givenName'
       VCARD_familyName = VCARD_PREFIX + 'familyName'
 
-      DATA_NAMESPACE = ENV['DATA_NAMESPACE'] || 'https://vivo.stanford.edu'
+      DATA_NAMESPACE = ENV['DATA_NAMESPACE'] || 'https://sul-vivo-dev.stanford.edu'
 
       VIVO_CONTEXT = {
         '@context' => {
